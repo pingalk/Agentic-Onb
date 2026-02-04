@@ -12,7 +12,7 @@ import { Wallet, Download, ExternalLink, ThumbsUp, ThumbsDown, Share2, Copy as C
 import { motion, AnimatePresence } from 'motion/react';
 import clsx from 'clsx';
 import { PerplexityStreamText } from './PerplexityStreamingTypography';
-import { RayThinking } from '../RayThinking';
+import { ChainOfThought } from '../ChainOfThought';
 import { useStreamSequencer } from '../useStreamSequencer';
 import { SmartHighlight, SmartHighlightWithBold } from './SmartHighlight';
 
@@ -406,22 +406,19 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
     setTimeout(() => setSubtextStarted(true), 1300);
   }, []);
 
-  return (
-    <>
-      {/* Phase 0: Thinking */}
-      {phase === 0 && <RayThinking />}
+  // Determine ChainOfThought mode based on phase
+  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'thinking';
 
-      {/* Phase 1+: Content */}
-      {phase >= 1 && (
-        <motion.div
-          className="flex flex-col gap-[24px] w-full mt-2"
-          initial="hidden"
-          animate="visible"
-          variants={containerVar}
-        >
-          {/* Primary Content Section - gap-[16px] between subsections */}
-          <div className="flex flex-col gap-[16px]">
-            {/* Header + Subtext + Stats Group - gap-[4px] internally */}
+  return (
+    <motion.div
+      className="flex flex-col gap-[24px] w-full mt-2"
+      initial="hidden"
+      animate="visible"
+      variants={containerVar}
+    >
+      {/* Primary Content Section - gap-[16px] between subsections */}
+      <div className="flex flex-col gap-[16px]">
+        {/* Header + Subtext + Stats Group - gap-[4px] internally */}
             <div className="flex flex-col gap-[4px] px-[0px] py-[4px]">
               {/* 1. Header: Icon + Bold Text (streamed) */}
               <motion.div variants={itemVar} className="flex gap-[6px] items-center">
@@ -615,55 +612,26 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
             </motion.div>
           )}
 
-          {/* 7. Divider (Phase 5+) - Only if suggestions are present and it's the last message */}
-          {phase >= 5 && isLast && data.suggestions && (
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={{ opacity: 1, scaleX: 1 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-[0.5px] bg-[#CBD5E2] origin-left"
-            />
-          )}
+        {/* 7. Divider (Phase 5+) - Only if it's the last message */}
+        {phase >= 5 && isLast && (
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-[0.5px] bg-[#CBD5E2] origin-left"
+          />
+        )}
 
-          {/* 8. Suggestions Section (Phase 5+) - Only visible for last message */}
-          {phase >= 5 && isLast && data.suggestions && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col gap-[12px] mt-[0px] mr-[0px] mb-[30px] ml-[0px]"
-            >
-              <h3 className="text-[18px] leading-[26px] font-semibold text-[#193f47]">
-                Suggestions
-              </h3>
-              <div className="flex flex-col gap-[2px]">
-                {data.suggestions.map((sug: string, i: number) => {
-                  const isHighlighted = highlightedSuggestionIndex === i;
-                  return (
-                    <motion.button
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1, duration: 0.2 }}
-                      onClick={() => onSuggestionClick?.(sug)}
-                      className={`flex items-center gap-[4px] p-[4px] text-left w-full rounded-[4px] transition-colors hover:bg-[#f1f5fa] group ${isHighlighted ? 'bg-[#f1f5fa]' : ''}`}
-                    >
-                      <div className={`shrink-0 size-[20px] rounded-full flex items-center justify-center transition-colors ${isHighlighted ? 'bg-white' : 'bg-[#f1f5fa] group-hover:bg-white'}`}>
-                        <span className={`text-[10px] font-medium leading-[14px] transition-colors ${isHighlighted ? 'text-[#2980e1]' : 'text-[#40566d] group-hover:text-[#2980e1]'}`}>
-                          {i + 1}
-                        </span>
-                      </div>
-                      <p className={`text-[16px] leading-[26px] tracking-[0.16px] font-medium transition-colors ${isHighlighted ? 'text-[#2980e1]' : 'text-[#40566d] group-hover:text-[#2980e1]'}`}>
-                        {sug}
-                      </p>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
-      )}
-    </>
+        {/* 8. ChainOfThought - Always at bottom, shows thinking during streaming, suggestions when complete */}
+        {isLast && (
+          <ChainOfThought
+            mode={chainOfThoughtMode}
+            suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+            onSuggestionClick={onSuggestionClick}
+            highlightedSuggestionIndex={highlightedSuggestionIndex}
+          />
+        )}
+    </motion.div>
   );
 };
 
@@ -835,7 +803,7 @@ const SimpleTextArtifact = ({
   return (
     <>
       {/* Phase 0: Thinking */}
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {/* Phase 1+: Content */}
       {phase >= 1 && (
@@ -993,7 +961,7 @@ const BulletListWithButtonsArtifact = ({
   return (
     <>
       {/* Phase 0: Thinking */}
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {/* Phase 1+: Content */}
       {phase >= 1 && (
@@ -1127,7 +1095,7 @@ const SettingUpdatedWithBulletsArtifact = ({
   return (
     <>
       {/* Phase 0: Thinking */}
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {/* Phase 1+: Content */}
       {phase >= 1 && (
@@ -1287,7 +1255,7 @@ const PaymentLinksCreatedArtifact = ({
   return (
     <>
       {/* Phase 0: Thinking */}
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {/* Phase 1+: Content */}
       {phase >= 1 && (
@@ -1503,23 +1471,20 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
     }
   };
 
-  return (
-    <>
-      {/* Phase 0: Thinking */}
-      {phase === 0 && <RayThinking />}
+  // Determine ChainOfThought mode based on phase
+  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'thinking';
 
-      {/* Phase 1+: Content */}
-      {phase >= 1 && (
-        <motion.div
-          className="flex flex-col gap-[24px] w-full mt-2"
-          initial="hidden"
-          animate="visible"
-          variants={containerVar}
-        >
-          {/* Primary Content Section */}
-          <div className="flex flex-col gap-[16px]">
-            {/* Header + Subtext Group */}
-            <div className="flex flex-col gap-[4px] px-[0px] py-[4px]">
+  return (
+    <motion.div
+      className="flex flex-col gap-[24px] w-full mt-2"
+      initial="hidden"
+      animate="visible"
+      variants={containerVar}
+    >
+      {/* Primary Content Section */}
+      <div className="flex flex-col gap-[16px]">
+        {/* Header + Subtext Group */}
+        <div className="flex flex-col gap-[4px] px-[0px] py-[4px]">
               {/* 1. Header: Icon + Bold Text (streamed) */}
               <motion.div variants={itemVar} className="flex gap-[6px] items-center">
                 <div className="shrink-0 size-[20px] bg-[#2563EB] rounded-[3.33px] flex items-center justify-center shadow-sm">
@@ -1678,55 +1643,26 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
             </motion.div>
           )}
 
-          {/* 6. Divider (Phase 5+) - Only if suggestions are present and it's the last message */}
-          {phase >= 5 && isLast && data.suggestions && (
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={{ opacity: 1, scaleX: 1 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-[0.5px] bg-[#CBD5E2] origin-left"
-            />
-          )}
+        {/* 6. Divider (Phase 5+) - Only if it's the last message */}
+        {phase >= 5 && isLast && (
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-[0.5px] bg-[#CBD5E2] origin-left"
+          />
+        )}
 
-          {/* 7. Suggestions Section (Phase 5+) - Only visible for last message */}
-          {phase >= 5 && isLast && data.suggestions && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col gap-[12px] mt-[0px] mr-[0px] mb-[30px] ml-[0px]"
-            >
-              <h3 className="text-[18px] leading-[26px] font-semibold text-[#193f47]">
-                Suggestions
-              </h3>
-              <div className="flex flex-col gap-[2px]">
-                {data.suggestions.map((sug: string, i: number) => {
-                  const isHighlighted = highlightedSuggestionIndex === i;
-                  return (
-                    <motion.button
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1, duration: 0.2 }}
-                      onClick={() => onSuggestionClick?.(sug)}
-                      className={`flex items-center gap-[4px] p-[4px] text-left w-full rounded-[4px] transition-colors hover:bg-[#f1f5fa] group ${isHighlighted ? 'bg-[#f1f5fa]' : ''}`}
-                    >
-                      <div className={`shrink-0 size-[20px] rounded-full flex items-center justify-center transition-colors ${isHighlighted ? 'bg-white' : 'bg-[#f1f5fa] group-hover:bg-white'}`}>
-                        <span className={`text-[10px] font-medium leading-[14px] transition-colors ${isHighlighted ? 'text-[#2980e1]' : 'text-[#40566d] group-hover:text-[#2980e1]'}`}>
-                          {i + 1}
-                        </span>
-                      </div>
-                      <p className={`text-[16px] leading-[26px] tracking-[0.16px] font-medium transition-colors ${isHighlighted ? 'text-[#2980e1]' : 'text-[#40566d] group-hover:text-[#2980e1]'}`}>
-                        {sug}
-                      </p>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
-      )}
-    </>
+        {/* 7. ChainOfThought - Always at bottom */}
+        {isLast && (
+          <ChainOfThought
+            mode={chainOfThoughtMode}
+            suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+            onSuggestionClick={onSuggestionClick}
+            highlightedSuggestionIndex={highlightedSuggestionIndex}
+          />
+        )}
+    </motion.div>
   );
 };
 
@@ -1745,37 +1681,36 @@ const MayaDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highlightedSug
     setTimeout(() => setSubtextStarted(true), 1300);
   }, []);
 
-  return (
-    <>
-      {phase === 0 && <RayThinking />}
+  // Determine ChainOfThought mode based on phase
+  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'thinking';
 
-      {phase >= 1 && (
-        <motion.div
-          className="flex flex-col gap-[24px] w-full mt-2"
-          initial="hidden"
-          animate="visible"
-          variants={containerVar}
-        >
-          <div className="flex flex-col gap-[16px]">
-            {/* Header + Subtext */}
-            <div className="flex flex-col gap-[4px] px-[0px] py-[4px]">
-              <motion.div variants={itemVar} className="flex gap-[6px] items-center">
-                <div className="shrink-0 size-[20px] bg-[#E9690C] rounded-[3.33px] flex items-center justify-center shadow-sm">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                </div>
-                <h3 className="text-[18px] leading-[24px] font-semibold text-[#020202]">
-                  <PerplexityStreamText
-                    content={data.headline}
-                    speed={15}
-                    onComplete={handleHeadlineComplete}
-                    inheritStyles
-                  />
-                </h3>
-              </motion.div>
+  return (
+    <motion.div
+      className="flex flex-col gap-[24px] w-full mt-2"
+      initial="hidden"
+      animate="visible"
+      variants={containerVar}
+    >
+      <div className="flex flex-col gap-[16px]">
+        {/* Header + Subtext */}
+        <div className="flex flex-col gap-[4px] px-[0px] py-[4px]">
+          <motion.div variants={itemVar} className="flex gap-[6px] items-center">
+            <div className="shrink-0 size-[20px] bg-[#E9690C] rounded-[3.33px] flex items-center justify-center shadow-sm">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <h3 className="text-[18px] leading-[24px] font-semibold text-[#020202]">
+              <PerplexityStreamText
+                content={data.headline}
+                speed={15}
+                onComplete={handleHeadlineComplete}
+                inheritStyles
+              />
+            </h3>
+          </motion.div>
 
               {subtextStarted && (
                 <motion.div
@@ -1840,48 +1775,25 @@ const MayaDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highlightedSug
             </motion.div>
           )}
 
-          {/* Divider */}
-          {phase >= 5 && isLast && data.suggestions && (
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={{ opacity: 1, scaleX: 1 }}
-              className="w-full h-[0.5px] bg-[#CBD5E2] origin-left"
-            />
-          )}
+        {/* Divider */}
+        {phase >= 5 && isLast && (
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            className="w-full h-[0.5px] bg-[#CBD5E2] origin-left"
+          />
+        )}
 
-          {/* Suggestions */}
-          {phase >= 5 && isLast && data.suggestions && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col gap-[12px] mb-[30px]"
-            >
-              <h3 className="text-[18px] leading-[26px] font-semibold text-[#193f47]">Suggestions</h3>
-              <div className="flex flex-col gap-[2px]">
-                {data.suggestions.map((sug: string, i: number) => {
-                  const isHighlighted = highlightedSuggestionIndex === i;
-                  return (
-                    <motion.button
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      onClick={() => onSuggestionClick?.(sug)}
-                      className={`flex items-center gap-[4px] p-[4px] text-left w-full rounded-[4px] hover:bg-[#f1f5fa] group ${isHighlighted ? 'bg-[#f1f5fa]' : ''}`}
-                    >
-                      <div className={`shrink-0 size-[20px] rounded-full flex items-center justify-center ${isHighlighted ? 'bg-white' : 'bg-[#f1f5fa] group-hover:bg-white'}`}>
-                        <span className={`text-[10px] font-medium ${isHighlighted ? 'text-[#2980e1]' : 'text-[#40566d] group-hover:text-[#2980e1]'}`}>{i + 1}</span>
-                      </div>
-                      <p className={`text-[16px] leading-[26px] tracking-[0.16px] font-medium ${isHighlighted ? 'text-[#2980e1]' : 'text-[#40566d] group-hover:text-[#2980e1]'}`}>{sug}</p>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
-      )}
-    </>
+        {/* ChainOfThought - Always at bottom */}
+        {isLast && (
+          <ChainOfThought
+            mode={chainOfThoughtMode}
+            suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+            onSuggestionClick={onSuggestionClick}
+            highlightedSuggestionIndex={highlightedSuggestionIndex}
+          />
+        )}
+    </motion.div>
   );
 };
 
@@ -1909,7 +1821,7 @@ const MayaDraftMessageArtifact = ({ data, onSuggestionClick, isLast, highlighted
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -2093,7 +2005,7 @@ const SupportTicketStatusArtifact = ({ data, onButtonClick, onSuggestionClick, i
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -2343,7 +2255,7 @@ const TicketEscalatedArtifact = ({ data, onSuggestionClick, isLast, highlightedS
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -2540,7 +2452,7 @@ const FailedPaymentDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highl
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -2710,7 +2622,7 @@ const PaymentLinkCreatedArtifact = ({ data, onSuggestionClick, isLast, highlight
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -2927,7 +2839,7 @@ const RefundStatusReportArtifact = ({ data, onSuggestionClick, isLast, highlight
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -3082,7 +2994,7 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -3203,7 +3115,7 @@ const SettlementExplanationArtifact = ({ data, onSuggestionClick, isLast, highli
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -3318,7 +3230,7 @@ const InstantSettlementOfferArtifact = ({ data, onSuggestionClick, isLast, highl
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -3457,7 +3369,7 @@ const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonCli
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -3553,7 +3465,7 @@ const InstantSettlementEnabledArtifact = ({ data, onSuggestionClick, onButtonCli
 
   return (
     <>
-      {phase === 0 && <RayThinking />}
+      {phase === 0 && <ChainOfThought />}
 
       {phase >= 1 && (
         <motion.div
@@ -3944,7 +3856,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
   // 2. Ray Thinking State
   if (data.isThinking) {
-    return <RayThinking />;
+    return <ChainOfThought />;
   }
 
   // 3. Ray AI Message with Investigation Report Artifact

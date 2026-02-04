@@ -1,5 +1,51 @@
 import { useState } from 'react';
 
+// V4 Animation: Persona-specific thinking steps for ChainOfThought component
+export const thinkingSteps: Record<string, string[]> = {
+    maya: [
+        "Searching transaction records...",
+        "Analyzing payment patterns...",
+        "Checking refund status..."
+    ],
+    arjun: [
+        "Analyzing account balance...",
+        "Reviewing settlement history...",
+        "Checking refund volume..."
+    ],
+    sarah: [
+        "Reviewing capture settings...",
+        "Analyzing payment flow...",
+        "Identifying auto-refunds..."
+    ],
+    sam: [
+        "Fetching ticket details...",
+        "Checking SLA status...",
+        "Reviewing escalation options..."
+    ],
+    shyam: [
+        "Analyzing screenshot...",
+        "Identifying payment issue...",
+        "Generating resolution..."
+    ],
+    kiara: [
+        "Looking up customer records...",
+        "Checking refund status...",
+        "Verifying bank processing..."
+    ],
+    varun: [
+        "Calculating settlement amount...",
+        "Checking settlement cycle...",
+        "Reviewing payment collection..."
+    ]
+};
+
+// Default thinking steps for fallback
+export const defaultThinkingSteps = [
+    "Working on this...",
+    "Gathering information...",
+    "Putting it all together..."
+];
+
 export const useDemoScript = () => {
     const [step, setStep] = useState(0);
 
