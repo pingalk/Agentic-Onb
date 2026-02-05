@@ -448,6 +448,7 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
   const [subtextStarted, setSubtextStarted] = useState(false);
   const [statsStarted, setStatsStarted] = useState(false);
   const [tableStarted, setTableStarted] = useState(false);
+  const [allStreamingComplete, setAllStreamingComplete] = useState(false);
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
     hasDataAsset: !!data.table,
@@ -467,18 +468,24 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
     if (data.stats && data.stats.length > 0) {
       setTimeout(() => setStatsStarted(true), timing.sequentialDelay);
     } else {
-      setTimeout(() => setTableStarted(true), timing.sequentialDelay);
+      setTimeout(() => {
+        setTableStarted(true);
+        setAllStreamingComplete(true);
+      }, timing.sequentialDelay);
     }
     onNarrativeComplete();
   }, [onNarrativeComplete, data.stats, timing.sequentialDelay]);
 
   // Start table after stats complete (with brief pause)
   const handleStatsComplete = React.useCallback(() => {
-    setTimeout(() => setTableStarted(true), timing.sequentialDelay);
+    setTimeout(() => {
+      setTableStarted(true);
+      setAllStreamingComplete(true);
+    }, timing.sequentialDelay);
   }, [timing.sequentialDelay]);
 
-  // Determine ChainOfThought mode based on phase
-  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'streaming';
+  // Determine ChainOfThought mode - only complete when phase >= 5 AND all streaming is done
+  const chainOfThoughtMode = (phase >= 5 && allStreamingComplete) ? 'complete' : 'streaming';
 
   return (
     <motion.div
@@ -641,7 +648,7 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
           </div>
 
           {/* 6. Footer Actions Strip (Phase 4+) - Only visible for last message */}
-          {phase >= 4 && isLast && (
+          {phase >= 4 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -792,7 +799,7 @@ const FollowupQuestionArtifact = ({
       )}
 
       {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -911,7 +918,7 @@ const SimpleTextArtifact = ({
       )}
 
       {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -1034,7 +1041,7 @@ const BulletListWithButtonsArtifact = ({
           )}
 
           {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-          {phase >= 4 && isLast && (
+          {phase >= 4 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1189,7 +1196,7 @@ const SettingUpdatedWithBulletsArtifact = ({
           )}
 
           {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-          {phase >= 4 && isLast && (
+          {phase >= 4 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1410,7 +1417,7 @@ const PaymentLinksCreatedArtifact = ({
           </div>
 
           {/* Footer Actions Strip (Phase 4+) - Only visible for last message */}
-          {phase >= 4 && isLast && (
+          {phase >= 4 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1616,7 +1623,7 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
           </div>
 
           {/* 5. Footer Actions Strip (Phase 4+) - Only visible for last message */}
-          {phase >= 4 && isLast && (
+          {phase >= 4 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1748,7 +1755,7 @@ const MayaDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highlightedSug
           </div>
 
           {/* Footer Actions (Phase 4+) */}
-          {phase >= 4 && isLast && (
+          {phase >= 4 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1891,7 +1898,7 @@ const MayaDraftMessageArtifact = ({ data, onSuggestionClick, isLast, highlighted
       </div>
 
       {/* Footer Actions (Phase 4+) */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -2128,7 +2135,7 @@ const SupportTicketStatusArtifact = ({ data, onButtonClick, onSuggestionClick, i
       )}
 
       {/* Footer Actions (Phase 4+) */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -2282,7 +2289,7 @@ const TicketEscalatedArtifact = ({ data, onSuggestionClick, isLast, highlightedS
       )}
 
       {/* Footer Actions (Phase 4+) */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -2448,7 +2455,7 @@ const FailedPaymentDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highl
       )}
 
       {/* Footer Actions (Phase 4+) */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -2639,7 +2646,7 @@ const PaymentLinkCreatedArtifact = ({ data, onSuggestionClick, isLast, highlight
       )}
 
       {/* Footer Actions (Phase 4+) */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -2761,7 +2768,7 @@ const RefundStatusReportArtifact = ({ data, onSuggestionClick, isLast, highlight
       )}
 
       {/* Footer Actions (Phase 4+) */}
-      {phase >= 4 && isLast && (
+      {phase >= 4 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

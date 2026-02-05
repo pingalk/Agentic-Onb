@@ -601,16 +601,17 @@ export const SparkRipplesBackground = ({
     const container = containerRef.current;
     const dpr = Math.min(window.devicePixelRatio, 2);
 
-    // Create OGL renderer
+    // Create OGL renderer with alpha support for transparency
     const renderer = new Renderer({
       width: container.clientWidth,
       height: container.clientHeight,
       dpr: dpr,
+      alpha: true,
     });
     const gl = renderer.gl;
-    // Set clear color to #f8f8f8 for muted mode (matches page background)
+    // Set transparent clear color for seamless blending with page background
     if (muted) {
-      gl.clearColor(248/255, 248/255, 248/255, 1);
+      gl.clearColor(0, 0, 0, 0);
     }
     gl.canvas.style.width = '100%';
     gl.canvas.style.height = '100%';

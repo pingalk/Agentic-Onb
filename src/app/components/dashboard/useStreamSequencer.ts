@@ -72,10 +72,10 @@ export const useStreamSequencer = ({
     useEffect(() => {
         if (phase === 4) {
              // Layer 4: Actions -> Layer 5: Suggestions
-             // Can happen almost immediately or with small delay
+             // Give streaming content time to complete before showing suggestions
              const timer = setTimeout(() => {
                  setPhase(5);
-             }, 200);
+             }, 2000);
              return () => clearTimeout(timer);
         }
     }, [phase]);

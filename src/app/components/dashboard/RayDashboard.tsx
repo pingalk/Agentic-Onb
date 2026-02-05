@@ -19,6 +19,8 @@ import svgPathsStats from "../../../imports/svg-h6d9ul042g";
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import { SparkRipplesBackground } from './SparkRipplesBackground';
 import { AvatarMenu } from '../AvatarMenu';
+import { SuggestionChipsPanel } from './SuggestionChipsPanel';
+import { HomeCards } from './HomeCards';
 
 // --- Helper Components ---
 
@@ -201,7 +203,6 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
 
   // Cycling placeholder suggestions for 'empty' variant
   const placeholderSuggestions = [
-    "Ask me anything...",
     "Show me today's transactions",
     "What's my payment success rate?",
     "Analyze my revenue this week",
@@ -217,33 +218,37 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
     return () => clearInterval(interval);
   }, [landingVariant, placeholderSuggestions.length]);
 
-  // Entry animation phases (0=hidden, 1=ray, 2=greeting, 3=tagline, 4=input-spotlight, 5=input-content, 6=cards)
+  // Entry animation phases (0=hidden, 1=ray, 2=greeting, 3=tagline, 4=input-spotlight, 5=spotlight-end, 6=input-content, 7=cards)
   const [animPhase, setAnimPhase] = useState(0);
+  const animationRanRef = React.useRef(false);
 
   useEffect(() => {
     if (view !== 'landing') return;
+    // Only run animation once per landing page visit
+    if (animationRanRef.current) return;
+    animationRanRef.current = true;
 
     // For 'default' variant, run animation with deliberate pacing
     if (landingVariant === 'default') {
-      setAnimPhase(0);
       const t1 = setTimeout(() => setAnimPhase(1), 400);      // Ray appears
       const t2 = setTimeout(() => setAnimPhase(2), 800);      // Greeting starts streaming
       const t3 = setTimeout(() => setAnimPhase(3), 1200);     // Tagline starts streaming
       const t4 = setTimeout(() => setAnimPhase(4), 4600);     // Input spotlight border starts
-      const t5 = setTimeout(() => setAnimPhase(5), 7000);     // Input content fades in
-      const t6 = setTimeout(() => setAnimPhase(6), 9200);     // Cards appear, shadow shows
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); };
+      const t5 = setTimeout(() => setAnimPhase(5), 5600);     // Spotlight ends
+      const t6 = setTimeout(() => setAnimPhase(6), 5700);     // Input content fades in
+      const t7 = setTimeout(() => setAnimPhase(7), 6500);     // Cards appear
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); clearTimeout(t7); };
     }
 
     // Story mode animation sequence
-    setAnimPhase(0);
     const t1 = setTimeout(() => setAnimPhase(1), 400);      // Ray appears
     const t2 = setTimeout(() => setAnimPhase(2), 2000);     // Greeting
     const t3 = setTimeout(() => setAnimPhase(3), 3200);     // Tagline
     const t4 = setTimeout(() => setAnimPhase(4), 4400);     // Input spotlight border
-    const t5 = setTimeout(() => setAnimPhase(5), 6000);     // Input content fades in
-    const t6 = setTimeout(() => setAnimPhase(6), 7200);     // Cards appear
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); };
+    const t5 = setTimeout(() => setAnimPhase(5), 5400);     // Spotlight ends
+    const t6 = setTimeout(() => setAnimPhase(6), 5500);     // Input content fades in
+    const t7 = setTimeout(() => setAnimPhase(7), 6300);     // Cards appear
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); clearTimeout(t7); };
   }, [view, landingVariant]);
 
   // EXPERIMENTAL: Track which briefing item is hovered (null = none)
@@ -507,8 +512,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                      <motion.div
                         className="absolute inset-0"
                         style={{
-                          transform: `translateY(${-150 - scrollY * 0.5}px) scale(2)`,
-                          filter: `hue-rotate(${currentMagicColor.hueRotate})`
+                          transform: `translateY(${-150 - scrollY * 0.5}px) scale(2)`
                         }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -678,8 +682,8 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <motion.div
                             className="absolute inset-0 rounded-[20px] pointer-events-none z-10 overflow-hidden"
                             initial={{ opacity: 0 }}
-                            animate={{ opacity: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 1 : 0 }}
-                            transition={{ duration: animPhase >= 6 && viewTransition !== 'spotlightHold' ? 0.8 : 1.2, ease: "easeOut" }}
+                            animate={{ opacity: (animPhase >= 4 && animPhase < 5) || viewTransition === 'spotlightHold' ? 1 : 0 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
                         >
                             {/* Horizontal linear gradient - sweeps left to right across top/bottom edges */}
                             <div
@@ -687,49 +691,48 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                 style={{
                                     background: `linear-gradient(90deg, rgba(203,213,225,0.5) 0%, rgba(203,213,225,0.5) 40%, ${currentMagicColor.gradient} 50%, rgba(203,213,225,0.5) 60%, rgba(203,213,225,0.5) 100%)`,
                                     backgroundSize: '200% 100%',
-                                    animation: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 'spotlightSweep 2s linear infinite' : 'none',
+                                    animation: (animPhase >= 4 && animPhase < 5) || viewTransition === 'spotlightHold' ? 'spotlightSweep 1s ease-out forwards' : 'none',
                                 }}
                             />
                             {/* Inner fill to create border effect - white for clean look */}
                             <div className="absolute inset-[2px] rounded-[18px] bg-white" />
                         </motion.div>
 
-                        {/* Spotlight for send button - positioned at bottom right to match buttons row padding */}
+                        {/* Input content - only visible after spotlight ends */}
                         <motion.div
-                            className="absolute bottom-[12px] right-[12px] w-[32px] h-[32px] rounded-full pointer-events-none z-10 overflow-hidden"
                             initial={{ opacity: 0 }}
-                            animate={{ opacity: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 1 : 0 }}
-                            transition={{ duration: animPhase >= 6 && viewTransition !== 'spotlightHold' ? 0.8 : 1.2, ease: "easeOut" }}
+                            animate={{ opacity: animPhase >= 6 ? 1 : 0 }}
+                            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                         >
-                            {/* Circular sweeping gradient */}
-                            <div
-                                className="absolute inset-0 rounded-full"
-                                style={{
-                                    background: `conic-gradient(from 0deg, ${currentMagicColor.gradient} 0deg, rgba(203,213,225,0.5) 60deg, rgba(203,213,225,0.5) 300deg, ${currentMagicColor.gradient} 360deg)`,
-                                    animation: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 'spin 1.5s linear infinite' : 'none',
-                                }}
+                            <RayInputBox
+                                value={prompt}
+                                onChange={setPrompt}
+                                onSend={handleSend}
+                                variant="hero"
+                                placeholder={landingVariant === 'default' ? placeholderSuggestions[placeholderIndex] : ""}
+                                animatePlaceholder={landingVariant === 'default'}
+                                showShadow={animPhase >= 6}
+                                autoFocus
+                                attachmentChip={shyamAttachment}
+                                onRemoveAttachment={() => setShyamAttachment(null)}
                             />
-                            {/* Inner fill - white for clean look */}
-                            <div className="absolute inset-[2px] rounded-full bg-white" />
                         </motion.div>
-
-                        {/* Input content */}
-                        <RayInputBox
-                            value={prompt}
-                            onChange={setPrompt}
-                            onSend={handleSend}
-                            variant="hero"
-                            placeholder={landingVariant === 'default' ? placeholderSuggestions[placeholderIndex] : "Ask me anything..."}
-                            animatePlaceholder={landingVariant === 'default'}
-                            showShadow={animPhase >= 6}
-                            autoFocus
-                            attachmentChip={shyamAttachment}
-                            onRemoveAttachment={() => setShyamAttachment(null)}
-                        />
                      </motion.div>
 
+                     {/* Suggestion Chips Panel - appears after animation completes */}
+                     {animPhase >= 7 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                            className="mt-4"
+                        >
+                            <SuggestionChipsPanel onPromptSelect={setPrompt} />
+                        </motion.div>
+                     )}
+
                      <div className="w-full max-w-2xl relative flex flex-col gap-[32px] items-center">
-                        
+
                         {/* Suggestion Categories - Commented out per request
                         <div className="content-stretch flex gap-[13px] items-center relative shrink-0 flex-wrap justify-center">
                             <div
@@ -829,6 +832,11 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         }}
                         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
                      >
+                        <HomeCards animPhase={animPhase} onPromptSelect={setPrompt} />
+                     </motion.div>
+
+                     {/* OLD CARDS GRID - REPLACED BY HomeCards */}
+                     {false && <div className="OLD_REMOVED_hidden">
                         {/* Responsive Grid Layout with Equal Spacing */}
                         <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-3 md:gap-4 auto-rows-min">
                         
@@ -836,7 +844,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <motion.div
                           className="bg-white h-auto md:h-[390px] md:row-span-2 overflow-clip rounded-[10px] w-full relative"
                           initial={{ opacity: 0, y: 26 }}
-                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
+                          animate={animPhase >= 7 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
                           transition={{
                             duration: 0.8,
                             delay: 0,
@@ -980,7 +988,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                             isNegative ? "border-[#fee4e2]" : (isNeutral && !isVarun) ? "border-[#fed7aa]" : "border-[#d1fae5]"
                           )}
                           initial={{ opacity: 0, y: 26 }}
-                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
+                          animate={animPhase >= 7 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
                           transition={{
                             duration: 0.8,
                             delay: 0.15,
@@ -1160,7 +1168,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <motion.div
                           className="bg-[#fcfcfc] border border-[rgba(0,0,0,0.1)] border-solid not-italic overflow-clip rounded-[12px] h-[183px] w-full relative cursor-pointer"
                           initial={{ opacity: 0, y: 26 }}
-                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
+                          animate={animPhase >= 7 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
                           transition={{
                             duration: 0.8,
                             delay: 0.3,
@@ -1197,7 +1205,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <motion.div
                           className="bg-[#fcfcfc] border border-[rgba(0,0,0,0.1)] border-solid h-[183px] overflow-clip rounded-[12px] w-full relative cursor-pointer"
                           initial={{ opacity: 0, y: 26 }}
-                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
+                          animate={animPhase >= 7 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
                           transition={{
                             duration: 0.8,
                             delay: 0.45,
@@ -1262,7 +1270,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         </div>
 
                      </div>
-                     </motion.div>
+                     </div>}
                 </div>
                 )
             ) : (

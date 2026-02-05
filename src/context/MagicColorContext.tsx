@@ -39,7 +39,7 @@ interface MagicColorContextValue {
 const MagicColorContext = createContext<MagicColorContextValue | undefined>(undefined);
 
 export const MagicColorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [magicColor, setMagicColor] = useState<MagicColorType>('blue');
+  const [magicColor, setMagicColor] = useState<MagicColorType>('green');
 
   const value: MagicColorContextValue = {
     magicColor,
