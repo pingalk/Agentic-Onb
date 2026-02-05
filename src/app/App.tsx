@@ -4,7 +4,6 @@ import { Login } from './components/auth/Login';
 import { DemoProvider } from '../context/DemoContext';
 import { TimingSettingsProvider } from '../context/TimingSettingsContext';
 import { MagicColorProvider } from '../context/MagicColorContext';
-import { DemoControls } from './components/DemoControls';
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(true); // Skip login, go directly to Ray AI
@@ -35,10 +34,7 @@ function AppContent() {
   }
 
   return (
-    <>
-      <Dashboard initialConfig={initialViewConfig} onLogout={handleLogout} />
-      <DemoControls />
-    </>
+    <Dashboard initialConfig={initialViewConfig} onLogout={handleLogout} />
   );
 }
 

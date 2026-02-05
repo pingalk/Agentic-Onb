@@ -460,7 +460,7 @@ Maya`,
                         amount: '15,000',
                         url: 'https://rzp.io/rzp/rahul15k',
                         status: 'Active',
-                        createdOn: 'Jan 28, 2026, just now',
+                        createdOn: 'Jan 28, 2026, Just now',
                         customer: {
                             name: 'Rahul',
                             email: 'rahul@gmail.com'
@@ -623,6 +623,190 @@ Maya`,
         }
     };
 
+    // Showcase - All Cards Demo (displays all artifact types)
+    const showcaseCards = [
+        // 1. Investigation Report
+        {
+            id: 'showcase-investigation',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'investigation_report' as const,
+                data: {
+                    headline: "Investigation Report",
+                    subtext: "This is an **investigation report** artifact with headline, subtext, stats, table, and resolution sections.",
+                    stats: [
+                        { label: 'Total Analyzed', value: '₹50,000' },
+                        { label: 'Issues Found', value: '2' }
+                    ],
+                    table: {
+                        rows: [
+                            { id: 'txn_001', amount: '₹20,000', status: 'Captured', method: 'UPI', date: '15 Jan 2025', rrn: '123456' },
+                            { id: 'txn_002', amount: '₹30,000', status: 'Pending', method: 'Card', date: '14 Jan 2025', rrn: '789012' }
+                        ]
+                    },
+                    resolution: {
+                        title: 'Resolution',
+                        content: 'This section shows the resolution or next steps for the investigation.'
+                    },
+                    suggestions: ['View details', 'Export report']
+                }
+            }
+        },
+        // 2. Simple Text
+        {
+            id: 'showcase-simple-text',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'simple_text' as const,
+                data: {
+                    headline: "Simple Text Card",
+                    body: "This is a **simple text** artifact with a headline and body text. It supports **bold** formatting.",
+                    suggestions: ['Got it', 'Tell me more']
+                }
+            }
+        },
+        // 3. Payment Link Form Card (Mini Card)
+        {
+            id: 'showcase-payment-link-card',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'payment_link_form_card' as const,
+                data: {
+                    formId: 'showcase-pl-1',
+                    status: 'draft' as const,
+                    prefill: {
+                        amount: '5000',
+                        purpose: 'Sample Payment',
+                        email: 'customer@example.com'
+                    },
+                    isLoading: false
+                }
+            }
+        },
+        // 4. Support Ticket Status
+        {
+            id: 'showcase-ticket',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'support_ticket_status' as const,
+                data: {
+                    headline: "Support Ticket Status",
+                    subtext: "Ticket **#TKT-12345** is currently being reviewed by our support team.",
+                    ticketId: 'TKT-12345',
+                    status: 'In Progress',
+                    priority: 'High',
+                    showEscalateButton: true,
+                    suggestions: ['Check updates', 'Contact support']
+                }
+            }
+        },
+        // 5. Settlement Upcoming
+        {
+            id: 'showcase-settlement',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'settlement_upcoming' as const,
+                data: {
+                    headline: "Upcoming Settlement",
+                    subtext: "Your next settlement of **₹85,000** is scheduled for tomorrow.",
+                    amount: '₹85,000',
+                    date: getFutureDate(1),
+                    suggestions: ['View breakdown', 'Get it now']
+                }
+            }
+        },
+        // 6. Payment Link Created
+        {
+            id: 'showcase-pl-created',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'payment_link_created' as const,
+                data: {
+                    headline: "Payment Link Created",
+                    subtext: "Your payment link has been created successfully.",
+                    linkUrl: 'https://rzp.io/l/abc123',
+                    amount: '₹10,000',
+                    purpose: 'Invoice Payment',
+                    suggestions: ['Create another', 'View all links']
+                }
+            }
+        },
+        // 7. Refund Status Report
+        {
+            id: 'showcase-refund',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'refund_status_report' as const,
+                data: {
+                    headline: "Refund Status",
+                    subtext: "Refund of **₹2,500** has been processed successfully.",
+                    amount: '₹2,500',
+                    status: 'Processed',
+                    rrn: '987654321',
+                    suggestions: ['Track more', 'Done']
+                }
+            }
+        },
+        // 8. Bullet List with Buttons
+        {
+            id: 'showcase-bullets',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'bullet_list_with_buttons' as const,
+                data: {
+                    headline: "Bullet List with Actions",
+                    bullets: [
+                        'First item in the bullet list',
+                        'Second item with **bold** text',
+                        'Third item explaining something'
+                    ],
+                    buttons: [
+                        { label: 'Primary Action', variant: 'primary' },
+                        { label: 'Secondary', variant: 'secondary' }
+                    ]
+                }
+            }
+        },
+        // 9. Followup Question
+        {
+            id: 'showcase-followup',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'followup_question' as const,
+                data: {
+                    question: "Would you like to proceed with this action?",
+                    options: ['Yes, proceed', 'No, cancel', 'Tell me more']
+                }
+            }
+        },
+        // 10. Add Funds Form Card
+        {
+            id: 'showcase-add-funds',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'add_funds_form_card' as const,
+                data: {
+                    formId: 'showcase-af-1',
+                    amount: '25000',
+                    walletBalance: '₹1,50,000'
+                }
+            }
+        },
+        // 11. Capture Settings Form Card
+        {
+            id: 'showcase-capture',
+            sender: 'ai' as const,
+            artifact: {
+                type: 'capture_settings_form_card' as const,
+                data: {
+                    formId: 'showcase-cs-1',
+                    currentSetting: 'manual',
+                    recommendedSetting: 'auto'
+                }
+            }
+        }
+    ];
+
     const processInput = (text: string) => {
         const lowerText = text.toLowerCase();
         let nextStep = step;
@@ -655,6 +839,7 @@ Maya`,
         kiaraScript,
         varunScript,
         briefingReviewResponses,
+        showcaseCards,
         getFutureDate
     };
 };

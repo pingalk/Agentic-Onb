@@ -580,9 +580,19 @@ interface SparkRipplesBackgroundProps {
   className?: string;
   opacity?: number;
   loop?: boolean;
+  scale?: number; // Scale up the animation (1.0 = 100%, 1.5 = 150%)
+  playbackRate?: number; // Video playback speed (0.5 = half speed, 1.0 = normal)
+  muted?: boolean; // When true, reduces contrast and brightness for subtle background use
 }
 
-export const SparkRipplesBackground = ({ className = '', opacity = 1, loop = true }: SparkRipplesBackgroundProps) => {
+export const SparkRipplesBackground = ({
+  className = '',
+  opacity = 1,
+  loop = true,
+  scale = 1,
+  playbackRate = 1,
+  muted = false
+}: SparkRipplesBackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -598,6 +608,10 @@ export const SparkRipplesBackground = ({ className = '', opacity = 1, loop = tru
       dpr: dpr,
     });
     const gl = renderer.gl;
+    // Set clear color to #f8f8f8 for muted mode (matches page background)
+    if (muted) {
+      gl.clearColor(248/255, 248/255, 248/255, 1);
+    }
     gl.canvas.style.width = '100%';
     gl.canvas.style.height = '100%';
     container.appendChild(gl.canvas);
@@ -669,12 +683,12 @@ export const SparkRipplesBackground = ({ className = '', opacity = 1, loop = tru
         uEnableCenterElement: { value: 1.0 },
         uCenterAnimDuration: { value: 6.0 },
         uCenterAnimTime: { value: 0 },
-        // Color correction - push whites brighter
-        uCCBlackPoint: { value: 0.0 },
-        uCCWhitePoint: { value: 0.85 },
-        uCCMidtoneGamma: { value: 1.0 },
-        uCCGamma: { value: 1.0 },
-        uCCContrast: { value: 0.0 },
+        // Color correction - muted mode tints output to blend with #f8f8f8 background
+        uCCBlackPoint: { value: muted ? 0.25 : 0.0 }, // Push darks up significantly for gray base
+        uCCWhitePoint: { value: muted ? 1.0 : 0.85 }, // Keep whites from being too bright
+        uCCMidtoneGamma: { value: muted ? 0.85 : 1.0 }, // Compress midtones toward gray
+        uCCGamma: { value: muted ? 0.95 : 1.0 }, // Slightly darker gamma
+        uCCContrast: { value: muted ? -0.25 : 0.0 }, // Reduce contrast for flat gray look
       },
     });
 
@@ -760,21 +774,66 @@ export const SparkRipplesBackground = ({ className = '', opacity = 1, loop = tru
     let animationId: number;
     let startTime = 0;
 
+    // Ping-pong state for seamless looping
+    let pingPongDirection = 1; // 1 = forward, -1 = backward
+    let lastFrameTime = 0;
+
     // Render loop
     function update(t: number) {
       animationId = requestAnimationFrame(update);
 
       if (startTime === 0) startTime = t;
       const currentTime = (t - startTime) * 0.001;
+      const deltaTime = lastFrameTime === 0 ? 0 : (t - lastFrameTime) * 0.001;
+      lastFrameTime = t;
       frameCount++;
 
       // Update video texture
       if (video && video.readyState >= video.HAVE_CURRENT_DATA) {
         videoTexture.image = video;
         videoTexture.needsUpdate = true;
-        // Loop video only if loop prop is true
-        if (loop && video.currentTime >= 14) {
-          video.currentTime = 0;
+
+        const videoDuration = video.duration || 14;
+
+        if (loop) {
+          // Loop video from the start
+          if (video.currentTime >= videoDuration) {
+            video.currentTime = 0;
+          }
+        } else {
+          // Non-loop mode: ping-pong between 50-80% of timeline for seamless looping
+          // Goes A→B→C→B→A instead of A→B→C→A (no visible cut)
+          const lowerBound = 0.50 * videoDuration; // 50%
+          const upperBound = 0.80 * videoDuration; // 80%
+
+          // Pause native playback and control position manually for ping-pong
+          if (!video.paused && pingPongDirection === -1) {
+            // Video is playing but we need to go backward - pause it
+            video.pause();
+          }
+
+          if (pingPongDirection === 1) {
+            // Forward: let video play naturally
+            if (video.paused) {
+              video.play().catch(() => {});
+            }
+            if (video.currentTime >= upperBound) {
+              // Hit upper bound - reverse direction
+              pingPongDirection = -1;
+              video.pause();
+            }
+          } else {
+            // Backward: manually seek backward each frame
+            const newTime = video.currentTime - deltaTime;
+            if (newTime <= lowerBound) {
+              // Hit lower bound - reverse direction
+              video.currentTime = lowerBound;
+              pingPongDirection = 1;
+              video.play().catch(() => {});
+            } else {
+              video.currentTime = newTime;
+            }
+          }
         }
       } else if (fallbackCanvas) {
         updateFallbackCanvas(fallbackCanvas, currentTime);
@@ -785,6 +844,8 @@ export const SparkRipplesBackground = ({ className = '', opacity = 1, loop = tru
       program.uniforms.uTime.value = currentTime;
       program.uniforms.uFrameCount.value = frameCount;
       program.uniforms.uCenterAnimTime.value = currentTime;
+      // Clear with background color before rendering (important for muted mode)
+      gl.clear(gl.COLOR_BUFFER_BIT);
       renderer.render({ scene: mesh });
     }
 
@@ -819,7 +880,9 @@ export const SparkRipplesBackground = ({ className = '', opacity = 1, loop = tru
 
         if (loadedVideo) {
           video = loadedVideo;
-          console.log('[SparkRipples] Video loaded, attempting to play...');
+          // Apply playback rate for slower/faster animation
+          video.playbackRate = playbackRate;
+          console.log('[SparkRipples] Video loaded, attempting to play at rate:', playbackRate);
           video.play().then(() => {
             console.log('[SparkRipples] Video playing!');
           }).catch((e) => {
@@ -846,13 +909,17 @@ export const SparkRipplesBackground = ({ className = '', opacity = 1, loop = tru
         video.src = '';
       }
     };
-  }, []);
+  }, [loop, playbackRate, muted]);
 
   return (
     <div
       ref={containerRef}
       className={`absolute inset-0 ${className}`}
-      style={{ opacity }}
+      style={{
+        opacity,
+        transform: scale !== 1 ? `scale(${scale})` : undefined,
+        transformOrigin: 'center center'
+      }}
     />
   );
 };

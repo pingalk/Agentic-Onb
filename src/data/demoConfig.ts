@@ -1,6 +1,6 @@
 // src/data/demoConfig.ts
 
-export type PersonaId = 'maya' | 'arjun' | 'sarah' | 'sam' | 'shyam' | 'kiara' | 'varun' | 'spark';
+export type PersonaId = 'blank' | 'maya' | 'arjun' | 'sarah' | 'sam' | 'shyam' | 'kiara' | 'varun' | 'spark' | 'showcase';
 export type Theme = 'positive' | 'negative' | 'neutral';
 
 export interface DashboardCard {
@@ -27,6 +27,41 @@ export interface PersonaConfig {
 }
 
 export const PERSONAS: Record<PersonaId, PersonaConfig> = {
+  blank: {
+    id: 'blank',
+    name: 'Blank Input',
+    subtitle: 'Showcase animated placeholder text cycling',
+    theme: 'neutral',
+    landing: {
+      greeting: "Welcome to Ray",
+      initialPrompt: "",
+      cards: [
+        {
+          id: 'briefing',
+          type: 'briefing',
+          title: "All systems operational",
+          subtext: "Ready to assist you with any query"
+        },
+        {
+          id: 'stats',
+          type: 'stats',
+          title: "Today's overview",
+          value: "₹1,00,000.00",
+          secondaryValue: "₹85,000.00",
+          trend: 'up',
+          status: 'healthy'
+        },
+        {
+          id: 'settlement',
+          type: 'settlement',
+          title: "Settlements on track",
+          value: "₹85K",
+          subtext: "Next Settlement",
+          status: 'healthy'
+        }
+      ]
+    }
+  },
   maya: {
     id: 'maya',
     name: 'Double Debit Scenario',
@@ -279,6 +314,17 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     theme: 'neutral',
     landing: {
       greeting: "",
+      initialPrompt: "",
+      cards: []
+    }
+  },
+  showcase: {
+    id: 'showcase',
+    name: '🎨 All Cards Showcase',
+    subtitle: 'Display all available card types and artifact variations',
+    theme: 'neutral',
+    landing: {
+      greeting: "Card Showcase",
       initialPrompt: "",
       cards: []
     }

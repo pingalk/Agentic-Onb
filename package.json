@@ -8,6 +8,8 @@
     "dev": "vite"
   },
   "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "@aspect-ui/blade-ai": "file:aspect-ui-blade-ai-0.1.0.tgz",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",

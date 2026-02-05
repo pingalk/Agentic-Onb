@@ -10,7 +10,7 @@ import {
 } from './ui/dropdown-menu';
 import { useTimingSettings, PRESETS, TimingSettings } from '../../context/TimingSettingsContext';
 
-// Slider component
+// Slider component - light theme for submenu, dark theme for standalone
 const Slider = ({
   label,
   value,
@@ -18,7 +18,8 @@ const Slider = ({
   min,
   max,
   step = 1,
-  unit = ''
+  unit = '',
+  dark = false
 }: {
   label: string;
   value: number;
@@ -27,11 +28,12 @@ const Slider = ({
   max: number;
   step?: number;
   unit?: string;
+  dark?: boolean;
 }) => (
   <div className="flex flex-col gap-1">
     <div className="flex justify-between text-xs">
-      <span className="text-slate-400">{label}</span>
-      <span className="text-white font-mono">{value}{unit}</span>
+      <span className={dark ? "text-slate-400" : "text-slate-500"}>{label}</span>
+      <span className={dark ? "text-white font-mono" : "text-slate-900 font-mono"}>{value}{unit}</span>
     </div>
     <input
       type="range"
@@ -40,29 +42,31 @@ const Slider = ({
       step={step}
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="w-full h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+      className={`w-full h-1 rounded-lg appearance-none cursor-pointer ${dark ? 'bg-slate-700 accent-emerald-500' : 'bg-slate-200 accent-blue-500'}`}
     />
   </div>
 );
 
-// Select component
+// Select component - light theme for submenu, dark theme for standalone
 const Select = <T extends string>({
   label,
   value,
   onChange,
-  options
+  options,
+  dark = false
 }: {
   label: string;
   value: T;
   onChange: (v: T) => void;
   options: { value: T; label: string }[];
+  dark?: boolean;
 }) => (
   <div className="flex flex-col gap-1">
-    <span className="text-xs text-slate-400">{label}</span>
+    <span className={`text-xs ${dark ? 'text-slate-400' : 'text-slate-500'}`}>{label}</span>
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as T)}
-      className="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white outline-none focus:border-emerald-500"
+      className={`w-full border rounded px-2 py-1 text-xs outline-none ${dark ? 'bg-slate-800 border-slate-600 text-white focus:border-emerald-500' : 'bg-white border-slate-200 text-slate-900 focus:border-blue-500'}`}
     >
       {options.map(opt => (
         <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -71,10 +75,10 @@ const Select = <T extends string>({
   </div>
 );
 
-// Section header
-const Section = ({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) => (
+// Section header - light theme for submenu, dark theme for standalone
+const Section = ({ icon: Icon, title, children, dark = false }: { icon: any; title: string; children: React.ReactNode; dark?: boolean }) => (
   <div className="space-y-2">
-    <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
+    <div className={`flex items-center gap-2 text-xs font-medium ${dark ? 'text-slate-300' : 'text-slate-600'}`}>
       <Icon size={12} />
       <span>{title}</span>
     </div>
@@ -83,6 +87,191 @@ const Section = ({ icon: Icon, title, children }: { icon: any; title: string; ch
     </div>
   </div>
 );
+
+// Extracted content component for use in submenus
+export const SettingsPanelContent = () => {
+  const { settings, updateSettings, applyPreset, resetToDefaults } = useTimingSettings();
+
+  return (
+    <>
+      <DropdownMenuLabel className="flex items-center justify-between">
+        <span>Animation Settings</span>
+        <button
+          onClick={resetToDefaults}
+          className="text-xs text-slate-400 hover:text-slate-900 flex items-center gap-1"
+        >
+          <RotateCcw size={10} />
+          Reset
+        </button>
+      </DropdownMenuLabel>
+
+      <DropdownMenuSeparator />
+
+      {/* Presets */}
+      <div className="px-2 py-2">
+        <span className="text-xs text-slate-400 mb-2 block">Quick Presets</span>
+        <div className="flex flex-wrap gap-1">
+          {Object.keys(PRESETS).map(preset => (
+            <button
+              key={preset}
+              onClick={() => applyPreset(preset)}
+              className="px-2 py-1 text-[10px] bg-slate-100 hover:bg-blue-600 hover:text-white rounded transition-colors capitalize"
+            >
+              {preset}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <DropdownMenuSeparator />
+
+      {/* Text Streaming */}
+      <div className="px-2 py-3 space-y-4">
+        <Section icon={Sparkles} title="Text Streaming">
+          <Select
+            label="Style"
+            value={settings.streamingStyle}
+            onChange={(v) => updateSettings({ streamingStyle: v })}
+            options={[
+              { value: 'basic', label: 'Basic' },
+              { value: 'typewriter', label: 'Typewriter' },
+              { value: 'glow', label: 'Glow (Emerald)' },
+              { value: 'gradient', label: 'Gradient' },
+            ]}
+          />
+          <Slider
+            label="Speed"
+            value={settings.textStreamSpeed}
+            onChange={(v) => updateSettings({ textStreamSpeed: v })}
+            min={5}
+            max={50}
+            unit="ms"
+          />
+          {(settings.streamingStyle === 'glow' || settings.streamingStyle === 'gradient') && (
+            <>
+              <Slider
+                label="Glow Intensity"
+                value={settings.streamingGlowIntensity}
+                onChange={(v) => updateSettings({ streamingGlowIntensity: v })}
+                min={0}
+                max={100}
+                unit="%"
+              />
+              <Slider
+                label="Trail Length"
+                value={settings.streamingTrailLength}
+                onChange={(v) => updateSettings({ streamingTrailLength: v })}
+                min={1}
+                max={30}
+                unit=" chars"
+              />
+              <Slider
+                label="Falloff"
+                value={settings.streamingFalloff}
+                onChange={(v) => updateSettings({ streamingFalloff: v })}
+                min={0.3}
+                max={3}
+                step={0.1}
+              />
+            </>
+          )}
+        </Section>
+
+        <DropdownMenuSeparator />
+
+        {/* Skeleton Animations */}
+        <Section icon={Layers} title="Card Loading">
+          <Select
+            label="Border Animation"
+            value={settings.skeletonStrokeAnimation}
+            onChange={(v) => updateSettings({ skeletonStrokeAnimation: v })}
+            options={[
+              { value: 'none', label: 'None' },
+              { value: 'spotlight', label: 'Spotlight' },
+              { value: 'edge-light', label: 'Edge Light' },
+              { value: 'conic-sweep', label: 'Conic Sweep' },
+              { value: 'prismatic', label: 'Prismatic' },
+              { value: 'orbit', label: 'Orbit' },
+            ]}
+          />
+          {settings.skeletonStrokeAnimation !== 'none' && (
+            <>
+              <Slider
+                label="Speed"
+                value={settings.skeletonSpeed}
+                onChange={(v) => updateSettings({ skeletonSpeed: v })}
+                min={0.5}
+                max={5}
+                step={0.1}
+                unit="s"
+              />
+              <Slider
+                label="Intensity"
+                value={settings.skeletonIntensity}
+                onChange={(v) => updateSettings({ skeletonIntensity: v })}
+                min={0}
+                max={100}
+                unit="%"
+              />
+              <Slider
+                label="Light Count"
+                value={settings.skeletonLightCount}
+                onChange={(v) => updateSettings({ skeletonLightCount: v })}
+                min={1}
+                max={4}
+              />
+            </>
+          )}
+          <Select
+            label="Fill Animation"
+            value={settings.skeletonFillAnimation}
+            onChange={(v) => updateSettings({ skeletonFillAnimation: v })}
+            options={[
+              { value: 'none', label: 'None' },
+              { value: 'shimmer', label: 'Shimmer' },
+              { value: 'pulse', label: 'Pulse' },
+              { value: 'wave', label: 'Wave' },
+              { value: 'breathe', label: 'Breathe' },
+            ]}
+          />
+        </Section>
+
+        <DropdownMenuSeparator />
+
+        {/* Timing */}
+        <Section icon={Timer} title="Demo Timing">
+          <Slider
+            label="Thinking Duration"
+            value={settings.thinkingDuration / 1000}
+            onChange={(v) => updateSettings({ thinkingDuration: v * 1000 })}
+            min={0}
+            max={30}
+            step={1}
+            unit="s"
+          />
+          <Slider
+            label="Cognitive Delay"
+            value={settings.cognitiveDelay}
+            onChange={(v) => updateSettings({ cognitiveDelay: v })}
+            min={0}
+            max={3000}
+            step={100}
+            unit="ms"
+          />
+          <Slider
+            label="Sequential Delay"
+            value={settings.sequentialDelay}
+            onChange={(v) => updateSettings({ sequentialDelay: v })}
+            min={0}
+            max={2000}
+            step={100}
+            unit="ms"
+          />
+        </Section>
+      </div>
+    </>
+  );
+};
 
 export const SettingsPanel = () => {
   const { settings, updateSettings, applyPreset, resetToDefaults } = useTimingSettings();

@@ -4,14 +4,14 @@ import { RayMessageRenderer, RayResponseData } from './chat/RayMessageRenderer';
 import { AddFundsModal } from './chat/AddFundsModal';
 import { PaymentLinkPrefill, parsePaymentLinkIntent } from './chat/PaymentLinkWidget';
 import { PaymentLinkModal } from './chat/PaymentLinkModal';
+import { SourceRect } from './chat/PaymentLinkMiniCard';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
 import { TransactionPreviewPane, TransactionData } from './chat/TransactionPreviewPane';
-import { ArrowDown, ArrowUp, Mic, Plus, Sparkles, Square } from 'lucide-react';
+import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
 import { RayInputBox } from './RayInputBox';
 import { useDemo } from '@/context/DemoContext';
 import { useDemoScript } from './useDemoScript';
 import { motion, AnimatePresence } from 'motion/react';
-import { SparkRipplesBackground } from './SparkRipplesBackground';
 import { useMagicColor } from '@/context/MagicColorContext';
 
 // EXPERIMENTAL: Roll-up animation for user messages
@@ -94,12 +94,13 @@ const generateArjunData = (): RayResponseData => {
 interface RayChatInterfaceProps {
   initialQuery?: string;
   isSplit?: boolean;
+  isEntering?: boolean; // True when transitioning from landing → chat
 }
 
-export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProps) => {
+export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatInterfaceProps) => {
   const { currentPersona } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
-  const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, briefingReviewResponses } = useDemoScript();
+  const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, briefingReviewResponses, showcaseCards } = useDemoScript();
   const [messages, setMessages] = useState<RayResponseData[]>([]);
   const [inputValue, setInputValue] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -115,6 +116,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
   const [isPaymentLinkModalOpen, setIsPaymentLinkModalOpen] = useState(false);
   const [paymentLinkPrefill, setPaymentLinkPrefill] = useState<PaymentLinkPrefill | null>(null);
   const [activeFormCardId, setActiveFormCardId] = useState<string | null>(null);
+  const [paymentLinkSourceRect, setPaymentLinkSourceRect] = useState<SourceRect | null>(null);
 
   // Capture Settings Modal States
   const [isCaptureSettingsModalOpen, setIsCaptureSettingsModalOpen] = useState(false);
@@ -255,17 +257,14 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
             behavior: 'smooth'
           });
         }, 100);
-      } else if (ENABLE_SMART_SCROLL_ON_THINKING && latestMessage?.isThinking) {
-        // Smart scroll: When Ray enters thinking state, scroll the last user message to top
+      } else if (ENABLE_SMART_SCROLL_ON_THINKING && latestMessage?.sender === 'user') {
+        // Smart scroll: When user sends a message, scroll it to the top of the viewport
         // This gives maximum room for Ray's response to appear below
-        // Note: We use a longer delay (400ms) to allow any previous scroll animations to complete
-        // and prevent the "jerk" effect when multiple scrolls happen in quick succession
-        const lastUserMessage = [...messages].reverse().find(m => m.sender === 'user');
-        if (lastUserMessage && scrollContainerRef.current) {
+        if (scrollContainerRef.current) {
           // Use requestAnimationFrame to ensure DOM is fully rendered
           requestAnimationFrame(() => {
             setTimeout(() => {
-              const userMessageEl = messageRefs.current.get(lastUserMessage.id);
+              const userMessageEl = messageRefs.current.get(latestMessage.id);
               const container = scrollContainerRef.current;
               if (userMessageEl && container) {
                 // Calculate the element's position relative to the scroll container
@@ -277,12 +276,10 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                 const topOffset = 24;
                 const scrollTop = container.scrollTop + (elementRect.top - containerRect.top) - topOffset;
 
-                container.scrollTo({
-                  top: Math.max(0, scrollTop),
-                  behavior: 'smooth'
-                });
+                // Use smooth scroll with custom easing
+                smoothScrollTo(container, Math.max(0, scrollTop), 600);
               }
-            }, 400);
+            }, 100); // Reduced delay - scroll immediately when user message appears
           });
         }
       } else if (ENABLE_ROLL_UP_ANIMATION && latestMessage?.sender === 'user') {
@@ -689,6 +686,15 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
     }
   }, [currentPersona.id, messages.length, varunScript, initialQuery]);
 
+  // Triggers for demo flow - Showcase (All Cards)
+  useEffect(() => {
+    if (currentPersona.id === 'showcase' && messages.length === 0 && !demoFlowStartedRef.current) {
+      demoFlowStartedRef.current = true;
+      // Immediately populate with all showcase cards
+      setMessages(showcaseCards);
+    }
+  }, [currentPersona.id, messages.length, showcaseCards]);
+
   // Triggers for briefing review queries (from "Review with Ray" click)
   useEffect(() => {
     if (!initialQuery || briefingReviewHandled || messages.length > 0) return;
@@ -988,7 +994,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
             isThinking: true
           }]);
 
-          // After 1 second, remove thinking and show mini-card with skeleton
+          // After 15 seconds (ChainOfThought duration), remove thinking and show mini-card with skeleton
           setTimeout(() => {
             const formCardId = `form-card-${Date.now()}`;
             setActiveFormCardId(formCardId);
@@ -1042,7 +1048,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                 setShyamFlowStep(2);
               }, 500);
             }, 2000);
-          }, 1000);
+          }, 15000);
         }, 300);
         return;
       }
@@ -1616,37 +1622,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
   };
 
   return (
-    <div className="flex h-full relative bg-white font-sans overflow-hidden">
-
-      {/* Spark Ripples WebGL Background - shows during streaming/thinking, positioned below chain of thought */}
-      <AnimatePresence>
-        {isStreaming && (
-          <motion.div
-            className="absolute top-[140px] w-full max-w-2xl h-[250px] pointer-events-none z-0 overflow-hidden"
-            style={{ left: 'calc(50% - 120px)', transform: 'translateX(-50%)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, delay: 2 }}
-          >
-            {/* Top fade from white */}
-            <div className="absolute inset-x-0 top-0 h-[80px] bg-gradient-to-b from-white via-white/90 to-transparent z-10" />
-            {/* Zoomed-in top portion of the animation */}
-            <div
-              className="absolute inset-0"
-              style={{
-                transform: 'translateY(-180px) scale(2)',
-                transformOrigin: 'top center',
-                filter: `hue-rotate(${currentMagicColor.hueRotate})`
-              }}
-            >
-              <SparkRipplesBackground opacity={0.5} loop={false} />
-            </div>
-            {/* Bottom fade to white */}
-            <div className="absolute inset-x-0 bottom-0 h-[100px] bg-gradient-to-t from-white via-white/95 to-transparent" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="flex h-full relative bg-[#f8f8f8] font-sans overflow-hidden">
 
       {/* Main Chat Container - animates width when preview is open */}
       <motion.div
@@ -1696,7 +1672,9 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                         onSuggestionClick={handleSuggestionClick}
                         onRowClick={handleRowClick}
                         highlightedSuggestionIndex={highlightedSuggestionIndex}
-                        onMiniCardClick={(formId) => {
+                        animatingCardId={isPaymentLinkModalOpen ? activeFormCardId : null}
+                        personaId={currentPersona.id}
+                        onMiniCardClick={(formId, sourceRect) => {
                           // Check which type of card was clicked
                           if (formId.includes('add-funds')) {
                             setActiveFormCardId(formId);
@@ -1706,6 +1684,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                             setIsCaptureSettingsModalOpen(true);
                           } else {
                             setActiveFormCardId(formId);
+                            setPaymentLinkSourceRect(sourceRect || null);
                             setIsPaymentLinkModalOpen(true);
                           }
                         }}
@@ -1725,7 +1704,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             onClick={scrollToNext}
-            className="absolute bottom-[130px] left-1/2 -translate-x-1/2 z-[60] size-9 bg-white border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.06)] rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors"
+            className="absolute bottom-[130px] left-1/2 -translate-x-1/2 z-[68] size-9 bg-white border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.06)] rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors"
           >
             <ArrowDown size={18} />
           </motion.button>
@@ -1786,12 +1765,16 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
          {/* Payment Link Modal - Opens with scrim, chat input stays above */}
          <PaymentLinkModal
            isOpen={isPaymentLinkModalOpen}
+           sourceRect={paymentLinkSourceRect}
+           onMorphComplete={() => {}}
            onClose={() => {
              setIsPaymentLinkModalOpen(false);
+             setPaymentLinkSourceRect(null);
            }}
            onComplete={(result) => {
              setIsPaymentLinkModalOpen(false);
              setPaymentLinkPrefill(null);
+             setPaymentLinkSourceRect(null);
              setInputValue('');
 
              // Update mini-card status to completed with linkUrl if it exists
@@ -1892,19 +1875,26 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
          />
 
          {/* Top Fade Gradient */}
-         <div className="h-16 w-full bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-30" />
+         <div className="h-16 w-full bg-gradient-to-t from-[#f8f8f8] via-[#f8f8f8]/80 to-transparent pointer-events-none z-30" />
 
          {/* Bottom fade gradient - chat content fades out towards input */}
-         {/* Structure: 120px gradient (0→100 opacity) on top, 120px solid white below */}
+         {/* Structure: 120px gradient (0→100 opacity) on top, 120px solid below */}
          <div className="fixed bottom-0 left-0 right-0 h-[240px] pointer-events-none z-[65]">
-            {/* Top 120px: gradient from transparent to white */}
-            <div className="absolute inset-x-0 top-0 h-[120px] bg-gradient-to-b from-transparent to-white" />
-            {/* Bottom 120px: solid white */}
-            <div className="absolute inset-x-0 bottom-0 h-[120px] bg-white" />
+            {/* Top 120px: gradient from transparent to #f8f8f8 */}
+            <div className="absolute inset-x-0 top-0 h-[120px] bg-gradient-to-b from-transparent to-[#f8f8f8]" />
+            {/* Bottom 120px: solid #f8f8f8 */}
+            <div className="absolute inset-x-0 bottom-0 h-[120px] bg-[#f8f8f8]" />
          </div>
 
          {/* Input Container - z-70 (above modal) - using RayInputBox for consistency */}
-         <div className="fixed bottom-[8px] left-0 right-0 z-[70] px-3 md:px-4 pointer-events-none">
+         {/* Fades in when transitioning from landing page to create seamless illusion */}
+         {/* Starts above (y: -12) and settles down to final position, matching hero's downward motion */}
+         <motion.div
+            className="fixed bottom-[8px] left-0 right-0 z-[70] px-3 md:px-4 pointer-events-none"
+            initial={isEntering ? { opacity: 0, y: -8 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+         >
             <div className="w-full max-w-2xl mx-auto relative pointer-events-auto">
                <RayInputBox
                   value={inputValue}
@@ -1912,18 +1902,11 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                   onSend={handleInputSubmit}
                   variant="compact"
                   placeholder="Ask anything..."
+                  isStreaming={isStreaming}
+                  onStopStreaming={() => setIsStreaming(false)}
                />
-               {/* Stop button overlay when streaming */}
-               {isStreaming && (
-                  <button
-                    onClick={() => setIsStreaming(false)}
-                    className="absolute right-[20px] bottom-[16px] w-[32px] h-[32px] flex items-center justify-center bg-[#0a0a0a] text-white rounded-full hover:bg-black transition-all shadow-sm active:scale-95 z-10"
-                  >
-                    <Square size={14} fill="white" />
-                  </button>
-               )}
             </div>
-         </div>
+         </motion.div>
         </div>
       </motion.div>
 
@@ -1941,16 +1924,9 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
               onSend={handleInputSubmit}
               variant="compact"
               placeholder="Ask anything..."
+              isStreaming={isStreaming}
+              onStopStreaming={() => setIsStreaming(false)}
             />
-            {/* Stop button overlay when streaming */}
-            {isStreaming && (
-              <button
-                onClick={() => setIsStreaming(false)}
-                className="absolute right-[20px] bottom-[16px] w-[32px] h-[32px] flex items-center justify-center bg-[#0a0a0a] text-white rounded-full hover:bg-black transition-all shadow-sm active:scale-95 z-10"
-              >
-                <Square size={14} fill="white" />
-              </button>
-            )}
           </motion.div>
         </div>,
         document.body

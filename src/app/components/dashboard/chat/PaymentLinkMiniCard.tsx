@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Link2, Check, ChevronRight, Copy, CheckCircle } from 'lucide-react';
+
+export interface SourceRect {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
 
 export interface PaymentLinkMiniCardProps {
   formData: {
@@ -9,9 +16,10 @@ export interface PaymentLinkMiniCardProps {
     email?: string;
   };
   status: 'draft' | 'completed';
-  onClick?: () => void;
+  onClick?: (sourceRect: SourceRect) => void;
   isLoading?: boolean;
   linkUrl?: string;
+  isAnimatingToModal?: boolean;
 }
 
 export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
@@ -19,9 +27,26 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
   status,
   onClick,
   isLoading = false,
-  linkUrl
+  linkUrl,
+  isAnimatingToModal = false
 }) => {
   const [copied, setCopied] = useState(false);
+  const cardRef = useRef<HTMLButtonElement>(null);
+
+  const handleClick = () => {
+    if (!onClick || isAnimatingToModal) return;
+
+    // Capture bounding rect and pass to parent
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      onClick({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height
+      });
+    }
+  };
 
   const formatAmount = (amount: string) => {
     const num = parseInt(amount.replace(/,/g, ''), 10);
@@ -43,7 +68,6 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
     }
   };
 
-  const isDraft = status === 'draft';
   const isCompleted = status === 'completed';
 
   // When completed, render as a div (non-clickable)
@@ -113,20 +137,33 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
   }
 
   // Draft state - clickable button
+  // When animating to modal, hide entire card instantly (morphing element takes over)
   return (
     <motion.button
-      onClick={onClick}
+      ref={cardRef}
+      onClick={handleClick}
       className={`
-        w-full max-w-[320px] text-left
+        w-full max-w-[320px] text-left relative
         bg-white border rounded-[12px] overflow-hidden
         transition-shadow duration-200
         border-[#305EFF]/30 hover:border-[#305EFF]/50 hover:shadow-md
       `}
       initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
-      transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      whileHover={isAnimatingToModal ? {} : { scale: 1.01 }}
+      whileTap={isAnimatingToModal ? {} : { scale: 0.99 }}
+      transition={{
+        type: 'spring',
+        damping: 20,
+        stiffness: 300,
+      }}
+      style={{
+        pointerEvents: isAnimatingToModal ? 'none' : 'auto',
+        visibility: isAnimatingToModal ? 'hidden' : 'visible' // Instant hide, no flicker
+      }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-[#305EFF]/5">

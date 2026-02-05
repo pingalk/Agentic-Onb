@@ -18,6 +18,7 @@ import svgPathsCards from "../../../imports/svg-9ik4xuwq12";
 import svgPathsStats from "../../../imports/svg-h6d9ul042g";
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import { SparkRipplesBackground } from './SparkRipplesBackground';
+import { AvatarMenu } from '../AvatarMenu';
 
 // --- Helper Components ---
 
@@ -362,6 +363,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
       setViewTransition('exiting');
 
       // After exit animation completes, switch view
+      // Extended to 700ms for smoother handoff with compact input
       setTimeout(() => {
         setPrompt('');
         setView('chat');
@@ -372,8 +374,8 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
         setTimeout(() => {
           setViewTransition('idle');
           setTransitionText('');
-        }, 400);
-      }, 500); // 500ms exit animation
+        }, 600);
+      }, 700); // 700ms exit animation - gives hero time to fade smoothly
     }, 1000); // 1s spotlight hold
   };
 
@@ -485,9 +487,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
             </div>
             
             <div className="flex items-center gap-4">
-                <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-medium uppercase ${isNegative ? 'bg-red-900' : 'bg-slate-900'}`}>
-                    {currentPersona.name.charAt(0)}
-                </div>
+                <AvatarMenu />
             </div>
         </div>
 
@@ -502,8 +502,8 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                      animate={{ opacity: viewTransition === 'exiting' ? 0 : 1 }}
                      transition={{ duration: 0.3 }}
                   >
-                     {/* White base to prevent black flash */}
-                     <div className="absolute inset-0 bg-white" />
+                     {/* Base background to prevent black flash */}
+                     <div className="absolute inset-0 bg-[#f8f8f8]" />
                      <motion.div
                         className="absolute inset-0"
                         style={{
@@ -517,7 +517,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <SparkRipplesBackground opacity={1} loop={false} />
                      </motion.div>
                      <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
-                     <div className="absolute inset-x-0 bottom-0 h-[70vh] bg-gradient-to-t from-white from-50% via-white/95 via-70% to-transparent" />
+                     <div className="absolute inset-x-0 bottom-0 h-[70vh] bg-gradient-to-t from-[#f8f8f8] from-50% via-[#f8f8f8]/95 via-70% to-transparent" />
                   </motion.div>
                )}
                {/* Fallback gradient for non-landing views */}
@@ -654,7 +654,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         </h1>
                      </motion.div>
 
-                     {/* Input Box with Spotlight Animation - moves to bottom during transition */}
+                     {/* Input Box with Spotlight Animation - moves to bottom and fades out during transition */}
                      <motion.div
                         ref={inputRef}
                         className={`max-w-2xl mb-8 ${viewTransition === 'exiting' ? 'fixed z-50 left-1/2 -translate-x-1/2' : 'relative w-full'}`}
@@ -664,26 +664,26 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         } : {}}
                         initial={{ opacity: 0, scale: 0.96 }}
                         animate={{
-                            opacity: animPhase >= 4 ? 1 : 0,
-                            scale: 1,
+                            opacity: viewTransition === 'exiting' ? 0 : (animPhase >= 4 ? 1 : 0),
+                            scale: viewTransition === 'exiting' ? 0.96 : 1,
                             y: viewTransition === 'exiting' && inputStartRect ? inputStartRect.targetY : 0,
                         }}
                         transition={{
-                            opacity: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-                            scale: { duration: 0.3 },
-                            y: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] },
+                            opacity: { duration: 0.7, ease: [0.4, 0, 0.2, 1] },
+                            scale: { duration: 0.7, ease: [0.4, 0, 0.2, 1] },
+                            y: { duration: 0.7, ease: [0.4, 0, 0.2, 1] },
                         }}
                      >
-                        {/* Spotlight BORDER overlay for input - matches RayInputBox rounded-[26px] */}
+                        {/* Spotlight BORDER overlay for input - matches RayInputBox rounded-[20px] */}
                         <motion.div
-                            className="absolute inset-0 rounded-[26px] pointer-events-none z-10 overflow-hidden"
+                            className="absolute inset-0 rounded-[20px] pointer-events-none z-10 overflow-hidden"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 1 : 0 }}
                             transition={{ duration: animPhase >= 6 && viewTransition !== 'spotlightHold' ? 0.8 : 1.2, ease: "easeOut" }}
                         >
                             {/* Horizontal linear gradient - sweeps left to right across top/bottom edges */}
                             <div
-                                className="absolute inset-0 rounded-[26px]"
+                                className="absolute inset-0 rounded-[20px]"
                                 style={{
                                     background: `linear-gradient(90deg, rgba(203,213,225,0.5) 0%, rgba(203,213,225,0.5) 40%, ${currentMagicColor.gradient} 50%, rgba(203,213,225,0.5) 60%, rgba(203,213,225,0.5) 100%)`,
                                     backgroundSize: '200% 100%',
@@ -691,12 +691,12 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                 }}
                             />
                             {/* Inner fill to create border effect - white for clean look */}
-                            <div className="absolute inset-[2px] rounded-[24px] bg-white" />
+                            <div className="absolute inset-[2px] rounded-[18px] bg-white" />
                         </motion.div>
 
-                        {/* Spotlight for send button - positioned at bottom right */}
+                        {/* Spotlight for send button - positioned at bottom right to match buttons row padding */}
                         <motion.div
-                            className="absolute bottom-[16px] right-[20px] w-[32px] h-[32px] rounded-full pointer-events-none z-10 overflow-hidden"
+                            className="absolute bottom-[12px] right-[12px] w-[32px] h-[32px] rounded-full pointer-events-none z-10 overflow-hidden"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 1 : 0 }}
                             transition={{ duration: animPhase >= 6 && viewTransition !== 'spotlightHold' ? 0.8 : 1.2, ease: "easeOut" }}
@@ -722,6 +722,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                             placeholder={landingVariant === 'default' ? placeholderSuggestions[placeholderIndex] : "Ask me anything..."}
                             animatePlaceholder={landingVariant === 'default'}
                             showShadow={animPhase >= 6}
+                            autoFocus
                             attachmentChip={shyamAttachment}
                             onRemoveAttachment={() => setShyamAttachment(null)}
                         />
@@ -1265,7 +1266,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                 </div>
                 )
             ) : (
-                <RayLayout initialQuery={lastQuery} />
+                <RayLayout initialQuery={lastQuery} isEntering={viewTransition === 'entering'} />
             )}
 
         </div>

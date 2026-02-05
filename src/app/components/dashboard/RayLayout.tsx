@@ -7,7 +7,7 @@ import { ActionAccordion } from './ActionAccordion';
 import { ActionWidgetVariant2 } from './ActionWidgetVariant2';
 import { ViewModeToggle } from './ViewModeToggle';
 
-const RayLayoutContent = ({ initialQuery }: { initialQuery?: string }) => {
+const RayLayoutContent = ({ initialQuery, isEntering }: { initialQuery?: string; isEntering?: boolean }) => {
   const flow = useFormStore();
   const { viewMode, isOpen, intent } = flow;
   
@@ -38,7 +38,7 @@ const RayLayoutContent = ({ initialQuery }: { initialQuery?: string }) => {
           ease: [0.2, 0, 0, 1] // Rauno Bezier
         }}
       >
-         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} />
+         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} isEntering={isEntering} />
       </motion.div>
 
       {/* RIGHT PANEL: ARTIFACT CONTAINER (Split Mode) */}
@@ -107,10 +107,10 @@ const RayLayoutContent = ({ initialQuery }: { initialQuery?: string }) => {
   );
 };
 
-export const RayLayout = ({ initialQuery }: { initialQuery?: string }) => {
+export const RayLayout = ({ initialQuery, isEntering }: { initialQuery?: string; isEntering?: boolean }) => {
   return (
     <FormProvider>
-      <RayLayoutContent initialQuery={initialQuery} />
+      <RayLayoutContent initialQuery={initialQuery} isEntering={isEntering} />
     </FormProvider>
   );
 };

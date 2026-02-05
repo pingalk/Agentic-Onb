@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { SmartTable, MessageFooter, SuggestionStack } from './RayComponents';
 import Ray from '@/imports/Ray';
 import Copy from '@/imports/Copy';
-import { PaymentLinkMiniCard } from './PaymentLinkMiniCard';
+import { PaymentLinkMiniCard, SourceRect } from './PaymentLinkMiniCard';
 import { AddFundsMiniCard } from './AddFundsMiniCard';
 import { CaptureSettingsMiniCard } from './CaptureSettingsMiniCard';
 import { FundsAddedCard } from './artifacts/FundsAddedCard';
 import { FundsAddedHeader, FundsAddedBody, SettlementCard, RayInsightCard } from './artifacts/FundsAddedComponents';
 import { ConfigurableSettlementCard, SettlementStatusTable, FeeCalculatorCard } from './artifacts/SettlementComponents';
+import { WhatsAppChatPreview, WHATSAPP_CHAT_SCENARIOS } from './WhatsAppChatPreview';
 import { Download, ExternalLink, ThumbsUp, ThumbsDown, Share2, Copy as CopyIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import clsx from 'clsx';
@@ -88,7 +89,7 @@ const RelativeTimestamp = ({ timestamp }: { timestamp?: Date }) => {
 
   let relativeText: string;
   if (diffMins < 1) {
-    relativeText = 'just now';
+    relativeText = 'Just now';
   } else if (diffMins < 60) {
     relativeText = `${diffMins}m ago`;
   } else if (diffHours < 24) {
@@ -2398,14 +2399,50 @@ const FailedPaymentDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highl
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-[16px]"
         >
-          <h4 className="text-[16px] font-medium text-[#192839]">{data.resolution.title}</h4>
+          <h4 className="text-[16px] font-medium text-[#192839]">
+            <PerplexityStreamText
+              content={data.resolution.title}
+              speed={12}
+              style="glow"
+              inheritStyles
+            />
+          </h4>
           <div className="flex flex-col gap-[12px]">
-            {data.resolution.steps?.map((step: any, i: number) => (
-              <div key={i} className="flex flex-col gap-[4px]">
-                <p className="text-[14px] font-medium text-[#192839]">{step.label}:</p>
-                <p className="text-[14px] text-[#40566d] leading-[22px]">{step.content}</p>
-              </div>
-            ))}
+            {data.resolution.steps?.map((step: any, i: number) => {
+              // Calculate delays so each step streams sequentially
+              // Each step takes ~2s (label ~300ms + content ~1500ms + buffer)
+              const stepBaseDelay = i * 2500;
+              const labelDelay = stepBaseDelay + 300;
+              const contentDelay = labelDelay + 400; // Content starts after label
+
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: stepBaseDelay / 1000 + 0.3 }}
+                  className="flex flex-col gap-[4px]"
+                >
+                  <p className="text-[14px] font-medium text-[#192839]">
+                    <PerplexityStreamText
+                      content={`${step.label}:`}
+                      speed={15}
+                      style="glow"
+                      delay={labelDelay}
+                      inheritStyles
+                    />
+                  </p>
+                  <p className="text-[14px] text-[#40566d] leading-[22px]">
+                    <PerplexityStreamText
+                      content={step.content}
+                      speed={8}
+                      style="glow"
+                      delay={contentDelay}
+                    />
+                  </p>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
       )}
@@ -3473,22 +3510,31 @@ const ScreenshotThumbnail = () => (
 );
 
 // Chat Stream Attachment Pill Component
-const ChatAttachmentPill = ({ filename, fileType }: { filename: string; fileType: string }) => {
+const ChatAttachmentPill = ({ filename, fileType, onClick }: { filename: string; fileType: string; onClick?: () => void }) => {
   return (
-    <div className="inline-flex items-center gap-[10px] p-[8px] pr-[12px] bg-[#EAEEFF] rounded-[12px]">
+    <button
+      onClick={onClick}
+      className="inline-flex items-center gap-[10px] p-[8px] pr-[12px] bg-[#EAEEFF] rounded-[12px] hover:bg-[#dde3ff] transition-colors cursor-pointer border-none"
+    >
       {/* Stylized screenshot thumbnail */}
       <ScreenshotThumbnail />
 
       {/* File info */}
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center text-left">
         <span className="font-['Inter',sans-serif] text-[14px] font-medium text-[#192839] leading-[20px]">{filename}</span>
         <span className="font-['Inter',sans-serif] text-[14px] font-medium text-[#768ea7] leading-[20px]">{fileType}</span>
       </div>
-    </div>
+    </button>
   );
 };
 
-export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onStreamComplete }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string) => void; onStreamComplete?: () => void }) => {
+export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onStreamComplete, animatingCardId, personaId }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string }) => {
+  // State for WhatsApp preview modal
+  const [isWhatsAppPreviewOpen, setIsWhatsAppPreviewOpen] = useState(false);
+
+  // Get the chat scenario based on persona
+  const chatScenario = WHATSAPP_CHAT_SCENARIOS[personaId || 'default'] || WHATSAPP_CHAT_SCENARIOS.default;
+
   // 1. User Message (Right Aligned) - Show attachment pill first, then text bubble
   if (data.sender === 'user') {
     // Extract image and text blocks
@@ -3498,27 +3544,41 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const hasText = textBlocks.length > 0 && textBlocks[0].content?.trim();
 
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-        className="flex flex-col items-end gap-[8px] ml-auto max-w-[398px]"
-      >
-        {/* Attachment Pill - shown first */}
-        {hasImage && (
-          <ChatAttachmentPill
-            filename={imageBlocks[0].filename || "Whatsapp Image"}
-            fileType={imageBlocks[0].fileType || "PNG"}
-          />
-        )}
+      <>
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+          className="flex flex-col items-end gap-[8px] ml-auto max-w-[398px]"
+        >
+          {/* Attachment Pill - shown first */}
+          {hasImage && (
+            <ChatAttachmentPill
+              filename={imageBlocks[0].filename || "Whatsapp Image"}
+              fileType={imageBlocks[0].fileType || "PNG"}
+              onClick={() => setIsWhatsAppPreviewOpen(true)}
+            />
+          )}
 
         {/* Text Bubble - shown below attachment */}
         {hasText && (
-          <div className="bg-[#e6eafa] text-[#090e13] px-[16px] py-[12px] rounded-[12px] shadow-[0px_2px_2px_0px_rgba(237,236,236,0.16)] w-fit text-[14px] leading-[20px] tracking-[-0.28px]">
+          <div className="bg-white border border-[#e5e5e5] text-[#090e13] px-[16px] py-[12px] rounded-[12px] w-fit text-[14px] leading-[20px] tracking-[-0.28px]">
             {textBlocks[0].content}
           </div>
         )}
-      </motion.div>
+        </motion.div>
+
+        {/* WhatsApp Chat Preview Modal */}
+        {hasImage && (
+          <WhatsAppChatPreview
+            isOpen={isWhatsAppPreviewOpen}
+            onClose={() => setIsWhatsAppPreviewOpen(false)}
+            customerName={chatScenario.customerName}
+            customerPhone={chatScenario.customerPhone}
+            messages={chatScenario.messages}
+          />
+        )}
+      </>
     );
   }
 
@@ -3799,9 +3859,10 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
         <PaymentLinkMiniCard
           formData={data.artifact.data.prefill}
           status={data.artifact.data.status}
-          onClick={() => onMiniCardClick?.(data.artifact.data.formId)}
+          onClick={(sourceRect) => onMiniCardClick?.(data.artifact.data.formId, sourceRect)}
           isLoading={data.artifact.data.isLoading}
           linkUrl={data.artifact.data.linkUrl}
+          isAnimatingToModal={animatingCardId === data.artifact.data.formId}
         />
       </div>
     );

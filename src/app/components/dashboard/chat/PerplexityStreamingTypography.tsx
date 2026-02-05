@@ -7,6 +7,7 @@ export type StreamingStyle = 'basic' | 'typewriter' | 'glow' | 'gradient';
 interface PerplexityStreamProps {
   content: string;
   speed?: number; // ms per char
+  delay?: number; // ms delay before starting to stream
   onComplete?: () => void;
   className?: string;
   inheritStyles?: boolean; // When true, inherits font styles from parent (for headlines)
@@ -23,6 +24,7 @@ interface TextSegment {
 export const PerplexityStreamText = ({
   content,
   speed = 10,
+  delay = 0,
   onComplete,
   className,
   inheritStyles = false,
@@ -32,9 +34,13 @@ export const PerplexityStreamText = ({
 }: PerplexityStreamProps) => {
   const intensityFactor = glowIntensity / 100;
   const [visibleCount, setVisibleCount] = useState(0);
+  const [isDelayComplete, setIsDelayComplete] = useState(delay === 0);
   const requestRef = useRef<number>();
   const startTimeRef = useRef<number>();
   const onCompleteCalled = useRef(false);
+  // Store onComplete in a ref to avoid re-running the animation effect when callback changes
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   // 1. Parse content into segments (Bold vs Normal) once
   // This ensures we stream the *rendered* characters, not the markdown syntax
@@ -52,7 +58,23 @@ export const PerplexityStreamText = ({
   // 2. Calculate total visible characters
   const totalLength = useMemo(() => segments.reduce((acc, s) => acc + s.text.length, 0), [segments]);
 
+  // Handle delay before starting animation
   useEffect(() => {
+    if (delay > 0) {
+      setIsDelayComplete(false);
+      const delayTimer = setTimeout(() => {
+        setIsDelayComplete(true);
+      }, delay);
+      return () => clearTimeout(delayTimer);
+    } else {
+      setIsDelayComplete(true);
+    }
+  }, [delay, content]);
+
+  useEffect(() => {
+    // Don't start until delay is complete
+    if (!isDelayComplete) return;
+
     // Reset
     setVisibleCount(0);
     startTimeRef.current = undefined;
@@ -60,19 +82,20 @@ export const PerplexityStreamText = ({
 
     const animate = (time: number) => {
       if (!startTimeRef.current) startTimeRef.current = time;
-      
+
       const elapsed = time - startTimeRef.current;
       const targetCount = Math.floor(elapsed / speed);
-      
+
       if (targetCount >= totalLength) {
         setVisibleCount(totalLength);
-        if (onComplete && !onCompleteCalled.current) {
+        // Use ref to get latest callback without causing effect re-runs
+        if (onCompleteRef.current && !onCompleteCalled.current) {
           onCompleteCalled.current = true;
-          onComplete();
+          onCompleteRef.current();
         }
-        return; 
+        return;
       }
-      
+
       setVisibleCount(targetCount);
       requestRef.current = requestAnimationFrame(animate);
     };
@@ -82,7 +105,7 @@ export const PerplexityStreamText = ({
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [totalLength, speed, onComplete]);
+  }, [totalLength, speed, isDelayComplete]); // Removed onComplete - using ref instead
 
   // Check if streaming is complete
   const isComplete = visibleCount >= totalLength;
@@ -103,8 +126,8 @@ export const PerplexityStreamText = ({
 
     // Use CSS variable for magic color theme
     // Default fallback is green (Razorpay brand)
+    // Note: Using inline instead of inline-block to preserve natural line wrapping
     return {
-      display: 'inline-block',
       color: `color-mix(in srgb, var(--magic-primary, rgb(16, 185, 129)) ${Math.round(colorOpacity * 100)}%, transparent)`,
       textShadow: `0 0 ${shadowBlur1}px color-mix(in srgb, var(--magic-primary, rgb(16, 185, 129)) ${Math.round(shadowOpacity1 * 100)}%, transparent), 0 0 ${shadowBlur2}px color-mix(in srgb, var(--magic-primary, rgb(16, 185, 129)) ${Math.round(shadowOpacity2 * 100)}%, transparent)`,
       filter: `blur(${textBlur}px)`,
@@ -113,20 +136,19 @@ export const PerplexityStreamText = ({
   };
 
   // Helper to get gradient styling for a character based on its position
+  // Note: transform requires inline-block, but we use it sparingly to preserve wrapping
   const getGradientStyle = (distanceFromEnd: number): React.CSSProperties => {
     if (distanceFromEnd >= trailLength) return {};
 
     const rawIntensity = Math.max(0, 1 - (distanceFromEnd / Math.max(1, trailLength - 1)));
     const intensity = Math.pow(rawIntensity, 1);
-    const floatAmount = 2 * intensityFactor;
     const blurAmount = 0.5 * intensityFactor;
 
+    // Removed transform/float effect to preserve natural line wrapping
     return {
-      display: 'inline-block',
-      transform: `translateY(${-intensity * floatAmount}px)`,
       opacity: 0.7 + (intensity * 0.3),
       filter: `blur(${intensity * blurAmount}px)`,
-      transition: 'transform 0.25s ease-out, filter 0.25s ease-out, opacity 0.25s ease-out',
+      transition: 'filter 0.25s ease-out, opacity 0.25s ease-out',
     };
   };
 
@@ -183,7 +205,7 @@ export const PerplexityStreamText = ({
                   : (segment.isBold ? "font-medium" : "font-normal")
               )}
             >
-              {char === ' ' ? '\u00A0' : char}
+              {char}
             </span>
           );
         });
@@ -229,16 +251,17 @@ export const PerplexityStreamText = ({
     return elements;
   };
 
-  // During streaming, use inline-grid to overlay streaming text on invisible full text
-  // This reserves the full space and prevents layout shift during word wrapping
+  // During streaming, use CSS Grid to overlay streaming text on invisible full text
+  // The invisible text reserves space and establishes proper line wrapping
+  // Both elements share the same grid cell so they wrap identically
   if (!isComplete && content) {
     return (
       <span
         className={clsx(inheritStyles ? "" : "text-[15px] leading-[1.6]", className)}
-        style={{ display: 'inline-grid' }}
+        style={{ display: 'grid' }}
       >
         {/* Full text rendered invisibly to reserve space - grid area 1/1 */}
-        <span className="invisible" style={{ gridArea: '1/1' }} aria-hidden="true">
+        <span style={{ gridArea: '1/1', visibility: 'hidden' }} aria-hidden="true">
           <SmartHighlightWithBold text={content} className={inheritStyles ? "" : "text-slate-600"} />
         </span>
         {/* Streaming content overlaid on same grid cell - grid area 1/1 */}

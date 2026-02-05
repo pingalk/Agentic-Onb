@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { useDemo } from '@/context/DemoContext';
 import { thinkingSteps, defaultThinkingSteps } from './useDemoScript';
 import Ray from '@/imports/Ray';
+import SparkRipplesBackground from './SparkRipplesBackground';
 
 export interface ChainOfThoughtProps {
   steps?: string[];
@@ -155,6 +156,26 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
           </div>
         )}
       </div>
+
+      {/* Spark Ripples - shown during waiting/streaming modes */}
+      <AnimatePresence>
+        {(isWaiting || isStreaming) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 100 }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            className="relative w-full rounded-[12px] overflow-hidden"
+          >
+            <SparkRipplesBackground
+              loop={false}
+              opacity={0.4}
+              playbackRate={0.5}
+              muted
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Suggestions - only shown in complete mode */}
       {isComplete && suggestions.length > 0 && (
