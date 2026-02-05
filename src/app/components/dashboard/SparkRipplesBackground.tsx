@@ -824,8 +824,8 @@ export const SparkRipplesBackground = ({
               video.pause();
             }
           } else {
-            // Backward: manually seek backward each frame
-            const newTime = video.currentTime - deltaTime;
+            // Backward: manually seek backward each frame (scaled by playbackRate)
+            const newTime = video.currentTime - deltaTime * playbackRate;
             if (newTime <= lowerBound) {
               // Hit lower bound - reverse direction
               video.currentTime = lowerBound;

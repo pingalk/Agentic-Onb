@@ -84,10 +84,11 @@ export const SuggestionChipsPanel: React.FC<SuggestionChipsPanelProps> = ({
   };
 
   const activePrompts = CATEGORIES.find((c) => c.id === activeCategory)?.prompts || [];
+  const isExpanded = activeCategory !== null;
 
   return (
-    <div className="w-full max-w-2xl">
-      {/* Chips Row */}
+    <div className="w-full max-w-2xl relative">
+      {/* Chips Row - fixed position, never moves */}
       <div className="flex items-center justify-center gap-2 flex-wrap">
         {CATEGORIES.map((category) => (
           <button
@@ -96,7 +97,7 @@ export const SuggestionChipsPanel: React.FC<SuggestionChipsPanelProps> = ({
             className={clsx(
               "h-7 px-3 py-1 rounded-lg font-['Inter',sans-serif] text-[14px] font-normal tracking-[-0.182px] leading-5 transition-all duration-200",
               activeCategory === category.id
-                ? 'bg-white text-[#292f32] border border-[rgba(67,75,81,0.36)] shadow-[0_2px_4px_rgba(0,0,0,0.06)]'
+                ? 'bg-[#292f32] text-white border border-transparent'
                 : 'bg-white text-[#292f32] border border-[rgba(67,75,81,0.18)] hover:border-[rgba(67,75,81,0.28)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.04)]'
             )}
           >
@@ -105,45 +106,27 @@ export const SuggestionChipsPanel: React.FC<SuggestionChipsPanelProps> = ({
         ))}
       </div>
 
-      {/* Expandable Panel */}
+      {/* Expandable Panel - appears below chips */}
       <AnimatePresence>
-        {activeCategory && (
+        {isExpanded && (
           <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-            className="overflow-hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+            className="mt-4"
           >
-            <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-4">
-              {/* Tab Chips Inside Panel */}
-              <div className="flex items-center gap-2 mb-4 flex-wrap">
-                {CATEGORIES.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => setActiveCategory(category.id)}
-                    className={clsx(
-                      "h-7 px-3 py-1 rounded-lg font-['Inter',sans-serif] text-[14px] font-normal tracking-[-0.182px] leading-5 transition-all duration-150",
-                      activeCategory === category.id
-                        ? 'bg-[#292f32] text-white border border-transparent'
-                        : 'bg-white text-[#292f32] border border-[rgba(67,75,81,0.18)] hover:border-[rgba(67,75,81,0.28)]'
-                    )}
-                  >
-                    {category.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Prompts Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] py-2">
+              {/* Prompts - Single Column with Dividers */}
+              <div className="flex flex-col">
                 {activePrompts.map((prompt, idx) => (
                   <motion.button
                     key={prompt}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05, duration: 0.2 }}
+                    transition={{ delay: idx * 0.04, duration: 0.2 }}
                     onClick={() => handlePromptClick(prompt)}
-                    className="text-left px-4 py-3 rounded-lg bg-[#f8f8f8] hover:bg-[#f0f0f0] font-['Inter',sans-serif] text-[14px] text-[#292f32] tracking-[-0.182px] transition-colors duration-150"
+                    className={`text-left px-4 py-3 hover:bg-[#f8f8f8] font-['Inter',sans-serif] text-[14px] text-[#292f32] tracking-[-0.182px] transition-colors duration-150 ${idx < activePrompts.length - 1 ? 'border-b border-[#f0f0f0]' : ''}`}
                   >
                     {prompt}
                   </motion.button>

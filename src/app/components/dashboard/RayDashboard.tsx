@@ -153,6 +153,7 @@ interface RayDashboardProps {
   initialQuery?: string;
   autoSubmit?: boolean;
   onLogout?: () => void;
+  onSceneChange?: (sceneId: string) => void;
 }
 
 export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
@@ -165,7 +166,7 @@ export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
   );
 };
 
-const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNavigateToPayments, initialQuery, onLogout }) => {
+const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNavigateToPayments, initialQuery, onLogout, onSceneChange }) => {
   const { currentPersona, setIsInChatView, setIsOnRayLandingPage } = useDemo(); // <--- LISTENING TO CONTEXT
 
   const [view, setView] = useState<'landing' | 'chat'>('landing');
@@ -200,6 +201,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
   // Scroll position for parallax effect on SparkRipples background
   const [scrollY, setScrollY] = useState(0);
   const landingScrollRef = React.useRef<HTMLDivElement>(null);
+
+  // Presentation mode: track which scenes have been triggered
+  const sceneTriggeredRef = React.useRef<Record<string, boolean>>({});
 
   // Cycling placeholder suggestions for 'empty' variant
   const placeholderSuggestions = [
@@ -250,6 +254,22 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
     const t7 = setTimeout(() => setAnimPhase(7), 6300);     // Cards appear
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); clearTimeout(t7); };
   }, [view, landingVariant]);
+
+  // Presentation mode: scene1 triggered on landing page load
+  useEffect(() => {
+    if (view === 'landing' && onSceneChange && !sceneTriggeredRef.current.scene1) {
+      sceneTriggeredRef.current.scene1 = true;
+      onSceneChange('scene1');
+    }
+  }, [view, onSceneChange]);
+
+  // Presentation mode: scene2 triggered when scrolling down on landing
+  useEffect(() => {
+    if (view === 'landing' && scrollY > 200 && onSceneChange && !sceneTriggeredRef.current.scene2) {
+      sceneTriggeredRef.current.scene2 = true;
+      onSceneChange('scene2');
+    }
+  }, [view, scrollY, onSceneChange]);
 
   // EXPERIMENTAL: Track which briefing item is hovered (null = none)
   const [hoveredBriefingItem, setHoveredBriefingItem] = useState<number | null>(null);
@@ -342,6 +362,12 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
     // Allow sending if there's text OR an attachment (for Shyam's flow)
     if (!prompt.trim() && !shyamAttachment) return;
 
+    // Presentation mode: scene3 triggered when question submitted
+    if (onSceneChange && !sceneTriggeredRef.current.scene3) {
+      sceneTriggeredRef.current.scene3 = true;
+      onSceneChange('scene3');
+    }
+
     // Capture text for transition animation
     setTransitionText(prompt);
     setLastQuery(prompt);
@@ -375,10 +401,24 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
         setViewTransition('entering');
         setIsSidebarCollapsed(true);
 
+        // Presentation mode: scene4 triggered when streaming/AI thinking starts
+        if (onSceneChange && !sceneTriggeredRef.current.scene4) {
+          sceneTriggeredRef.current.scene4 = true;
+          onSceneChange('scene4');
+        }
+
         // Reset transition state after enter animation
         setTimeout(() => {
           setViewTransition('idle');
           setTransitionText('');
+
+          // Presentation mode: scene5 triggered when response is complete (after a delay for demo)
+          setTimeout(() => {
+            if (onSceneChange && !sceneTriggeredRef.current.scene5) {
+              sceneTriggeredRef.current.scene5 = true;
+              onSceneChange('scene5');
+            }
+          }, 3000); // 3s after chat settles - simulates response completion
         }, 600);
       }, 700); // 700ms exit animation - gives hero time to fade smoothly
     }, 1000); // 1s spotlight hold
@@ -518,7 +558,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1.5, delay: 3 }}
                      >
-                        <SparkRipplesBackground opacity={1} loop={false} />
+                        <SparkRipplesBackground opacity={1} loop={false} playbackRate={0.5} />
                      </motion.div>
                      <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
                      <div className="absolute inset-x-0 bottom-0 h-[70vh] bg-gradient-to-t from-[#f8f8f8] from-50% via-[#f8f8f8]/95 via-70% to-transparent" />
@@ -623,7 +663,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                             )}
                         </p>
                         {/* Tagline - Large Text with magic color - staggered characters in default mode */}
-                        <h1 className="font-sans font-normal text-[28px] md:text-[40px] leading-[36px] md:leading-[48px] tracking-[-0.5px]" style={{ color: currentMagicColor.primary }}>
+                        <h1 className="font-sans font-normal text-[28px] md:text-[40px] leading-[36px] md:leading-[48px] tracking-[-0.5px] text-[#2563EB]">
                             {landingVariant === 'default' ? (
                                 // Staggered character animation for default mode - starts after greeting finishes
                                 "What can I do for you today?".split('').map((char, i) => (
@@ -725,7 +765,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                            className="mt-4"
+                            className="mt-6"
                         >
                             <SuggestionChipsPanel onPromptSelect={setPrompt} />
                         </motion.div>

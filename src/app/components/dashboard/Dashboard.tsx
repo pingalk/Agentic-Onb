@@ -26,9 +26,10 @@ export interface DashboardProps {
         variants: { home: string; transactions: string };
     };
     onLogout?: () => void;
+    onSceneChange?: (sceneId: string) => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, onSceneChange }) => {
   const { currentPersonaId } = useDemo();
   const [currentView, setCurrentView] = useState(initialConfig?.view || 'home');
   const [variants, setVariants] = useState<{home: string; transactions: string}>(initialConfig?.variants || {
@@ -104,7 +105,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout })
             autoSubmit = false; // User manually presses Enter on landing page
           }
           
-          return <RayDashboard onNavigate={setCurrentView} onNavigateToPayments={handleNavigateToPayments} initialQuery={initialQuery} autoSubmit={autoSubmit} onLogout={onLogout} />; 
+          return <RayDashboard onNavigate={setCurrentView} onNavigateToPayments={handleNavigateToPayments} initialQuery={initialQuery} autoSubmit={autoSubmit} onLogout={onLogout} onSceneChange={onSceneChange} />; 
         }
         return (
           <div className="max-w-6xl mx-auto w-full">

@@ -90,64 +90,54 @@ export const HomeCards: React.FC<HomeCardsProps> = ({ animPhase, onPromptSelect 
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   return (
-    <div className="flex gap-5 items-start w-full max-w-[850px]">
-      {/* Key Updates Card - Left Column - matches height of right column (2 cards + gap) */}
+    <div className="flex flex-wrap gap-5 items-start w-full max-w-[850px]">
+      {/* Critical Downtime Card */}
       <motion.div
-        className="border border-[#dee1e3] flex flex-col items-center p-2 rounded-xl shrink-0 w-[268px]"
-        style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 27.731%, rgb(255, 255, 255) 97.165%, rgb(247, 247, 248) 100%)" }}
+        className="border border-[#fee2e2] flex flex-col gap-2 items-center p-2 rounded-xl shrink-0 w-[269px] cursor-pointer transition-shadow hover:shadow-md"
+        style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 27.731%, rgb(255, 255, 255) 93.453%, rgb(254, 242, 242) 100%)" }}
         initial={{ opacity: 0, y: 26 }}
         animate={animPhase >= 7 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
         transition={{ duration: 0.8, delay: 0, ease: [0.16, 1, 0.3, 1] }}
+        onMouseEnter={() => setHoveredCard('critical')}
+        onMouseLeave={() => setHoveredCard(null)}
       >
-        <div className="relative rounded-lg w-full p-1">
-          {/* Title */}
-          <div className="flex items-center py-[5px] mb-3">
-            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#7d7d7d] leading-[18px]">
-              Key updates
+        <div className="bg-gradient-to-b from-white from-[47%] to-[#fef2f2] h-[221px] overflow-hidden relative rounded-lg w-[253px] p-4 flex flex-col justify-between">
+          <div className="flex flex-col gap-2">
+            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#7d7d7d] leading-[18px]">Key Update</p>
+            <p className="font-['Inter',sans-serif] font-medium text-[20px] text-[#d92d20] tracking-[-0.528px] leading-[28px]">
+              Critical Downtime
+            </p>
+            <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#7d7d7d] leading-[20px]">
+              All users transacting through HDFC bank are likely to face failures.
             </p>
           </div>
-
-          {/* Cards Container */}
-          <div className="flex flex-col gap-3 w-full">
-            {/* Critical Downtime Card */}
-            <div
-              className="bg-[#fef2f2] flex flex-col h-[259px] justify-between p-3 rounded-lg w-full cursor-pointer transition-shadow hover:shadow-md"
-              onMouseEnter={() => setHoveredCard('critical')}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className="flex flex-col gap-2 w-full">
-                <p className="font-['Inter',sans-serif] font-medium text-[16px] text-[#d92d20] tracking-[-0.528px] leading-[24px]">
-                  Critical Downtime
-                </p>
-                <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#7d7d7d] leading-[20px]">
-                  All users transacting through HDFC bank are likely to face failures.
-                </p>
-              </div>
-              <CardFooter label="Deep dive into reason" isHovered={hoveredCard === 'critical'} magicColor={magicColorConfig.primary} />
-            </div>
-
-            {/* Ticket Resolved Card */}
-            <div
-              className="bg-[#f8f8f8] flex flex-col flex-1 justify-between p-3 rounded-lg w-full min-h-[259px] cursor-pointer transition-shadow hover:shadow-md"
-              onMouseEnter={() => setHoveredCard('ticket')}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <div className="flex flex-col gap-2 w-full">
-                <p className="font-['Inter',sans-serif] font-medium text-[16px] text-[#050505] tracking-[-0.528px] leading-[24px]">
-                  Ticket #20323783 resolved
-                </p>
-                <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#7d7d7d] leading-[20px]">
-                  Issue has been resolved. You can take further actions or track the support ticket here
-                </p>
-              </div>
-              <CardFooter label="Deep dive into reason" isHovered={hoveredCard === 'ticket'} magicColor={magicColorConfig.primary} />
-            </div>
-          </div>
         </div>
+        <CardFooter label="Deep dive into reason" isHovered={hoveredCard === 'critical'} magicColor={magicColorConfig.primary} />
       </motion.div>
 
-      {/* Right Column - 2x2 Grid */}
-      <div className="flex flex-wrap gap-5 items-start w-[558px]">
+      {/* Ticket Resolved Card */}
+      <motion.div
+        className="border border-[#dee1e3] flex flex-col gap-2 items-center p-2 rounded-xl shrink-0 w-[269px] cursor-pointer transition-shadow hover:shadow-md"
+        style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 27.731%, rgb(255, 255, 255) 93.453%, rgb(247, 247, 248) 100%)" }}
+        initial={{ opacity: 0, y: 26 }}
+        animate={animPhase >= 7 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
+        transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+        onMouseEnter={() => setHoveredCard('ticket')}
+        onMouseLeave={() => setHoveredCard(null)}
+      >
+        <div className="bg-gradient-to-b from-white from-[47%] to-[#f8f8f8] h-[221px] overflow-hidden relative rounded-lg w-[253px] p-4 flex flex-col justify-between">
+          <div className="flex flex-col gap-2">
+            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#7d7d7d] leading-[18px]">Key Update</p>
+            <p className="font-['Inter',sans-serif] font-medium text-[20px] text-[#050505] tracking-[-0.528px] leading-[28px]">
+              Ticket #20323783 resolved
+            </p>
+            <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#7d7d7d] leading-[20px]">
+              Issue has been resolved. You can take further actions or track the support ticket here.
+            </p>
+          </div>
+        </div>
+        <CardFooter label="View ticket details" isHovered={hoveredCard === 'ticket'} magicColor={magicColorConfig.primary} />
+      </motion.div>
         {/* Settlement Card */}
         <motion.div
           className="border border-[#dee1e3] flex flex-col gap-2 items-center p-2 rounded-xl shrink-0 w-[269px] cursor-pointer transition-shadow hover:shadow-md"
@@ -168,7 +158,7 @@ export const HomeCards: React.FC<HomeCardsProps> = ({ animPhase, onPromptSelect 
             <div className="absolute flex flex-col gap-1 left-[22px] top-[44px] w-[151px]">
               <div className="flex gap-[2px] items-start text-[#050505] leading-[38px]">
                 <span className="font-['Inter',sans-serif] font-medium text-[30px]">₹</span>
-                <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[32px]">1.2k</span>
+                <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[32px]">1,200</span>
               </div>
               <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#7d7d7d] leading-[20px]">
                 Will deposit today 9:00 PM
@@ -251,7 +241,7 @@ export const HomeCards: React.FC<HomeCardsProps> = ({ animPhase, onPromptSelect 
               <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#7d7d7d] leading-[18px]">Balance</p>
               <div className="flex gap-[2px] items-start text-[#050505] leading-[38px]">
                 <span className="font-['Inter',sans-serif] font-medium text-[30px]">₹</span>
-                <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[32px]">35k</span>
+                <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[32px]">35,000</span>
               </div>
             </div>
 
@@ -291,7 +281,7 @@ export const HomeCards: React.FC<HomeCardsProps> = ({ animPhase, onPromptSelect 
               <div className="flex flex-col gap-2 text-[#050505]">
                 <div className="flex gap-[2px] items-start leading-[38px]">
                   <span className="font-['Inter',sans-serif] font-medium text-[30px]">₹</span>
-                  <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[32px]">12k</span>
+                  <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[32px]">12,000</span>
                 </div>
                 <p className="font-['Inter',sans-serif] font-medium tracking-[-0.528px]">
                   <span className="font-semibold text-[#009457] text-[14px]">▲</span>
@@ -384,7 +374,6 @@ export const HomeCards: React.FC<HomeCardsProps> = ({ animPhase, onPromptSelect 
             </div>
           </div>
         </motion.div>
-      </div>
     </div>
   );
 };
