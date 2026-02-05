@@ -92,7 +92,7 @@ type HelperProps = {
 function Helper({ text, text1 }: HelperProps) {
   return (
     <div className="content-stretch flex gap-[6px] items-start relative shrink-0 text-[14px] w-full flex-wrap">
-      <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-semibold justify-center relative shrink-0 text-[#192839]">
+      <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-medium justify-center relative shrink-0 text-[#192839]">
         <p className="leading-[20px] text-nowrap">{text}</p>
       </div>
       <div className="flex flex-col font-['Inter:Regular',sans-serif] justify-center relative shrink-0 text-[#40566d]">
@@ -131,7 +131,7 @@ type Text5Props = {
 function Text5({ text }: Text5Props) {
   return (
     <div className="content-stretch flex gap-[6px] items-start relative shrink-0 w-full">
-      <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#192839] text-[14px] whitespace-normal">
+      <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[#192839] text-[14px] whitespace-normal">
         <p className="leading-[20px]">{text}</p>
       </div>
     </div>
@@ -207,7 +207,7 @@ type HeadingTextProps = {
 function HeadingText({ text }: HeadingTextProps) {
   return (
     <div className="basis-0 content-stretch flex grow items-start min-h-px min-w-px relative shrink-0">
-      <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#192839] text-[16px] text-nowrap">
+      <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[#192839] text-[16px] text-nowrap">
         <p className="leading-[24px]">{text}</p>
       </div>
     </div>
@@ -228,7 +228,7 @@ type Text3Props = {
 function Text3({ text }: Text3Props) {
   return (
     <div className="content-stretch flex items-baseline opacity-[0.64] relative shrink-0">
-      <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[14px] not-italic relative shrink-0 text-[#192839] text-[10px] text-nowrap text-right">{text}</p>
+      <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[14px] not-italic relative shrink-0 text-[#192839] text-[10px] text-nowrap text-right">{text}</p>
     </div>
   );
 }
@@ -240,7 +240,7 @@ type Text2Props = {
 function Text2({ text }: Text2Props) {
   return (
     <div className="content-stretch flex items-baseline opacity-[0.64] relative shrink-0">
-      <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[14px] not-italic relative shrink-0 text-[#d92d20] text-[10px] text-nowrap text-right">{text}</p>
+      <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[14px] not-italic relative shrink-0 text-[#d92d20] text-[10px] text-nowrap text-right">{text}</p>
     </div>
   );
 }
@@ -251,7 +251,7 @@ type Text1Props = {
 function Text1({ text }: Text1Props) {
   return (
     <div className="content-stretch flex items-baseline opacity-[0.64] relative shrink-0">
-      <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[14px] not-italic relative shrink-0 text-[#008743] text-[10px] text-nowrap text-right">{text}</p>
+      <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[14px] not-italic relative shrink-0 text-[#008743] text-[10px] text-nowrap text-right">{text}</p>
     </div>
   );
 }
@@ -263,7 +263,7 @@ type TextProps = {
 function Text({ text, additionalClassNames = "" }: TextProps) {
   return (
     <div className={clsx("content-stretch flex items-center relative shrink-0", additionalClassNames)}>
-      <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[20px] not-italic relative shrink-0 text-[#40566d] text-[14px] text-nowrap">{text}</p>
+      <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[20px] not-italic relative shrink-0 text-[#40566d] text-[14px] text-nowrap">{text}</p>
     </div>
   );
 }
@@ -387,7 +387,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({ id, onBa
                                     <Text1 text="₹" />
                                     <div className="content-stretch flex items-baseline relative shrink-0" data-name="value-container">
                                       <div className="content-stretch flex items-baseline relative shrink-0" data-name="main-value-container">
-                                        <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[20px] not-italic relative shrink-0 text-[#008743] text-[14px] text-nowrap text-right">5,000</p>
+                                        <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[20px] not-italic relative shrink-0 text-[#008743] text-[14px] text-nowrap text-right">5,000</p>
                                       </div>
                                       <Text1 text=".00" />
                                     </div>
@@ -416,7 +416,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({ id, onBa
                                     <Text2 text="₹" />
                                     <div className="content-stretch flex items-baseline relative shrink-0" data-name="value-container">
                                       <div className="content-stretch flex items-baseline relative shrink-0" data-name="main-value-container">
-                                        <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[20px] not-italic relative shrink-0 text-[#d92d20] text-[14px] text-nowrap text-right">200</p>
+                                        <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[20px] not-italic relative shrink-0 text-[#d92d20] text-[14px] text-nowrap text-right">200</p>
                                       </div>
                                       <Text2 text=".00" />
                                     </div>
@@ -428,7 +428,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({ id, onBa
                             <Divider />
                             <div className="content-stretch flex items-center justify-between relative shrink-0 w-full">
                               <div className="content-stretch flex gap-[4px] items-center relative shrink-0">
-                                <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] text-nowrap">Net amount</p>
+                                <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] text-nowrap">Net amount</p>
                               </div>
                               <div className="content-stretch flex items-end justify-end relative shrink-0" data-name="Amount">
                                 <div className="content-stretch flex items-baseline relative shrink-0" data-name="root">
@@ -436,7 +436,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({ id, onBa
                                     <Text3 text="₹" />
                                     <div className="content-stretch flex items-baseline relative shrink-0" data-name="value-container">
                                       <div className="content-stretch flex items-baseline relative shrink-0" data-name="main-value-container">
-                                        <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] text-nowrap text-right">1,000</p>
+                                        <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] text-nowrap text-right">1,000</p>
                                       </div>
                                       <Text3 text=".00" />
                                     </div>
@@ -489,7 +489,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({ id, onBa
                           <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 flex-1 min-w-0" data-name="Value list">
                             <div className="h-[20px] relative shrink-0 w-full" data-name="Value">
                               <div className="absolute content-stretch flex gap-[4px] items-center left-0 top-0 w-full" data-name="value">
-                                <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] truncate">pay_LM93MI0K4sEmbQ</p>
+                                <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] truncate">pay_LM93MI0K4sEmbQ</p>
                                 <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="copy">
                                   <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="root">
                                     <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="wrapper">
@@ -516,7 +516,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({ id, onBa
                           <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 flex-1 min-w-0" data-name="Value list">
                             <div className="h-[20px] relative shrink-0 w-full" data-name="Value">
                               <div className="absolute content-stretch flex gap-[4px] items-center left-0 top-0 w-full" data-name="value">
-                                <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] truncate">order_usfeiufgey3247</p>
+                                <p className="font-['Inter:Semi_Bold',sans-serif] font-medium leading-[20px] not-italic relative shrink-0 text-[#192839] text-[14px] truncate">order_usfeiufgey3247</p>
                                 <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="copy">
                                   <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="root">
                                     <div className="content-stretch flex items-center justify-center relative shrink-0" data-name="wrapper">

@@ -39,7 +39,7 @@ export const FundsAddedHeader = ({ title }: { title: string }) => {
   return (
     <div className="flex gap-[6px] items-center relative shrink-0">
       <CheckIcon />
-      <h3 className="font-sans font-semibold text-[18px] leading-[26px] text-[#020202]">
+      <h3 className="font-sans font-medium text-[18px] leading-[26px] text-[#020202]">
         {title}
       </h3>
     </div>
@@ -93,7 +93,7 @@ export const SettlementCard = () => {
 
       {/* Main Content Text */}
       <div className="absolute left-[118px] top-[12px] leading-[0]">
-         <span className="block leading-[24px] text-[#0f78ad] text-[18px] font-sans font-semibold">Settlement on the way</span>
+         <span className="block leading-[24px] text-[#0f78ad] text-[18px] font-sans font-medium">Settlement on the way</span>
          <span className="block h-[2px]" /> {/* Spacer per Figma <br> */}
          <span className="block leading-[20px] text-[#768ea7] text-[14px] font-normal font-sans">Settlement scheduled for Jan 24, 2026 10:00 AM</span>
       </div>
@@ -103,18 +103,18 @@ export const SettlementCard = () => {
          <div className="flex items-baseline relative shrink-0 gap-[2px]">
             {/* Currency Symbol */}
             <div className="flex items-baseline opacity-64 relative shrink-0">
-               <p className="font-semibold leading-[20px] text-[#192839] text-[14px] text-right font-sans">₹</p>
+               <p className="font-medium leading-[20px] text-[#192839] text-[14px] text-right font-sans">₹</p>
             </div>
             
             {/* Value Container */}
             <div className="flex items-baseline relative shrink-0">
                {/* Main Value */}
                <div className="flex items-baseline relative shrink-0">
-                  <p className="font-semibold leading-[26px] text-[#192839] text-[20px] text-right font-sans">1,26,000</p>
+                  <p className="font-medium leading-[26px] text-[#192839] text-[20px] text-right font-sans">1,26,000</p>
                </div>
                {/* Decimal Container */}
                <div className="flex items-baseline opacity-64 relative shrink-0">
-                  <p className="font-semibold leading-[20px] text-[#192839] text-[14px] text-right font-sans">.00</p>
+                  <p className="font-medium leading-[20px] text-[#192839] text-[14px] text-right font-sans">.00</p>
                </div>
             </div>
          </div>
@@ -133,7 +133,7 @@ export const RayInsightCard = () => {
          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="shrink-0">
            <path d="M8 1L9.79 5.42L14.5 6.02L11 9.34L11.94 14L8 11.77L4.06 14L5 9.34L1.5 6.02L6.21 5.42L8 1Z" fill="#1291D0" stroke="#1291D0" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
          </svg>
-         <p className="text-[14px] font-semibold text-[#1291D0]">Ray Insight</p>
+         <p className="text-[14px] font-medium text-[#1291D0]">Ray Insight</p>
       </div>
       <p className="text-[14px] leading-[20px] text-[#40566d] tracking-[0.14px]">
         To avoid your settlements being paused during busy refund periods, you can use Refund Credits. Think of it as a separate 'wallet' used only for refunds, this way your settlements remain untouched and are processed seamlessly.

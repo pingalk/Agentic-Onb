@@ -39,7 +39,7 @@ export const Insights: React.FC = () => {
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 w-full overflow-hidden">
         <div className="flex-1 w-full min-w-0">
-            <div className="flex items-center gap-1 text-slate-800 font-semibold mb-1">
+            <div className="flex items-center gap-1 text-slate-800 font-medium mb-1">
                 Payment method split <Info size={14} className="text-slate-400" />
             </div>
             <div className="text-xs text-slate-500 mb-6">Last 7 days</div>
@@ -96,7 +96,7 @@ const InsightCard: React.FC<InsightCardProps> = ({ label, value, change, data, c
                 <div className="text-xs text-slate-400 mb-2">Last 7 days</div>
                 <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-bold text-slate-800">{value}</span>
-                    <span className={`text-xs font-semibold flex items-center ${isNegative ? 'text-red-500' : 'text-green-500'}`}>
+                    <span className={`text-xs font-medium flex items-center ${isNegative ? 'text-red-500' : 'text-green-500'}`}>
                         <ArrowUp size={12} className="mr-0.5" /> {change}
                     </span>
                 </div>

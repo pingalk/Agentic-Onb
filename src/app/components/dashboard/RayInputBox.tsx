@@ -64,6 +64,8 @@ interface RayInputBoxProps {
   onSend: () => void;
   variant?: 'hero' | 'compact';
   placeholder?: string;
+  animatePlaceholder?: boolean; // Enable flip animation for cycling placeholders
+  showShadow?: boolean; // Control shadow visibility for entry animation
   autoFocus?: boolean;
   attachmentChip?: {
     filename: string;
@@ -79,6 +81,8 @@ export const RayInputBox: React.FC<RayInputBoxProps> = ({
   onSend,
   variant = 'hero',
   placeholder = "Ask anything...",
+  animatePlaceholder = false,
+  showShadow = false, // Default to no shadow; shows on focus or when explicitly set
   autoFocus = false,
   attachmentChip = null,
   onRemoveAttachment
@@ -114,11 +118,14 @@ export const RayInputBox: React.FC<RayInputBoxProps> = ({
     }
   };
 
+  // Background color: white for compact (chat), slate-50 for hero (landing)
+  const bgColor = isHero ? 'bg-[#f8fafc]' : 'bg-white';
+
   return (
     <motion.div
       layout
       transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-      className="bg-[#f8fafc] relative rounded-[26px] w-full"
+      className={`${bgColor} relative rounded-[26px] w-full`}
     >
       <div className="content-stretch flex flex-col gap-[4px] items-end justify-end overflow-clip px-[20px] py-[16px] relative rounded-[inherit] size-full">
         {/* Attachment Chip - displayed above the textarea */}
@@ -140,21 +147,52 @@ export const RayInputBox: React.FC<RayInputBoxProps> = ({
           )}
         </AnimatePresence>
 
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          autoFocus={autoFocus}
-          placeholder={placeholder}
-          className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full bg-transparent border-none outline-none resize-none font-['TASA_Orbiter_Display',sans-serif] leading-[24px] text-[#40566d] text-[18px] tracking-[0.36px] placeholder:text-[#768ea7]"
-          style={{
-            minHeight: '48px',
-            height: '48px'
-          }}
-        />
+        <div className="relative w-full">
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            autoFocus={autoFocus}
+            placeholder={animatePlaceholder ? '' : placeholder}
+            className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full bg-transparent border-none outline-none resize-none font-['TASA_Orbiter_Display',sans-serif] leading-[24px] text-[#40566d] text-[18px] tracking-[0.36px] placeholder:text-[#768ea7]"
+            style={{
+              minHeight: '48px',
+              height: '48px'
+            }}
+          />
+          {/* Animated placeholder overlay - staggered character reveal (shows even when focused, as long as no text) */}
+          {animatePlaceholder && !value && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={placeholder}
+                className="absolute top-0 left-0 pointer-events-none font-['TASA_Orbiter_Display',sans-serif] leading-[24px] text-[#768ea7] text-[18px] tracking-[0.36px]"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}
+              >
+                {placeholder.split('').map((char, i) => (
+                  <motion.span
+                    key={i}
+                    className="inline-block"
+                    style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
+                    initial={{ opacity: 0, y: 6, filter: 'blur(4px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{
+                      duration: 0.15,
+                      delay: i * 0.025,
+                      ease: [0.25, 0.1, 0.25, 1]
+                    }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </div>
         
         {/* Buttons */}
         <div className="content-stretch flex gap-[8px] items-center justify-end relative shrink-0 w-[197px]">
@@ -194,7 +232,7 @@ export const RayInputBox: React.FC<RayInputBoxProps> = ({
         </div>
       </div>
       
-      <div aria-hidden="true" className="absolute border border-[#6db7e8] border-solid inset-0 pointer-events-none rounded-[26px] shadow-[0px_6px_32px_4px_rgba(25,40,57,0.09)]" />
+      <div aria-hidden="true" className={clsx("absolute border border-[#6db7e8] border-solid inset-0 pointer-events-none rounded-[26px] transition-shadow duration-300", (showShadow || isFocused) && "shadow-[0px_6px_32px_4px_rgba(25,40,57,0.09)]")} />
     </motion.div>
   );
 };

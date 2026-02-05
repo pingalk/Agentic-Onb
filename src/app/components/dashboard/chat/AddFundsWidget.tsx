@@ -39,7 +39,7 @@ function Heading({ amount }: { amount: string }) {
     <div className="bg-white relative shrink-0 w-full" data-name="Heading">
       <div className="flex flex-row items-center justify-center overflow-clip rounded-[inherit] size-full">
         <div className="content-stretch flex items-center justify-center px-[4px] relative w-full">
-          <p className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[24px] not-italic relative shrink-0 text-[#222] text-[18px] text-center">
+          <p className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[24px] not-italic relative shrink-0 text-[#222] text-[18px] text-center">
             Congrats! ₹{displayAmount} has been added
           </p>
         </div>
@@ -172,7 +172,7 @@ export const AddFundsWidget: React.FC<AddFundsWidgetProps> = ({ initialAmount = 
                 <div className="flex items-start justify-between p-[12px] w-full bg-transparent">
                 <div className="flex gap-[8px] items-start flex-1">
                     <div className="flex flex-col items-start w-full">
-                    <p className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[24px] text-[#192839] text-[18px] w-full">
+                    <p className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[24px] text-[#192839] text-[18px] w-full">
                         Add Funds via UPI
                     </p>
                     </div>
@@ -187,7 +187,7 @@ export const AddFundsWidget: React.FC<AddFundsWidgetProps> = ({ initialAmount = 
                 <div className="flex flex-col gap-[12px]">
                 {/* Header Row */}
                 <div className="flex justify-between items-center">
-                    <p className="font-['Inter',sans-serif] font-semibold text-[#222] text-[16px] leading-[24px]">
+                    <p className="font-['Inter',sans-serif] font-medium text-[#222] text-[16px] leading-[24px]">
                     How much would you like to add?
                     </p>
                 </div>
@@ -270,7 +270,7 @@ export const AddFundsWidget: React.FC<AddFundsWidgetProps> = ({ initialAmount = 
                 <button 
                 onClick={handleSubmit}
                 disabled={!amount || !purpose}
-                className="h-[36px] w-full rounded-[8px] bg-gradient-to-r from-[#1566f1] to-[#4793fd] flex items-center justify-center text-white text-[12px] font-semibold shadow-[inset_0px_2px_0px_0px_rgba(255,255,255,0.2)] hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-[36px] w-full rounded-[8px] bg-gradient-to-r from-[#1566f1] to-[#4793fd] flex items-center justify-center text-white text-[12px] font-medium shadow-[inset_0px_2px_0px_0px_rgba(255,255,255,0.2)] hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                 Confirm & Proceed
                 </button>

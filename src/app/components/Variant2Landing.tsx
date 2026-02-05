@@ -5,54 +5,9 @@ import Card3 from "@/imports/Card3";
 import svgPaths from "@/imports/svg-fk2cc1j6pm";
 import { motion } from 'motion/react';
 import clsx from "clsx";
+import Ray from "@/imports/Ray";
 
 // --- Icons & SVGs ---
-
-function RayIcon() {
-  const [isWaving, setIsWaving] = useState(false);
-
-  useEffect(() => {
-    const startTimer = setTimeout(() => {
-      setIsWaving(true);
-    }, 500);
-
-    const resetTimer = setTimeout(() => {
-      setIsWaving(false);
-    }, 1100);
-    
-    return () => {
-      clearTimeout(startTimer);
-      clearTimeout(resetTimer);
-    };
-  }, []);
-
-  return (
-    <div className="relative shrink-0 size-[32px]">
-      <svg className="block size-full overflow-visible" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
-        <g>
-          {/* Top Left */}
-          <path d="M4 4H13L16 16L4 13V4Z" fill="#009E5C" />
-          
-          {/* Top Right - Animated */}
-          <g 
-            className={clsx(
-              "transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-[16px_16px]",
-              isWaving && "rotate-[10deg] scale-125"
-            )}
-          >
-            <path d="M19 4H28V13L16 16L19 4Z" fill="#009E5C" />
-          </g>
-          
-          {/* Bottom Right */}
-          <path d="M28 19V28H19L16 16L28 19Z" fill="#009E5C" />
-          
-          {/* Bottom Left */}
-          <path d="M13 28H4V19L16 16L13 28Z" fill="#009E5C" />
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 function SearchIcon() {
   return (
@@ -228,7 +183,7 @@ export default function Variant2Landing({ prompt, setPrompt, onSend, onChipClick
         
         {/* Greeting */}
         <div className="flex items-center gap-[7px]">
-            <RayIcon />
+            <div className="size-[32px] shrink-0"><Ray /></div>
             <h2 className="font-['TASA_Orbiter_Display:Medium',sans-serif] text-[30px] leading-[34px] text-[#094c85] tracking-[-0.39px]">
                 Good afternoon, Ishan!
             </h2>

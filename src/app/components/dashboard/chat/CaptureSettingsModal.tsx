@@ -85,7 +85,7 @@ export const CaptureSettingsModal: React.FC<CaptureSettingsModalProps> = ({
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-6 pb-4">
-            <h2 className="text-[22px] font-semibold text-[#192839]">
+            <h2 className="text-[22px] font-medium text-[#192839]">
               Capture Settings
             </h2>
             <button
@@ -127,7 +127,7 @@ export const CaptureSettingsModal: React.FC<CaptureSettingsModalProps> = ({
                     onChange={() => setSelectedOption('auto')}
                     className="sr-only"
                   />
-                  <p className="text-[16px] font-semibold text-[#192839]">
+                  <p className="text-[16px] font-medium text-[#192839]">
                     Automatic Capture
                   </p>
                   <p className="text-[14px] text-[#64748b] mt-0.5">
@@ -167,7 +167,7 @@ export const CaptureSettingsModal: React.FC<CaptureSettingsModalProps> = ({
                     onChange={() => setSelectedOption('manual')}
                     className="sr-only"
                   />
-                  <p className="text-[16px] font-semibold text-[#192839]">
+                  <p className="text-[16px] font-medium text-[#192839]">
                     Manual Capture
                   </p>
                   <p className="text-[14px] text-[#64748b] mt-0.5">
@@ -215,7 +215,7 @@ export const CaptureSettingsModal: React.FC<CaptureSettingsModalProps> = ({
             <button
               onClick={handleNext}
               disabled={isSubmitting}
-              className="h-[42px] px-8 rounded-[6px] text-[14px] font-semibold bg-[#305EFF] text-white hover:bg-[#1a4cd6] transition-colors flex items-center justify-center min-w-[100px]"
+              className="h-[42px] px-8 rounded-[6px] text-[14px] font-medium bg-[#305EFF] text-white hover:bg-[#1a4cd6] transition-colors flex items-center justify-center min-w-[100px]"
             >
               {isSubmitting ? (
                 <Loader2 className="animate-spin" size={18} />

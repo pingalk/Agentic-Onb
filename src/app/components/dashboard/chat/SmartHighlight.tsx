@@ -26,13 +26,13 @@ const HIGHLIGHT_PATTERNS = {
 
 // Highlight styles for different types (heavier font weight + #202020 color)
 const HIGHLIGHT_STYLES: Record<string, string> = {
-  amount: 'font-semibold text-[#202020]',
-  date: 'font-semibold text-[#202020]',
-  time: 'font-semibold text-[#202020]',
-  id: 'font-mono font-semibold text-[#202020]',
-  duration: 'font-semibold text-[#202020]',
-  percentage: 'font-semibold text-[#202020]',
-  status: 'font-semibold text-[#202020]',
+  amount: 'font-medium text-[#202020]',
+  date: 'font-medium text-[#202020]',
+  time: 'font-medium text-[#202020]',
+  id: 'font-mono font-medium text-[#202020]',
+  duration: 'font-medium text-[#202020]',
+  percentage: 'font-medium text-[#202020]',
+  status: 'font-medium text-[#202020]',
 };
 
 interface HighlightMatch {
@@ -155,7 +155,7 @@ export const SmartHighlightWithBold: React.FC<SmartHighlightProps> = ({ text, cl
       {segments.map((segment, i) => {
         const highlighted = <SmartHighlight key={i} text={segment.text} />;
         return segment.isBold ? (
-          <strong key={i} className="font-semibold text-[#192839]">
+          <strong key={i} className="font-medium text-[#192839]">
             {highlighted}
           </strong>
         ) : (

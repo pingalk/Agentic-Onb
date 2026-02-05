@@ -70,7 +70,7 @@ const InfoRow = ({
     </span>
     <div className="flex items-center gap-[6px] flex-1">
       <span className={clsx(
-        "text-[14px] font-semibold leading-[20px]",
+        "text-[14px] font-medium leading-[20px]",
         isLink ? "text-[#2563EB] underline decoration-blue-300 underline-offset-2" : "text-[#40566d]"
       )}>
         {value}
@@ -92,7 +92,7 @@ const Section = ({
 }) => (
   <div className="flex flex-col gap-[12px] w-full">
     <div className="flex items-center justify-between">
-      <h3 className="text-[18px] font-semibold text-[#192839] leading-[24px]">
+      <h3 className="text-[18px] font-medium text-[#192839] leading-[24px]">
         {title}
       </h3>
       {action}
@@ -236,7 +236,7 @@ export const TransactionPreviewPane: React.FC<TransactionPreviewPaneProps> = ({
       >
         {/* Title bar */}
         <motion.div className="flex items-center justify-between" variants={itemVariants}>
-          <h2 className="text-[18px] font-semibold text-[#40566d] leading-[24px]">
+          <h2 className="text-[18px] font-medium text-[#40566d] leading-[24px]">
             {getTitle()}
           </h2>
           <div className="flex items-center gap-[16px]">
@@ -255,9 +255,9 @@ export const TransactionPreviewPane: React.FC<TransactionPreviewPaneProps> = ({
         {/* Amount display */}
         <div className="flex flex-col items-center gap-[8px] pt-[8px]">
           <motion.div className="flex items-baseline" variants={amountVariants}>
-            <span className="text-[24px] font-semibold text-[#768ea7] leading-[28px]">₹</span>
-            <span className="text-[40px] font-semibold text-[#192839] leading-[44px]">{mainAmount}</span>
-            <span className="text-[24px] font-semibold text-[#768ea7] leading-[28px]">.{decimal.padEnd(2, '0')}</span>
+            <span className="text-[24px] font-medium text-[#768ea7] leading-[28px]">₹</span>
+            <span className="text-[40px] font-medium text-[#192839] leading-[44px]">{mainAmount}</span>
+            <span className="text-[24px] font-medium text-[#768ea7] leading-[28px]">.{decimal.padEnd(2, '0')}</span>
           </motion.div>
 
           {/* Status badge */}

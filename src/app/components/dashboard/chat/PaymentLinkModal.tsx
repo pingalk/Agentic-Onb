@@ -162,7 +162,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="font-semibold text-[18px] text-[#192839]"
+                  className="font-medium text-[18px] text-[#192839]"
                 >
                   Payment Link Created!
                 </motion.p>
@@ -176,7 +176,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
               >
                 {/* Header - Fixed */}
                 <div className="flex-shrink-0 px-6 pt-6 pb-4 border-b border-[#e2e8f0]">
-                  <h2 className="text-[22px] font-semibold text-[#3a4755]">
+                  <h2 className="text-[22px] font-medium text-[#3a4755]">
                     Standard Payment Link
                   </h2>
                 </div>
@@ -187,7 +187,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Amount */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Amount<span className="text-red-500">*</span>
                       </label>
                       <div className="flex items-center h-[44px] border border-[#e2e8f0] rounded-[6px] bg-white focus-within:border-[#305EFF] focus-within:ring-1 focus-within:ring-[#305EFF] transition-all">
@@ -207,7 +207,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Payment For */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Payment For
                       </label>
                       <input
@@ -221,7 +221,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Customer Details */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Customer Details
                       </label>
                       <div className="flex gap-3">
@@ -280,7 +280,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Reference Id */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Reference Id
                       </label>
                       <input
@@ -294,7 +294,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Link Expiry */}
                     <div className="flex flex-col gap-2">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Link Expiry
                       </label>
                       <Checkbox
@@ -319,7 +319,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Reminders */}
                     <div className="flex flex-col gap-1">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Reminders
                       </label>
                       <p className="text-[14px] text-[#64748b]">
@@ -336,7 +336,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Partial Payment */}
                     <div className="flex flex-col gap-2">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Partial Payment
                       </label>
                       <Checkbox
@@ -348,7 +348,7 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
 
                     {/* Notes */}
                     <div className="flex flex-col gap-1">
-                      <label className="text-[14px] font-semibold text-[#3a4755]">
+                      <label className="text-[14px] font-medium text-[#3a4755]">
                         Notes
                       </label>
                       <a
@@ -367,14 +367,14 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
                 <div className="flex-shrink-0 px-6 py-4 bg-[#f8fafc] border-t border-[#e2e8f0] flex gap-3 justify-end rounded-b-[8px]">
                   <button
                     onClick={onClose}
-                    className="h-[42px] px-6 rounded-[6px] text-[14px] font-semibold text-[#64748b] bg-white border border-[#e2e8f0] hover:bg-[#f1f5f9] transition-colors"
+                    className="h-[42px] px-6 rounded-[6px] text-[14px] font-medium text-[#64748b] bg-white border border-[#e2e8f0] hover:bg-[#f1f5f9] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmit}
                     disabled={!isFormValid || status === 'submitting'}
-                    className={`h-[42px] px-6 rounded-[6px] text-[14px] font-semibold transition-all flex items-center justify-center min-w-[160px]
+                    className={`h-[42px] px-6 rounded-[6px] text-[14px] font-medium transition-all flex items-center justify-center min-w-[160px]
                       ${isFormValid
                         ? 'bg-[#5B7FFF] text-white hover:bg-[#4a6ee8]'
                         : 'bg-[#cbd5e1] text-white cursor-not-allowed'

@@ -70,7 +70,7 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
         {/* Content */}
         <div className="px-3 py-2.5 border-t border-[#f1f5f9]">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-[15px] font-semibold text-[#1e293b]">
+            <span className="text-[15px] font-medium text-[#1e293b]">
               ₹{formatAmount(formData.amount)}
             </span>
             {formData.purpose && (
@@ -156,7 +156,7 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
           /* Actual Content */
           <>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[15px] font-semibold text-[#1e293b]">
+              <span className="text-[15px] font-medium text-[#1e293b]">
                 ₹{formatAmount(formData.amount)}
               </span>
               {formData.purpose && (

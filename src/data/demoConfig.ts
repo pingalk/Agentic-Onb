@@ -1,6 +1,6 @@
 // src/data/demoConfig.ts
 
-export type PersonaId = 'maya' | 'arjun' | 'sarah' | 'sam' | 'shyam' | 'kiara' | 'varun';
+export type PersonaId = 'maya' | 'arjun' | 'sarah' | 'sam' | 'shyam' | 'kiara' | 'varun' | 'spark';
 export type Theme = 'positive' | 'negative' | 'neutral';
 
 export interface DashboardCard {
@@ -33,7 +33,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     subtitle: 'Customer claims they were charged twice for the same order',
     theme: 'positive',
     landing: {
-      greeting: "Good afternoon, Maya!",
+      greeting: "Good afternoon, Maya",
       initialPrompt: "Show me recent payments from arvind@gmail.com",
       cards: [
         {
@@ -68,7 +68,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     subtitle: 'Settlements paused due to high refunds, need to add funds via UPI',
     theme: 'negative',
     landing: {
-      greeting: "Good afternoon, Arjun!",
+      greeting: "Good afternoon, Arjun",
       initialPrompt: "Where are my settlements? Why is my account balance negative? We had high value txns this week",
       cards: [
         {
@@ -103,7 +103,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     subtitle: 'Customer says payment was refunded but I didn\'t initiate it',
     theme: 'neutral',
     landing: {
-      greeting: "Welcome back, Sarah!",
+      greeting: "Welcome back, Sarah",
       initialPrompt: "My customer called and said payment was refunded. I didn't initiate this.. What is going on?",
       cards: [
         {
@@ -138,7 +138,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     subtitle: 'Need to check and escalate my pending support ticket',
     theme: 'positive',
     landing: {
-      greeting: "Good afternoon, Sam!",
+      greeting: "Good afternoon, Sam",
       initialPrompt: "What's the status of my last ticket",
       cards: [
         {
@@ -173,7 +173,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     subtitle: 'Client sent me a WhatsApp screenshot of their failed payment',
     theme: 'neutral',
     landing: {
-      greeting: "Good afternoon, Shyam!",
+      greeting: "Good afternoon, Shyam",
       initialPrompt: "[Screenshot uploaded]",
       cards: [
         {
@@ -208,7 +208,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     subtitle: 'Need to check the status of my customer Rohan\'s last transaction',
     theme: 'positive',
     landing: {
-      greeting: "Good afternoon, Kiara!",
+      greeting: "Good afternoon, Kiara",
       initialPrompt: "Check the status of Rohan's last transaction",
       cards: [
         {
@@ -243,7 +243,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     subtitle: 'Want to know when my next settlement is coming',
     theme: 'neutral',
     landing: {
-      greeting: "Good afternoon, Varun!",
+      greeting: "Good afternoon, Varun",
       initialPrompt: "What is my upcoming settlement?",
       cards: [
         {
@@ -270,6 +270,17 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
           status: 'healthy'
         }
       ]
+    }
+  },
+  spark: {
+    id: 'spark',
+    name: '✨ Spark Ripples POC',
+    subtitle: 'WebGL glass refraction effect prototype - blank canvas for testing',
+    theme: 'neutral',
+    landing: {
+      greeting: "",
+      initialPrompt: "",
+      cards: []
     }
   }
 };

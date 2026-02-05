@@ -1,6 +1,7 @@
 import React from 'react';
 import { PERSONAS } from '../../data/demoConfig';
 import { useDemo } from '../../context/DemoContext';
+import { useMagicColor } from '../../context/MagicColorContext';
 import { RotateCcw, ChevronDown, Check } from 'lucide-react';
 import {
   DropdownMenu,
@@ -10,9 +11,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from './ui/dropdown-menu';
+import { SettingsPanel } from './SettingsPanel';
 
 export const DemoControls = () => {
   const { currentPersonaId, setPersona, resetDemo, isOnRayLandingPage, currentPersona } = useDemo();
+  const { magicColor, setMagicColor, config } = useMagicColor();
 
   // Only show on Ray landing page
   if (!isOnRayLandingPage) return null;
@@ -48,6 +51,27 @@ export const DemoControls = () => {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <div className="h-4 w-px bg-white/20" />
+
+      {/* Magic Color Toggle */}
+      <button
+        onClick={() => setMagicColor(magicColor === 'blue' ? 'green' : 'blue')}
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+        title={`Switch to ${magicColor === 'blue' ? 'Green' : 'Blue'} theme`}
+      >
+        <div
+          className="w-3 h-3 rounded-full transition-colors duration-300"
+          style={{ backgroundColor: config.primary }}
+        />
+        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">
+          {magicColor === 'blue' ? 'Corp' : 'Rzp'}
+        </span>
+      </button>
+
+      <div className="h-4 w-px bg-white/20" />
+
+      <SettingsPanel />
 
       <div className="h-4 w-px bg-white/20" />
 

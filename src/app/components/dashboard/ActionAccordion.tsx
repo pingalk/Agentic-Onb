@@ -405,7 +405,7 @@ export const ActionAccordion = ({ flow }: { flow: any }) => {
                             <div className="content-stretch flex items-start justify-between p-[12px] relative w-full">
                                 <div className="content-stretch flex flex-col items-start pb-[2px] pt-0 px-0 relative shrink-0 w-full">
                                     <div className="flex justify-between w-full items-center">
-                                        <p className="font-['TASA_Orbiter_Display:SemiBold',sans-serif] font-semibold leading-[24px] not-italic relative shrink-0 text-[#192839] text-[18px] text-nowrap">
+                                        <p className="font-['TASA_Orbiter_Display:SemiBold',sans-serif] font-medium leading-[24px] not-italic relative shrink-0 text-[#192839] text-[18px] text-nowrap">
                                             {flow.intent === 'create_subscription' ? 'Let’s create a subscription' : 'Let’s create a payment link'}
                                         </p>
                                         <div className="flex items-center gap-1">

@@ -17,6 +17,8 @@ import { RayFAB } from './RayFAB';
 import Link from '../../../imports/Link-51-1889';
 import Ray from '../../../imports/Ray';
 import { Toaster } from "@/app/components/ui/sonner";
+import { useDemo } from '@/context/DemoContext';
+import { SparkRipples } from '../SparkRipples';
 
 export interface DashboardProps {
     initialConfig?: {
@@ -27,6 +29,7 @@ export interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout }) => {
+  const { currentPersonaId } = useDemo();
   const [currentView, setCurrentView] = useState(initialConfig?.view || 'home');
   const [variants, setVariants] = useState<{home: string; transactions: string}>(initialConfig?.variants || {
     home: 'B',
@@ -45,6 +48,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout })
       setIsSidebarCollapsed(true);
     }
   }, [currentView, isRaySidePanelOpen, rayLayoutMode]);
+
+  // Render SparkRipples for the spark persona (POC) - must be after all hooks
+  if (currentPersonaId === 'spark') {
+    return <SparkRipples />;
+  }
 
   const handleVariantChange = (view: 'home' | 'transactions', variant: string) => {
     setVariants(prev => ({ ...prev, [view]: variant }));

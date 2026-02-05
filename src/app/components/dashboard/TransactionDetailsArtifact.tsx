@@ -194,7 +194,7 @@ export const TransactionDetailsArtifact = () => {
             {/* Custom Header matching TitleBar in design */}
             <div className="flex items-center justify-between p-[20px] relative z-10 w-full">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-[#40566d] text-[18px] font-['TASA_Orbiter_Display:SemiBold'] font-semibold leading-[24px]">Transaction Details</h2>
+                    <h2 className="text-[#40566d] text-[18px] font-['TASA_Orbiter_Display:SemiBold'] font-medium leading-[24px]">Transaction Details</h2>
                 </div>
                 <div className="flex items-center gap-[16px] pl-[8px]">
                     <button className="flex items-center justify-center w-[20px] h-[20px] text-[#768EA7]">
@@ -209,9 +209,9 @@ export const TransactionDetailsArtifact = () => {
             <div className="flex-1 overflow-y-auto relative z-10">
                 <div className="flex flex-col items-center px-6 pb-6">
                     <div className="flex items-baseline text-[#192839] mb-1 gap-[2px]">
-                        <span className="text-[24px] font-['Inter:SemiBold'] font-semibold opacity-60 leading-[32px]">₹</span>
-                        <span className="text-[40px] font-['TASA_Orbiter_Display:SemiBold'] font-semibold leading-[46px]">{transactionData.amount.split('.')[0]}</span>
-                        <span className="text-[24px] font-['TASA_Orbiter_Display:SemiBold'] font-semibold opacity-60 leading-[32px]">.{transactionData.amount.split('.')[1]}</span>
+                        <span className="text-[24px] font-['Inter:SemiBold'] font-medium opacity-60 leading-[32px]">₹</span>
+                        <span className="text-[40px] font-['TASA_Orbiter_Display:SemiBold'] font-medium leading-[46px]">{transactionData.amount.split('.')[0]}</span>
+                        <span className="text-[24px] font-['TASA_Orbiter_Display:SemiBold'] font-medium opacity-60 leading-[32px]">.{transactionData.amount.split('.')[1]}</span>
                     </div>
                     
                     <StatusBadge status={transactionData.status} />

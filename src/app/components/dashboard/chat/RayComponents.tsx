@@ -19,7 +19,7 @@ export const SmartTable = ({ headers, rows }: { headers: string[], rows: any[] }
     <div className="relative group/table mt-5 mb-4">
       <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
         <table className="w-full text-left text-sm">
-          <thead className="bg-[#F9FAFB] border-b border-slate-200 text-[11px] uppercase text-slate-500 font-semibold tracking-wider">
+          <thead className="bg-[#F9FAFB] border-b border-slate-200 text-[11px] uppercase text-slate-500 font-medium tracking-wider">
             <tr>
               {headers.map((h, i) => (
                 <th key={i} className="px-4 py-3 whitespace-nowrap">{h}</th>
@@ -107,7 +107,7 @@ export const MessageFooter = () => (
 // --- 4. Suggestion Stack (Numbered) ---
 export const SuggestionStack = ({ items }: { items: string[] }) => (
   <div className="flex flex-col gap-2 mt-6 w-full">
-    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Suggestions</h4>
+    <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Suggestions</h4>
     {items.map((item, i) => (
       <button 
         key={i}

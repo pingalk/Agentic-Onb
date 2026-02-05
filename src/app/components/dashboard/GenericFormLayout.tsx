@@ -10,7 +10,7 @@ interface FormHeaderProps {
 export const FormHeader: React.FC<FormHeaderProps> = ({ title, onClose }) => {
   return (
     <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
-      <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
+      <h2 className="text-xl font-medium text-slate-900">{title}</h2>
       {onClose && (
         <button 
           onClick={onClose}
@@ -33,7 +33,7 @@ export const FormSection: React.FC<FormSectionProps> = ({ title, description, ch
   return (
     <div className="p-6 border-b border-gray-100 last:border-0">
       <div className="mb-4">
-        <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wide">{title}</h3>
+        <h3 className="text-sm font-medium text-slate-900 uppercase tracking-wide">{title}</h3>
         {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
       </div>
       <div className="flex flex-col gap-5">

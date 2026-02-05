@@ -67,7 +67,7 @@ export const RayFAB: React.FC<RayFABProps> = ({ onClick }) => {
 
       {/* Text */}
       <span
-        className="relative shrink-0 text-[14px] font-semibold text-white"
+        className="relative shrink-0 text-[14px] font-medium text-white"
         style={{ fontFamily: "'TASA Orbiter Display', sans-serif" }}
       >
         Ask Ray

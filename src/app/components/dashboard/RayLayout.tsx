@@ -64,7 +64,7 @@ const RayLayoutContent = ({ initialQuery }: { initialQuery?: string }) => {
                  <div className="h-full w-full bg-blue-50/10 rounded-2xl border border-blue-200/50 shadow-[0_0_24px_rgba(48,94,255,0.06)] overflow-hidden flex flex-col">
                     {/* The Artifact Header (Visual Anchor) */}
                     <div className="h-14 border-b border-gray-100 flex items-center px-6 bg-white/50 backdrop-blur-sm shrink-0">
-                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                        <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
                            {intent === 'create_subscription' ? 'Subscription Draft' : 'Active Task'}
                         </span>
                     </div>

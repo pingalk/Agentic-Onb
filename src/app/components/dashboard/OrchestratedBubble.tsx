@@ -61,7 +61,7 @@ const StreamingTypography = ({
         <span className={className}>
             {displayedText.split(/(₹[\d,]+\.?\d*)/g).map((part, i) => 
                 part.match(/₹[\d,]+\.?\d*/) ? (
-                    <span key={i} className="font-semibold text-[#192839]">{part}</span>
+                    <span key={i} className="font-medium text-[#192839]">{part}</span>
                 ) : (
                     part
                 )
@@ -147,7 +147,7 @@ export const OrchestratedBubble = ({
             {/* Layer 1: Narrative */}
             <div className="flex flex-col gap-[12px]">
                 {heading && (
-                    <h3 className="text-[18px] font-semibold text-[#020202] leading-[26px]">
+                    <h3 className="text-[18px] font-medium text-[#020202] leading-[26px]">
                         <StreamingTypography 
                             text={heading} 
                             speed={15} 
@@ -238,7 +238,7 @@ export const OrchestratedBubble = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                 >
-                    <h4 className="text-[18px] font-['TASA_Orbiter_Display'] font-semibold text-[#193f47] leading-[26px]">Suggestions</h4>
+                    <h4 className="text-[18px] font-['TASA_Orbiter_Display'] font-medium text-[#193f47] leading-[26px]">Suggestions</h4>
                     <div className="flex flex-col items-start w-full">
                         {suggestions.map((suggestion, idx) => (
                             <SuggestionRow key={idx} index={idx} label={suggestion} delay={idx * 0.1} />

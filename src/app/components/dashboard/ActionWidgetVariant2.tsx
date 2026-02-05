@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import svgPaths from "../../../imports/svg-zsawxnofnb";
 import { useFormStore } from './FormStore';
+import Ray from '../../../imports/Ray';
 
 function StepCount({ count }: { count: number }) {
   return (
@@ -26,7 +27,7 @@ function Subtext({ text }: { text: string }) {
 function StepContent({ title, text }: { title: string, text: string }) {
   return (
     <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0">
-      <p className="font-['Inter'] font-semibold leading-[20px] not-italic relative shrink-0 text-[#222] text-[14px]">
+      <p className="font-['Inter'] font-medium leading-[20px] not-italic relative shrink-0 text-[#222] text-[14px]">
         {title}
       </p>
       <Subtext text={text} />
@@ -49,7 +50,7 @@ function ChangeButton({ onClick }: { onClick: () => void }) {
         onClick={onClick}
         className="bg-[rgba(108,132,157,0.12)] content-stretch flex gap-[4px] h-[32px] items-center justify-center px-[12px] relative rounded-[4px] shrink-0 hover:bg-[rgba(108,132,157,0.2)] transition-colors"
     >
-      <div className="flex flex-col font-['Inter'] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#192839] text-[12px] text-center">
+      <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[#192839] text-[12px] text-center">
         <p className="leading-[18px]">Change</p>
       </div>
     </button>
@@ -70,52 +71,6 @@ function Step({ count, title, text, onEdit }: { count: number, title: string, te
 }
 
 // --- Icons & Graphics ---
-
-function RayIcon() {
-  const [isWaving, setIsWaving] = useState(false);
-
-  useEffect(() => {
-    const startTimer = setTimeout(() => {
-      setIsWaving(true);
-    }, 500);
-
-    const resetTimer = setTimeout(() => {
-      setIsWaving(false);
-    }, 1100);
-    
-    return () => {
-      clearTimeout(startTimer);
-      clearTimeout(resetTimer);
-    };
-  }, []);
-
-  return (
-    <div className="relative shrink-0 size-[24px]">
-      <svg className="block size-full overflow-visible" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
-        <g>
-          {/* Top Left */}
-          <path d="M3 3H9.75L12 12L3 9.75V3Z" fill="#009E5C" />
-          
-          {/* Top Right - Animated */}
-          <g 
-            className={clsx(
-              "transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-[12px_12px]",
-              isWaving && "rotate-[10deg] scale-125"
-            )}
-          >
-            <path d="M14.25 3H21V9.75L12 12L14.25 3Z" fill="#009E5C" />
-          </g>
-          
-          {/* Bottom Right */}
-          <path d="M21 14.25V21H14.25L12 12L21 14.25Z" fill="#009E5C" />
-          
-          {/* Bottom Left */}
-          <path d="M9.75 21H3V14.25L12 12L9.75 21Z" fill="#009E5C" />
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 function PlusIcon() {
   return (
@@ -218,7 +173,7 @@ export const ActionWidgetVariant2 = ({ flow }: { flow: ReturnType<typeof useForm
             {/* Input Content */}
             <div className="flex-[1_0_0] min-h-px min-w-[260px] relative px-4">
                  <div className="flex gap-2 items-center">
-                    <RayIcon />
+                    <div className="size-[24px] shrink-0"><Ray /></div>
                     <input 
                         type="text" 
                         placeholder="Type your answer..."

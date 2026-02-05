@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StoreProvider } from './StoreContext';
 import { FormProvider } from './FormStore';
 import { RayLayout } from './RayLayout';
@@ -11,11 +11,13 @@ import imgHeroCardBg from "figma:asset/f9e01682c64370f508a272cdc70ec2928a2e3147.
 import Variant2Landing from '../Variant2Landing';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useDemo } from '../../../context/DemoContext';
+import { useMagicColor } from '../../../context/MagicColorContext';
 import svgPathsChips from "../../../imports/svg-xvon3romwc";
 import svgPathsInput from "../../../imports/svg-h0tl9nb0vi";
 import svgPathsCards from "../../../imports/svg-9ik4xuwq12";
 import svgPathsStats from "../../../imports/svg-h6d9ul042g";
-import { motion } from 'motion/react';
+import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { SparkRipplesBackground } from './SparkRipplesBackground';
 
 // --- Helper Components ---
 
@@ -180,7 +182,68 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
   const [lastQuery, setLastQuery] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [landingVariant, setLandingVariant] = useState<'v1' | 'v2'>('v1'); // Changed to 'v1' to show responsive cards
+  const [landingVariant, setLandingVariant] = useState<'v1' | 'v2' | 'default'>('default'); // default=no animation, cycling placeholder; v1=story mode; v2=alt
+
+  // Magic color theme for AI elements (blue vs green) - from global context
+  const { magicColor, setMagicColor, config: currentMagicColor } = useMagicColor();
+
+  // Transition state for Magic Move animation (landing → chat)
+  // 'spotlightHold' = spotlight stays visible for 1s before movement starts
+  const [viewTransition, setViewTransition] = useState<'idle' | 'spotlightHold' | 'exiting' | 'entering'>('idle');
+  const [transitionText, setTransitionText] = useState(''); // Captured text for bubble animation
+  const inputRef = React.useRef<HTMLDivElement>(null); // Ref to capture input position
+  const [inputStartRect, setInputStartRect] = useState<{ top: number; left: number; width: number; height: number; targetY: number } | null>(null);
+
+  // Scroll position for parallax effect on SparkRipples background
+  const [scrollY, setScrollY] = useState(0);
+  const landingScrollRef = React.useRef<HTMLDivElement>(null);
+
+  // Cycling placeholder suggestions for 'empty' variant
+  const placeholderSuggestions = [
+    "Ask me anything...",
+    "Show me today's transactions",
+    "What's my payment success rate?",
+    "Analyze my revenue this week",
+    "Help me create a payment link",
+  ];
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+  useEffect(() => {
+    if (landingVariant !== 'default') return;
+    const interval = setInterval(() => {
+      setPlaceholderIndex(prev => (prev + 1) % placeholderSuggestions.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [landingVariant, placeholderSuggestions.length]);
+
+  // Entry animation phases (0=hidden, 1=ray, 2=greeting, 3=tagline, 4=input-spotlight, 5=input-content, 6=cards)
+  const [animPhase, setAnimPhase] = useState(0);
+
+  useEffect(() => {
+    if (view !== 'landing') return;
+
+    // For 'default' variant, run animation with deliberate pacing
+    if (landingVariant === 'default') {
+      setAnimPhase(0);
+      const t1 = setTimeout(() => setAnimPhase(1), 400);      // Ray appears
+      const t2 = setTimeout(() => setAnimPhase(2), 800);      // Greeting starts streaming
+      const t3 = setTimeout(() => setAnimPhase(3), 1200);     // Tagline starts streaming
+      const t4 = setTimeout(() => setAnimPhase(4), 4600);     // Input spotlight border starts
+      const t5 = setTimeout(() => setAnimPhase(5), 7000);     // Input content fades in
+      const t6 = setTimeout(() => setAnimPhase(6), 9200);     // Cards appear, shadow shows
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); };
+    }
+
+    // Story mode animation sequence
+    setAnimPhase(0);
+    const t1 = setTimeout(() => setAnimPhase(1), 400);      // Ray appears
+    const t2 = setTimeout(() => setAnimPhase(2), 2000);     // Greeting
+    const t3 = setTimeout(() => setAnimPhase(3), 3200);     // Tagline
+    const t4 = setTimeout(() => setAnimPhase(4), 4400);     // Input spotlight border
+    const t5 = setTimeout(() => setAnimPhase(5), 6000);     // Input content fades in
+    const t6 = setTimeout(() => setAnimPhase(6), 7200);     // Cards appear
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); };
+  }, [view, landingVariant]);
 
   // EXPERIMENTAL: Track which briefing item is hovered (null = none)
   const [hoveredBriefingItem, setHoveredBriefingItem] = useState<number | null>(null);
@@ -238,9 +301,22 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
   // State for Shyam's image attachment
   const [shyamAttachment, setShyamAttachment] = useState<{ filename: string; fileType: string; thumbnailUrl?: string } | null>(null);
 
+  // Track if user has manually selected a story (to distinguish from initial load)
+  const hasUserSelectedStory = useRef(false);
+  const prevPersonaId = useRef(currentPersona.id);
+
   // Sync prompt with persona when on landing page
   useEffect(() => {
-    if (view === 'landing' && !initialQuery) {
+    if (view !== 'landing' || initialQuery) return;
+
+    // Check if persona just changed (user selected a story)
+    const personaChanged = prevPersonaId.current !== currentPersona.id;
+    prevPersonaId.current = currentPersona.id;
+
+    // On initial load, keep input empty (base state)
+    // When user selects a story, fill the input with that story's prompt
+    if (personaChanged || hasUserSelectedStory.current) {
+      hasUserSelectedStory.current = true;
       // Special handling for Shyam - show attachment chip instead of text
       if (currentPersona.id === 'shyam') {
         setPrompt(''); // Clear text, show chip instead
@@ -249,16 +325,56 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
         setPrompt(currentPersona.landing.initialPrompt);
         setShyamAttachment(null);
       }
+    } else {
+      // Initial load - empty input
+      setPrompt('');
+      setShyamAttachment(null);
     }
   }, [currentPersona, view, initialQuery]);
 
   const handleSend = () => {
     // Allow sending if there's text OR an attachment (for Shyam's flow)
     if (!prompt.trim() && !shyamAttachment) return;
+
+    // Capture text for transition animation
+    setTransitionText(prompt);
     setLastQuery(prompt);
-    setPrompt('');
-    setView('chat');
-    setIsSidebarCollapsed(true);
+
+    // Capture input position for magic move animation
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      // Calculate how far down to move: viewport height - current top - input height - bottom padding (8px to match chat input)
+      const targetY = window.innerHeight - rect.top - rect.height - 8;
+      setInputStartRect({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        targetY,
+      });
+    }
+
+    // Hold spotlight for 1s before starting movement
+    setViewTransition('spotlightHold');
+
+    // After 1s spotlight hold, start the movement
+    setTimeout(() => {
+      setViewTransition('exiting');
+
+      // After exit animation completes, switch view
+      setTimeout(() => {
+        setPrompt('');
+        setView('chat');
+        setViewTransition('entering');
+        setIsSidebarCollapsed(true);
+
+        // Reset transition state after enter animation
+        setTimeout(() => {
+          setViewTransition('idle');
+          setTransitionText('');
+        }, 400);
+      }, 500); // 500ms exit animation
+    }, 1000); // 1s spotlight hold
   };
 
   const handleHomeClick = () => {
@@ -289,7 +405,16 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
   const mainValueColor = isNegative ? 'text-slate-900' : 'text-slate-900';
 
   return (
-    <div className="bg-[#F8FAFC] relative w-full h-full overflow-hidden flex font-sans transition-colors duration-500">
+    <div
+      className="bg-[#F8FAFC] relative w-full h-full overflow-hidden flex font-sans transition-colors duration-500"
+      style={{
+        '--magic-primary': currentMagicColor.primary,
+        '--magic-gradient': currentMagicColor.gradient,
+        '--magic-gradient-light': currentMagicColor.gradientLight,
+        '--magic-streaming': currentMagicColor.streamingColor,
+        '--magic-bubble': currentMagicColor.bubbleColor,
+      } as React.CSSProperties}
+    >
       <RaySidebar 
         currentView={view === 'landing' ? 'new-chat' : 'chat'}
         onChangeView={(v) => {
@@ -344,8 +469,11 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Portal>
                             <DropdownMenu.Content className="min-w-[160px] bg-white rounded-lg p-1 shadow-lg border border-slate-100 z-[100]" sideOffset={5} align="end">
+                                <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('default')}>
+                                     {landingVariant === 'default' && <Check size={14} className="mr-2 text-blue-600" />} Default (No Animation)
+                                </DropdownMenu.Item>
                                 <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('v1')}>
-                                     {landingVariant === 'v1' && <Check size={14} className="mr-2 text-blue-600" />} Variant 1
+                                     {landingVariant === 'v1' && <Check size={14} className="mr-2 text-blue-600" />} Story Mode
                                 </DropdownMenu.Item>
                                 <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('v2')}>
                                      {landingVariant === 'v2' && <Check size={14} className="mr-2 text-blue-600" />} Variant 2
@@ -367,9 +495,37 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
         <div className="flex-1 relative overflow-hidden dashboard-bg transition-[background] duration-700">
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[1200px] h-[400px] md:h-[800px] opacity-30">
-                  <div className={`absolute inset-0 bg-gradient-to-tr ${isNegative ? 'from-red-100 via-transparent to-orange-100' : 'from-blue-100 via-transparent to-green-100'} blur-3xl rounded-full mix-blend-multiply transition-colors duration-1000`} />
-               </div>
+               {/* Spark Ripples WebGL Background - delayed 3s, fades out during transition */}
+               {view === 'landing' && (
+                  <motion.div
+                     initial={{ opacity: 1 }}
+                     animate={{ opacity: viewTransition === 'exiting' ? 0 : 1 }}
+                     transition={{ duration: 0.3 }}
+                  >
+                     {/* White base to prevent black flash */}
+                     <div className="absolute inset-0 bg-white" />
+                     <motion.div
+                        className="absolute inset-0"
+                        style={{
+                          transform: `translateY(${-150 - scrollY * 0.5}px) scale(2)`,
+                          filter: `hue-rotate(${currentMagicColor.hueRotate})`
+                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1.5, delay: 3 }}
+                     >
+                        <SparkRipplesBackground opacity={1} loop={false} />
+                     </motion.div>
+                     <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
+                     <div className="absolute inset-x-0 bottom-0 h-[70vh] bg-gradient-to-t from-white from-50% via-white/95 via-70% to-transparent" />
+                  </motion.div>
+               )}
+               {/* Fallback gradient for non-landing views */}
+               {view !== 'landing' && (
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[1200px] h-[400px] md:h-[800px] opacity-30">
+                     <div className={`absolute inset-0 bg-gradient-to-tr ${isNegative ? 'from-red-100 via-transparent to-orange-100' : 'from-blue-100 via-transparent to-green-100'} blur-3xl rounded-full mix-blend-multiply transition-colors duration-1000`} />
+                  </div>
+               )}
             </div>
 
             {view === 'landing' ? (
@@ -385,31 +541,193 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         }}
                     />
                 ) : (
-                <div className="relative z-10 h-full overflow-y-auto flex flex-col items-center justify-center p-4 md:p-8 px-4 md:px-[32px] pt-[210px] md:pt-[360px] pb-[100px] scrollbar-hide">
-                     {/* Greeting Section - offset slightly above center */}
-                     <div
-                         className="flex items-center gap-[12px] mb-8 group cursor-default -mt-[15vh]"
-                         onMouseEnter={() => setWaveTrigger(prev => prev + 1)}
+                <div
+                    ref={landingScrollRef}
+                    onScroll={(e) => setScrollY((e.target as HTMLDivElement).scrollTop)}
+                    className="relative z-10 h-full overflow-y-auto flex flex-col items-center p-4 md:p-8 px-4 md:px-[32px] pt-[15vh] md:pt-[20vh] pb-[100px] scrollbar-hide"
+                >
+                     {/* Greeting Section - Stacked Layout */}
+                     <motion.div
+                        className="flex flex-col items-center gap-4 mb-8 group cursor-default text-center"
+                        animate={{
+                            opacity: viewTransition === 'exiting' ? 0 : 1,
+                            filter: viewTransition === 'exiting' ? 'blur(8px)' : 'blur(0px)',
+                            y: viewTransition === 'exiting' ? -20 : 0,
+                        }}
+                        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
                      >
-                        <div className="relative shrink-0 size-[32px]">
-                            <Ray trigger={waveTrigger} />
-                        </div>
-                        <h1 className={`font-sans font-medium text-[22px] md:text-[30px] leading-[28px] md:leading-[34px] tracking-[-0.39px] transition-colors duration-300 ${greetingColor}`}>
-                            {currentPersona.landing.greeting}
+                        {/* Ray Logo - Centered, Blue, Static with Entry Spin (overshoot settle) */}
+                        <motion.div
+                            className="relative shrink-0 size-[48px]"
+                            style={{ '--fill-0': currentMagicColor.primary } as React.CSSProperties}
+                            initial={{ opacity: 0, rotate: -90, scale: 0.3 }}
+                            animate={{
+                                opacity: animPhase >= 1 ? 1 : 0,
+                                rotate: animPhase >= 1 ? 0 : -90,
+                                scale: animPhase >= 1 ? 1 : 0.3
+                            }}
+                            transition={{
+                                opacity: { duration: 0.5 },
+                                rotate: {
+                                    type: "spring",
+                                    stiffness: 100,
+                                    damping: 10,
+                                    duration: 1.5
+                                },
+                                scale: {
+                                    type: "spring",
+                                    stiffness: 100,
+                                    damping: 12,
+                                    duration: 1.2
+                                }
+                            }}
+                        >
+                            <Ray static />
+                        </motion.div>
+                        {/* Small Greeting - staggered characters in default mode */}
+                        <p className={`font-sans font-normal text-[16px] md:text-[18px] leading-[24px] tracking-[-0.2px] transition-colors duration-300 ${greetingColor}`}>
+                            {landingVariant === 'default' ? (
+                                // Staggered character animation for default mode - starts after Ray appears
+                                currentPersona.landing.greeting.split('').map((char, i) => (
+                                    <motion.span
+                                        key={i}
+                                        className="inline-block"
+                                        style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
+                                        initial={{ opacity: 0, filter: 'blur(4px)' }}
+                                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                                        transition={{
+                                            duration: 0.2,
+                                            delay: 0.8 + i * 0.04,
+                                            ease: [0.25, 0.1, 0.25, 1]
+                                        }}
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))
+                            ) : (
+                                <motion.span
+                                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                                    animate={{
+                                        opacity: animPhase >= 2 ? 1 : 0,
+                                        y: animPhase >= 2 ? 0 : 8,
+                                        filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
+                                    }}
+                                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                                >
+                                    {currentPersona.landing.greeting}
+                                </motion.span>
+                            )}
+                        </p>
+                        {/* Tagline - Large Text with magic color - staggered characters in default mode */}
+                        <h1 className="font-sans font-normal text-[28px] md:text-[40px] leading-[36px] md:leading-[48px] tracking-[-0.5px]" style={{ color: currentMagicColor.primary }}>
+                            {landingVariant === 'default' ? (
+                                // Staggered character animation for default mode - starts after greeting finishes
+                                "What can I do for you today?".split('').map((char, i) => (
+                                    <motion.span
+                                        key={i}
+                                        className="inline-block"
+                                        style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
+                                        initial={{ opacity: 0, filter: 'blur(4px)' }}
+                                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                                        transition={{
+                                            duration: 0.2,
+                                            delay: 2.0 + i * 0.03,
+                                            ease: [0.25, 0.1, 0.25, 1]
+                                        }}
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))
+                            ) : (
+                                <motion.span
+                                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                                    animate={{
+                                        opacity: animPhase >= 3 ? 1 : 0,
+                                        y: animPhase >= 3 ? 0 : 8,
+                                        filter: animPhase >= 3 ? 'blur(0px)' : 'blur(8px)'
+                                    }}
+                                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                                >
+                                    What can I do for you today?
+                                </motion.span>
+                            )}
                         </h1>
-                     </div>
+                     </motion.div>
 
-                     {/* Input Box */}
-                     <div className="w-full max-w-2xl relative mb-8 flex flex-col gap-[32px] items-center">
+                     {/* Input Box with Spotlight Animation - moves to bottom during transition */}
+                     <motion.div
+                        ref={inputRef}
+                        className={`max-w-2xl mb-8 ${viewTransition === 'exiting' ? 'fixed z-50 left-1/2 -translate-x-1/2' : 'relative w-full'}`}
+                        style={viewTransition === 'exiting' && inputStartRect ? {
+                            top: inputStartRect.top,
+                            width: inputStartRect.width,
+                        } : {}}
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{
+                            opacity: animPhase >= 4 ? 1 : 0,
+                            scale: 1,
+                            y: viewTransition === 'exiting' && inputStartRect ? inputStartRect.targetY : 0,
+                        }}
+                        transition={{
+                            opacity: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                            scale: { duration: 0.3 },
+                            y: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] },
+                        }}
+                     >
+                        {/* Spotlight BORDER overlay for input - matches RayInputBox rounded-[26px] */}
+                        <motion.div
+                            className="absolute inset-0 rounded-[26px] pointer-events-none z-10 overflow-hidden"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 1 : 0 }}
+                            transition={{ duration: animPhase >= 6 && viewTransition !== 'spotlightHold' ? 0.8 : 1.2, ease: "easeOut" }}
+                        >
+                            {/* Horizontal linear gradient - sweeps left to right across top/bottom edges */}
+                            <div
+                                className="absolute inset-0 rounded-[26px]"
+                                style={{
+                                    background: `linear-gradient(90deg, rgba(203,213,225,0.5) 0%, rgba(203,213,225,0.5) 40%, ${currentMagicColor.gradient} 50%, rgba(203,213,225,0.5) 60%, rgba(203,213,225,0.5) 100%)`,
+                                    backgroundSize: '200% 100%',
+                                    animation: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 'spotlightSweep 2s linear infinite' : 'none',
+                                }}
+                            />
+                            {/* Inner fill to create border effect - white for clean look */}
+                            <div className="absolute inset-[2px] rounded-[24px] bg-white" />
+                        </motion.div>
+
+                        {/* Spotlight for send button - positioned at bottom right */}
+                        <motion.div
+                            className="absolute bottom-[16px] right-[20px] w-[32px] h-[32px] rounded-full pointer-events-none z-10 overflow-hidden"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 1 : 0 }}
+                            transition={{ duration: animPhase >= 6 && viewTransition !== 'spotlightHold' ? 0.8 : 1.2, ease: "easeOut" }}
+                        >
+                            {/* Circular sweeping gradient */}
+                            <div
+                                className="absolute inset-0 rounded-full"
+                                style={{
+                                    background: `conic-gradient(from 0deg, ${currentMagicColor.gradient} 0deg, rgba(203,213,225,0.5) 60deg, rgba(203,213,225,0.5) 300deg, ${currentMagicColor.gradient} 360deg)`,
+                                    animation: (animPhase >= 4 && animPhase < 6) || viewTransition === 'spotlightHold' ? 'spin 1.5s linear infinite' : 'none',
+                                }}
+                            />
+                            {/* Inner fill - white for clean look */}
+                            <div className="absolute inset-[2px] rounded-full bg-white" />
+                        </motion.div>
+
+                        {/* Input content */}
                         <RayInputBox
                             value={prompt}
                             onChange={setPrompt}
                             onSend={handleSend}
                             variant="hero"
-                            placeholder="Ask me anything..."
+                            placeholder={landingVariant === 'default' ? placeholderSuggestions[placeholderIndex] : "Ask me anything..."}
+                            animatePlaceholder={landingVariant === 'default'}
+                            showShadow={animPhase >= 6}
                             attachmentChip={shyamAttachment}
                             onRemoveAttachment={() => setShyamAttachment(null)}
                         />
+                     </motion.div>
+
+                     <div className="w-full max-w-2xl relative flex flex-col gap-[32px] items-center">
                         
                         {/* Suggestion Categories - Commented out per request
                         <div className="content-stretch flex gap-[13px] items-center relative shrink-0 flex-wrap justify-center">
@@ -500,8 +818,16 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         */}
                      </div>
 
-                     {/* Dynamic Cards Grid */}
-                     <div className="w-full max-w-full md:max-w-[850px] mt-[80px]">
+                     {/* Dynamic Cards Grid - fades out during transition */}
+                     <motion.div
+                        className="w-full max-w-full md:max-w-[850px] mt-[80px]"
+                        animate={{
+                            opacity: viewTransition === 'exiting' ? 0 : 1,
+                            y: viewTransition === 'exiting' ? 40 : 0,
+                            filter: viewTransition === 'exiting' ? 'blur(4px)' : 'blur(0px)',
+                        }}
+                        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                     >
                         {/* Responsive Grid Layout with Equal Spacing */}
                         <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-3 md:gap-4 auto-rows-min">
                         
@@ -509,9 +835,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <motion.div
                           className="bg-white h-auto md:h-[390px] md:row-span-2 overflow-clip rounded-[10px] w-full relative"
                           initial={{ opacity: 0, y: 26 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ 
-                            duration: 2.0, 
+                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
+                          transition={{
+                            duration: 0.8,
                             delay: 0,
                             ease: [0.16, 1, 0.3, 1]
                           }}
@@ -653,10 +979,10 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                             isNegative ? "border-[#fee4e2]" : (isNeutral && !isVarun) ? "border-[#fed7aa]" : "border-[#d1fae5]"
                           )}
                           initial={{ opacity: 0, y: 26 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
                           transition={{
-                            duration: 2.0,
-                            delay: 0.3,
+                            duration: 0.8,
+                            delay: 0.15,
                             ease: [0.16, 1, 0.3, 1]
                           }}
                           onMouseEnter={() => setHoveredCard('stats')}
@@ -706,9 +1032,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                   <div className="content-stretch flex items-end justify-end relative shrink-0">
                                     <div className="content-stretch flex items-baseline relative shrink-0">
                                       <div className="content-stretch flex gap-[2px] items-baseline relative shrink-0">
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
-                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[26px] not-italic text-[#192839] text-[20px]">-46,000</span>
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
+                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[26px] not-italic text-[#192839] text-[20px]">-46,000</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
                                       </div>
                                     </div>
                                   </div>
@@ -719,9 +1045,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                   <div className="content-stretch flex items-end justify-end relative shrink-0">
                                     <div className="content-stretch flex items-baseline relative shrink-0">
                                       <div className="content-stretch flex gap-[2px] items-baseline relative shrink-0">
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
-                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[26px] not-italic text-[#192839] text-[20px]">1,20,000</span>
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
+                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[26px] not-italic text-[#192839] text-[20px]">1,20,000</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
                                       </div>
                                     </div>
                                   </div>
@@ -735,9 +1061,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                   <div className="content-stretch flex items-end justify-end relative shrink-0">
                                     <div className="content-stretch flex items-baseline relative shrink-0">
                                       <div className="content-stretch flex gap-[2px] items-baseline relative shrink-0">
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
-                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[26px] not-italic text-[#192839] text-[20px]">10,40,000</span>
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
+                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[26px] not-italic text-[#192839] text-[20px]">10,40,000</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
                                       </div>
                                     </div>
                                   </div>
@@ -748,9 +1074,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                   <div className="content-stretch flex items-end justify-end relative shrink-0">
                                     <div className="content-stretch flex items-baseline relative shrink-0">
                                       <div className="content-stretch flex gap-[2px] items-baseline relative shrink-0">
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
-                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[26px] not-italic text-[#192839] text-[20px]">13,40,000</span>
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
+                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[26px] not-italic text-[#192839] text-[20px]">13,40,000</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
                                       </div>
                                     </div>
                                   </div>
@@ -764,9 +1090,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                   <div className="content-stretch flex items-end justify-end relative shrink-0">
                                     <div className="content-stretch flex items-baseline relative shrink-0">
                                       <div className="content-stretch flex gap-[2px] items-baseline relative shrink-0">
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
-                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[26px] not-italic text-[#192839] text-[20px]">1,13,000</span>
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
+                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[26px] not-italic text-[#192839] text-[20px]">1,13,000</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
                                       </div>
                                     </div>
                                   </div>
@@ -777,9 +1103,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                   <div className="content-stretch flex items-end justify-end relative shrink-0">
                                     <div className="content-stretch flex items-baseline relative shrink-0">
                                       <div className="content-stretch flex gap-[2px] items-baseline relative shrink-0">
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
-                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[26px] not-italic text-[#192839] text-[20px]">1,00,000</span>
-                                        <span className="font-['Inter',sans-serif] font-semibold leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">₹</span>
+                                        <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[26px] not-italic text-[#192839] text-[20px]">1,00,000</span>
+                                        <span className="font-['Inter',sans-serif] font-medium leading-[20px] not-italic text-[#192839] text-[14px] opacity-64">.00</span>
                                       </div>
                                     </div>
                                   </div>
@@ -833,10 +1159,10 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <motion.div
                           className="bg-[#fcfcfc] border border-[rgba(0,0,0,0.1)] border-solid not-italic overflow-clip rounded-[12px] h-[183px] w-full relative cursor-pointer"
                           initial={{ opacity: 0, y: 26 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
                           transition={{
-                            duration: 2.0,
-                            delay: 0.6,
+                            duration: 0.8,
+                            delay: 0.3,
                             ease: [0.16, 1, 0.3, 1]
                           }}
                           onMouseEnter={() => setHoveredCard('success')}
@@ -844,14 +1170,14 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         >
                           {/* Title at top */}
                           <p className="absolute font-['TASA_Orbiter_Display',sans-serif] leading-[28px] left-[12px] text-[#40566d] text-[20px] top-[15px] tracking-[-0.26px]">
-                            Your payment success rate is <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[#00a251]">healthy</span>
+                            Your payment success rate is <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[#00a251]">healthy</span>
                           </p>
 
                           {/* Label */}
                           <p className="absolute font-['Inter',sans-serif] font-medium leading-[16px] left-[12px] text-[#768ea7] text-[12px] top-[111px] tracking-[0.24px]">SUCCESS RATE</p>
 
                           {/* Large percentage value */}
-                          <div className="absolute flex flex-col font-['TASA_Orbiter_Display',sans-serif] font-semibold justify-end leading-[0] left-[75px] text-[#192839] text-[32px] text-right top-[169px] translate-x-[-100%] translate-y-[-100%]">
+                          <div className="absolute flex flex-col font-['TASA_Orbiter_Display',sans-serif] font-medium justify-end leading-[0] left-[75px] text-[#192839] text-[32px] text-right top-[169px] translate-x-[-100%] translate-y-[-100%]">
                             <p className="leading-[38px]">98%</p>
                           </div>
 
@@ -870,10 +1196,10 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         <motion.div
                           className="bg-[#fcfcfc] border border-[rgba(0,0,0,0.1)] border-solid h-[183px] overflow-clip rounded-[12px] w-full relative cursor-pointer"
                           initial={{ opacity: 0, y: 26 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          animate={animPhase >= 6 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
                           transition={{
-                            duration: 2.0,
-                            delay: 0.9,
+                            duration: 0.8,
+                            delay: 0.45,
                             ease: [0.16, 1, 0.3, 1]
                           }}
                           onMouseEnter={() => setHoveredCard('settlement')}
@@ -911,8 +1237,8 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                           <div className="absolute content-stretch flex items-end justify-end left-[15px] top-[131px]">
                             <div className="content-stretch flex items-baseline relative shrink-0">
                               <div className="content-stretch flex gap-[2px] items-baseline relative shrink-0">
-                                <span className="font-['Inter',sans-serif] font-semibold leading-[26px] not-italic text-[#192839] text-[20px] opacity-64">₹</span>
-                                <span className="font-['TASA_Orbiter_Display',sans-serif] font-semibold leading-[38px] not-italic text-[#192839] text-[32px]">{isVarun ? "3.1L" : "1.26L"}</span>
+                                <span className="font-['Inter',sans-serif] font-medium leading-[26px] not-italic text-[#192839] text-[20px] opacity-64">₹</span>
+                                <span className="font-['TASA_Orbiter_Display',sans-serif] font-medium leading-[38px] not-italic text-[#192839] text-[32px]">{isVarun ? "3.1L" : "1.26L"}</span>
                               </div>
                             </div>
                           </div>
@@ -935,12 +1261,13 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         </div>
 
                      </div>
-                     </div>
+                     </motion.div>
                 </div>
                 )
             ) : (
                 <RayLayout initialQuery={lastQuery} />
             )}
+
         </div>
       </div>
     </div>

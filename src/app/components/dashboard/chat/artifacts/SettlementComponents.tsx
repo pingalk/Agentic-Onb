@@ -90,7 +90,7 @@ export const ConfigurableSettlementCard: React.FC<SettlementCardProps> = ({
 
       {/* Main Content Text */}
       <div className="absolute left-[118px] top-[12px] leading-[0]">
-        <span className="block leading-[24px] text-[18px] font-sans font-semibold" style={{ color: statusColor }}>
+        <span className="block leading-[24px] text-[18px] font-sans font-medium" style={{ color: statusColor }}>
           {titleText}
         </span>
         <span className="block h-[2px]" />
@@ -103,16 +103,16 @@ export const ConfigurableSettlementCard: React.FC<SettlementCardProps> = ({
       <div className="absolute right-[16px] top-[12px] flex items-end justify-end">
         <div className="flex items-baseline relative shrink-0 gap-[2px]">
           <div className="flex items-baseline opacity-64 relative shrink-0">
-            <p className="font-semibold leading-[20px] text-[#192839] text-[14px] text-right font-sans">₹</p>
+            <p className="font-medium leading-[20px] text-[#192839] text-[14px] text-right font-sans">₹</p>
           </div>
           <div className="flex items-baseline relative shrink-0">
             <div className="flex items-baseline relative shrink-0">
-              <p className="font-semibold leading-[26px] text-[#192839] text-[20px] text-right font-sans">
+              <p className="font-medium leading-[26px] text-[#192839] text-[20px] text-right font-sans">
                 {mainAmount}
               </p>
             </div>
             <div className="flex items-baseline opacity-64 relative shrink-0">
-              <p className="font-semibold leading-[20px] text-[#192839] text-[14px] text-right font-sans">
+              <p className="font-medium leading-[20px] text-[#192839] text-[14px] text-right font-sans">
                 .{decimal.padEnd(2, '0')}
               </p>
             </div>
@@ -141,7 +141,7 @@ export const SettlementStatusTable: React.FC<SettlementStatusTableProps> = ({ ro
   return (
     <div className="w-full rounded-[12px] border border-[#E4E7EC] overflow-hidden">
       {/* Table Header */}
-      <div className="flex h-[48px] text-[14px] font-semibold text-[#192839] bg-[rgba(108,132,157,0.06)] px-[16px] border-b border-[rgba(108,132,157,0.18)]">
+      <div className="flex h-[48px] text-[14px] font-medium text-[#192839] bg-[rgba(108,132,157,0.06)] px-[16px] border-b border-[rgba(108,132,157,0.18)]">
         <div className="flex-1 flex items-center pl-[20px]">Status</div>
         <div className="w-[150px] flex items-center justify-end pr-[20px]">Amount</div>
       </div>
@@ -154,10 +154,10 @@ export const SettlementStatusTable: React.FC<SettlementStatusTableProps> = ({ ro
               key={index}
               className={`flex h-[56px] items-center px-[16px] border-b border-[#E4E7EC] last:border-b-0 ${isTotal ? 'bg-[#F9FAFB]' : ''}`}
             >
-              <div className={`flex-1 text-[14px] pl-[20px] ${isTotal ? 'font-semibold text-[#192839]' : 'text-[#5D6B82]'}`}>
+              <div className={`flex-1 text-[14px] pl-[20px] ${isTotal ? 'font-medium text-[#192839]' : 'text-[#5D6B82]'}`}>
                 {row.status}
               </div>
-              <div className={`w-[150px] text-[14px] text-right pr-[20px] ${isTotal ? 'font-semibold text-[#192839]' : 'font-semibold text-[#1D2939]'}`}>
+              <div className={`w-[150px] text-[14px] text-right pr-[20px] ${isTotal ? 'font-medium text-[#192839]' : 'font-medium text-[#1D2939]'}`}>
                 {row.amount}
               </div>
             </div>
@@ -182,16 +182,16 @@ export const FeeCalculatorCard: React.FC<FeeCardProps> = ({ percentage, feeAmoun
       <div className="flex flex-col gap-[12px]">
         <div className="flex justify-between items-center">
           <span className="text-[14px] text-[#5D6B82]">Settlement Amount</span>
-          <span className="text-[14px] font-semibold text-[#192839]">{settlementAmount}</span>
+          <span className="text-[14px] font-medium text-[#192839]">{settlementAmount}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-[14px] text-[#5D6B82]">Fee ({percentage})</span>
-          <span className="text-[14px] font-semibold text-[#192839]">{feeAmount}</span>
+          <span className="text-[14px] font-medium text-[#192839]">{feeAmount}</span>
         </div>
         <div className="h-[1px] bg-[#E4E7EC]" />
         <div className="flex justify-between items-center">
           <span className="text-[14px] font-medium text-[#192839]">You'll receive</span>
-          <span className="text-[16px] font-semibold text-[#059669]">
+          <span className="text-[16px] font-medium text-[#059669]">
             ₹{(parseFloat(settlementAmount.replace(/[₹,]/g, '')) - parseFloat(feeAmount.replace(/[₹,]/g, ''))).toLocaleString('en-IN')}
           </span>
         </div>

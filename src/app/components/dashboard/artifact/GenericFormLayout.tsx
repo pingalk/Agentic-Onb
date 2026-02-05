@@ -28,7 +28,7 @@ export const GenericFormLayout: React.FC<GenericFormLayoutProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 shrink-0">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900 leading-tight">{title}</h2>
+          <h2 className="text-xl font-medium text-slate-900 leading-tight">{title}</h2>
           {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
         </div>
         <button 

@@ -120,7 +120,7 @@ const StatBox: React.FC<StatBoxProps> = ({ label, value, change, subtext, active
             </div>
             <div className="flex items-end gap-3 mb-2">
                 <div className="text-2xl font-bold text-slate-800">{value}</div>
-                <div className="text-green-600 text-sm font-semibold mb-1">{change}</div>
+                <div className="text-green-600 text-sm font-medium mb-1">{change}</div>
             </div>
             <div className="text-xs text-slate-400">
                 {subtext}

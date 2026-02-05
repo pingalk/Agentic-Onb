@@ -99,7 +99,7 @@ export const RayAIResponse: React.FC<RayAIResponseProps> = ({ headerText, dataCo
                            </svg>
                          </div>
                          <div className="flex flex-col gap-[4px]">
-                           <span className="text-[14px] font-semibold text-[#1291D0]">Ray Insight</span>
+                           <span className="text-[14px] font-medium text-[#1291D0]">Ray Insight</span>
                            <p className="text-[15px] leading-[24px] text-[#40566d]">
                              {insightText}
                            </p>

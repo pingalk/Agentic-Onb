@@ -56,7 +56,7 @@ export const AddFundsMiniCard: React.FC<AddFundsMiniCardProps> = ({
           </div>
         ) : (
           <div className="flex items-baseline gap-1.5">
-            <span className="text-[15px] font-semibold text-[#1e293b]">
+            <span className="text-[15px] font-medium text-[#1e293b]">
               ₹{formatAmount(formData.amount)}
             </span>
             {formData.purpose && (

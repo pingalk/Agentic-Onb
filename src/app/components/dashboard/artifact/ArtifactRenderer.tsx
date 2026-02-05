@@ -32,7 +32,7 @@ const InvestigationReportArtifact = ({ data, onRowClick }: any) => {
             <Wallet size={18} strokeWidth={2.5} />
          </div>
          <div className="flex flex-col gap-4">
-            <h3 className="text-[18px] leading-[1.4] font-semibold text-[#020202]">
+            <h3 className="text-[18px] leading-[1.4] font-medium text-[#020202]">
                {data.headline}
             </h3>
             <p className="text-[16px] text-[#40566d] leading-[1.5]">
@@ -46,7 +46,7 @@ const InvestigationReportArtifact = ({ data, onRowClick }: any) => {
          {data.stats.map((stat: any, i: number) => (
             <li key={i} className="text-[16px] leading-[1.5] text-[#40566d]">
                <span className="text-[#40566d]">{stat.label}: </span>
-               <span className="font-semibold text-[#192839]">{stat.value}</span>
+               <span className="font-medium text-[#192839]">{stat.value}</span>
             </li>
          ))}
       </motion.ul>
@@ -68,7 +68,7 @@ const InvestigationReportArtifact = ({ data, onRowClick }: any) => {
             <div className="text-[14px] text-slate-900 font-medium">
                {data.table.rows.map((row: any) => (
                  <div key={row.id} onClick={() => onRowClick && onRowClick(row.id)} className="relative flex h-[48px] items-center border-b border-slate-100 hover:bg-slate-50 cursor-pointer group">
-                    <div className="w-[110px] font-semibold font-mono">{row.amount}</div>
+                    <div className="w-[110px] font-medium font-mono">{row.amount}</div>
                     <div className="w-[100px]">
                         <span className={clsx("px-2 py-0.5 rounded text-[12px]", row.status === 'Refunded' ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600")}>
                             {row.status}

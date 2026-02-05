@@ -19,7 +19,7 @@ export const ContextBadge = () => {
           </svg>
       </div>
       <div className="content-stretch flex flex-col font-['Inter:Medium',sans-serif] items-start not-italic relative shrink-0 text-nowrap justify-center h-[39px]">
-        <p className="leading-[20px] relative shrink-0 text-[14px] text-black font-semibold">Payment link creation</p>
+        <p className="leading-[20px] relative shrink-0 text-[14px] text-black font-medium">Payment link creation</p>
         <p className="leading-[18px] relative shrink-0 text-[#767676] text-[12px]">Form</p>
       </div>
     </div>

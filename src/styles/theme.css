@@ -179,3 +179,36 @@
     line-height: 1.5;
   }
 }
+
+/* Spotlight sweep animation - left to right continuous */
+@keyframes spotlightSweep {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Magic color themed elements - uses CSS custom properties set by MagicColorContext */
+.magic-bg-primary {
+  background-color: var(--magic-primary, #2563EB);
+}
+
+.magic-text-primary {
+  color: var(--magic-primary, #2563EB);
+}
+
+.magic-btn-primary {
+  background-color: var(--magic-primary, #2563EB);
+  color: white;
+  transition: filter 0.2s ease;
+}
+
+.magic-btn-primary:hover {
+  filter: brightness(0.9);
+}
+
+.magic-border-primary {
+  border-color: var(--magic-primary, #2563EB);
+}

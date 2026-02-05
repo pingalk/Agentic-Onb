@@ -3,30 +3,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import clsx from 'clsx';
 import { useDemo } from '@/context/DemoContext';
 import { thinkingSteps, defaultThinkingSteps } from './useDemoScript';
-
-// Ray icon SVG path - same as the main Ray component
-const RAY_PATH = "M12 12L14.25 3H21V9.75L12 12L21 14.25V21H14.25L12 12L9.75001 21H3.00001V14.25L12 12L3.00001 9.75V3H9.75001L12 12Z";
-
-const RayIcon = () => (
-  <svg
-    className="block size-full"
-    fill="none"
-    preserveAspectRatio="none"
-    viewBox="0 0 24 24"
-  >
-    <path
-      d={RAY_PATH}
-      fill="#009E5C"
-    />
-  </svg>
-);
+import Ray from '@/imports/Ray';
 
 export interface ChainOfThoughtProps {
   steps?: string[];
   stepInterval?: number;
   isPaused?: boolean;
   onComplete?: () => void;
-  mode?: 'thinking' | 'complete';
+  mode?: 'waiting' | 'streaming' | 'complete';
   suggestions?: string[];
   onSuggestionClick?: (suggestion: string) => void;
   highlightedSuggestionIndex?: number | null;
@@ -34,10 +18,10 @@ export interface ChainOfThoughtProps {
 
 export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
   steps: propSteps,
-  stepInterval = 1200,
+  stepInterval = 3000,
   isPaused = false,
   onComplete,
-  mode = 'thinking',
+  mode = 'waiting',
   suggestions = [],
   onSuggestionClick,
   highlightedSuggestionIndex = null
@@ -48,12 +32,13 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
 
   const [stepIndex, setStepIndex] = useState(0);
 
-  const isThinking = mode === 'thinking';
+  const isWaiting = mode === 'waiting';
+  const isStreaming = mode === 'streaming';
   const isComplete = mode === 'complete';
 
-  // Cycle through thinking steps only in thinking mode
+  // Cycle through thinking steps only in waiting mode
   useEffect(() => {
-    if (!isThinking || isPaused) return;
+    if (!isWaiting || isPaused) return;
 
     const interval = setInterval(() => {
       setStepIndex((prev) => {
@@ -66,7 +51,7 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
     }, stepInterval);
 
     return () => clearInterval(interval);
-  }, [steps.length, stepInterval, isPaused, isThinking]);
+  }, [steps.length, stepInterval, isPaused, isWaiting]);
 
   // Call onComplete when mode changes to complete
   useEffect(() => {
@@ -76,11 +61,18 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
   }, [isComplete, onComplete]);
 
   const currentStep = steps[stepIndex];
-  const shouldRotate = isThinking && !isPaused;
+  // Rotate icon in waiting or streaming mode (not complete)
+  const shouldRotate = (isWaiting || isStreaming) && !isPaused;
 
   // Determine display text based on mode
+  // - waiting: show cycling shimmery text
+  // - streaming: no text
+  // - complete: static "How can I help you next?"
   const displayText = isComplete ? "How can I help you next?" : currentStep;
   const textKey = isComplete ? 'complete' : `step-${stepIndex}`;
+
+  // Show text in waiting mode (shimmery) or complete mode (static)
+  const shouldShowText = isWaiting || isComplete;
 
   return (
     <motion.div
@@ -90,9 +82,17 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
       className="flex flex-col gap-3"
     >
       <style>{`
-        @keyframes shimmerGreen {
+        @keyframes shimmerMagic {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
+        }
+        .shimmer-magic {
+          background: linear-gradient(90deg, var(--magic-primary, #009E5C) 0%, var(--magic-gradient-light, rgba(0, 158, 92, 0.5)) 50%, var(--magic-primary, #009E5C) 100%);
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          animation: shimmerMagic 2s linear infinite;
         }
       `}</style>
 
@@ -114,53 +114,46 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
             animationPlayState: isPaused ? 'paused' : 'running'
           }}
         >
-          <RayIcon />
+          <Ray static />
         </motion.div>
 
-        {/* Flipping text - shimmer in thinking mode, static in complete mode */}
-        <div className="h-[26px] relative min-w-[200px] overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={textKey}
-              initial={{ y: 12, opacity: 0, filter: 'blur(6px)' }}
-              animate={{
-                y: 0,
-                opacity: 1,
-                filter: 'blur(0px)',
-                transition: {
-                  y: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] },
-                  opacity: { duration: 0.35, ease: 'easeOut' },
-                  filter: { duration: 0.4, ease: 'easeOut' }
-                }
-              }}
-              exit={{
-                y: -12,
-                opacity: 0,
-                filter: 'blur(6px)',
-                transition: {
-                  y: { duration: 0.3, ease: [0.4, 0, 1, 1] },
-                  opacity: { duration: 0.25, ease: 'easeIn' },
-                  filter: { duration: 0.25, ease: 'easeIn' }
-                }
-              }}
-              className={clsx(
-                "absolute left-0 top-0 whitespace-nowrap",
-                "text-[16px] leading-[26px] tracking-[0.16px]",
-                isThinking && [
-                  "bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600",
-                  "bg-[length:200%_100%] bg-clip-text text-transparent"
-                ],
-                isComplete && "text-[#40566d]"
-              )}
-              style={isThinking ? {
-                animation: 'shimmerGreen 2s linear infinite',
-                animationPlayState: isPaused ? 'paused' : 'running'
-              } : undefined}
-            >
-              {displayText}
-            </motion.span>
-          </AnimatePresence>
-        </div>
+        {/* Text - shown in waiting mode (shimmery) and complete mode (static) */}
+        {shouldShowText && (
+          <div className="relative min-w-[200px] flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={textKey}
+                initial={{ y: 12, opacity: 0, filter: 'blur(6px)' }}
+                animate={{
+                  y: 0,
+                  opacity: 1,
+                  filter: 'blur(0px)',
+                  transition: {
+                    y: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] },
+                    opacity: { duration: 0.35, ease: 'easeOut' },
+                    filter: { duration: 0.4, ease: 'easeOut' }
+                  }
+                }}
+                exit={{
+                  y: -12,
+                  opacity: 0,
+                  filter: 'blur(6px)',
+                  transition: {
+                    y: { duration: 0.3, ease: [0.4, 0, 1, 1] },
+                    opacity: { duration: 0.25, ease: 'easeIn' },
+                    filter: { duration: 0.25, ease: 'easeIn' }
+                  }
+                }}
+                className={clsx(
+                  "whitespace-nowrap text-[16px] leading-[26px] tracking-[0.16px]",
+                  isWaiting ? "shimmer-magic" : "text-[#40566d]"
+                )}
+              >
+                {displayText}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+        )}
       </div>
 
       {/* Suggestions - only shown in complete mode */}

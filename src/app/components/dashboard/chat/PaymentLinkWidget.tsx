@@ -356,7 +356,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[18px] text-[#192839]"
+              className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[18px] text-[#192839]"
             >
               Payment Link Created!
             </motion.p>
@@ -371,7 +371,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
           >
             {/* Header */}
             <div className="p-[12px] pb-0">
-              <p className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[18px] text-[#192839] leading-[24px]">
+              <p className="font-['TASA_Orbiter_Display',sans-serif] font-medium text-[18px] text-[#192839] leading-[24px]">
                 Let's create a payment link
               </p>
             </div>
@@ -389,7 +389,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                     className="flex flex-col justify-center min-h-[24px]"
                   >
                     <div className="flex items-center justify-between">
-                      <p className={`font-['Inter',sans-serif] font-semibold text-[14px] transition-colors ${getStepState(0) === 'pending' ? 'text-slate-400' : 'text-[#192839]'}`}>
+                      <p className={`font-['Inter',sans-serif] font-medium text-[14px] transition-colors ${getStepState(0) === 'pending' ? 'text-slate-400' : 'text-[#192839]'}`}>
                         Payment link Details
                       </p>
                       {getStepState(0) === 'completed' && (
@@ -451,7 +451,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                           <button
                             onClick={() => handleNextStep(0)}
                             disabled={!isStep0Valid}
-                            className={`mt-3 h-[36px] w-full rounded-[6px] font-['Inter',sans-serif] font-semibold text-[14px] transition-all duration-200 relative overflow-hidden
+                            className={`mt-3 h-[36px] w-full rounded-[6px] font-['Inter',sans-serif] font-medium text-[14px] transition-all duration-200 relative overflow-hidden
                               ${isStep0Valid
                                 ? 'text-white cursor-pointer shadow-[0px_2px_4px_0px_rgba(0,0,0,0.1)] active:scale-[0.98]'
                                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
@@ -480,7 +480,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                     className="flex flex-col justify-center min-h-[24px]"
                   >
                     <div className="flex items-center justify-between">
-                      <p className={`font-['Inter',sans-serif] font-semibold text-[14px] transition-colors ${getStepState(1) === 'pending' ? 'text-slate-400' : 'text-[#192839]'}`}>
+                      <p className={`font-['Inter',sans-serif] font-medium text-[14px] transition-colors ${getStepState(1) === 'pending' ? 'text-slate-400' : 'text-[#192839]'}`}>
                         Customer Details
                       </p>
                       {getStepState(1) === 'completed' && (
@@ -542,7 +542,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                           <div className="flex flex-col gap-1 mt-3">
                             <button
                               onClick={() => handleNextStep(1)}
-                              className="h-[36px] w-full rounded-[6px] text-white font-['Inter',sans-serif] font-semibold text-[14px] transition-all shadow-[0px_2px_4px_0px_rgba(0,0,0,0.1)] active:scale-[0.98]"
+                              className="h-[36px] w-full rounded-[6px] text-white font-['Inter',sans-serif] font-medium text-[14px] transition-all shadow-[0px_2px_4px_0px_rgba(0,0,0,0.1)] active:scale-[0.98]"
                               style={{
                                 background: 'linear-gradient(-73deg, #1566f1 54.84%, #4793fd 98.57%)',
                                 boxShadow: 'inset 0px 2px 0px 0px rgba(255,255,255,0.2)'
@@ -552,7 +552,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                             </button>
                             <button
                               onClick={() => handleNextStep(1)}
-                              className="h-[32px] w-full rounded-[4px] hover:bg-slate-50 font-['Inter',sans-serif] font-semibold text-[13px] text-[#768ea7] transition-colors"
+                              className="h-[32px] w-full rounded-[4px] hover:bg-slate-50 font-['Inter',sans-serif] font-medium text-[13px] text-[#768ea7] transition-colors"
                             >
                               Skip
                             </button>
@@ -574,7 +574,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                     className="flex flex-col justify-center min-h-[24px]"
                   >
                     <div className="flex items-center justify-between">
-                      <p className={`font-['Inter',sans-serif] font-semibold text-[14px] transition-colors ${getStepState(2) === 'pending' ? 'text-slate-400' : 'text-[#192839]'}`}>
+                      <p className={`font-['Inter',sans-serif] font-medium text-[14px] transition-colors ${getStepState(2) === 'pending' ? 'text-slate-400' : 'text-[#192839]'}`}>
                         Other Details
                       </p>
                       {getStepState(2) === 'completed' && (
@@ -603,7 +603,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                         <div className="flex flex-col gap-[20px]">
                           {/* Link Expiry */}
                           <div className="flex flex-col gap-[8px]">
-                            <p className="font-['Inter',sans-serif] font-semibold text-[12px] text-[#768ea7] leading-[18px]">
+                            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#768ea7] leading-[18px]">
                               Should the link expire?
                             </p>
                             <div className="flex gap-[15px]">
@@ -626,7 +626,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
 
                           {/* Reminder */}
                           <div className="flex flex-col gap-[8px]">
-                            <p className="font-['Inter',sans-serif] font-semibold text-[12px] text-[#768ea7] leading-[18px]">
+                            <p className="font-['Inter',sans-serif] font-medium text-[12px] text-[#768ea7] leading-[18px]">
                               Is a reminder required?
                             </p>
                             <div className="flex gap-[15px]">
@@ -651,7 +651,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                           <div className="flex flex-col gap-1">
                             <button
                               onClick={() => handleNextStep(2)}
-                              className="h-[36px] w-full rounded-[6px] text-white font-['Inter',sans-serif] font-semibold text-[14px] transition-all shadow-[0px_2px_4px_0px_rgba(0,0,0,0.1)] active:scale-[0.98]"
+                              className="h-[36px] w-full rounded-[6px] text-white font-['Inter',sans-serif] font-medium text-[14px] transition-all shadow-[0px_2px_4px_0px_rgba(0,0,0,0.1)] active:scale-[0.98]"
                               style={{
                                 background: 'linear-gradient(-73deg, #1566f1 54.84%, #4793fd 98.57%)',
                                 boxShadow: 'inset 0px 2px 0px 0px rgba(255,255,255,0.2)'
@@ -661,7 +661,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                             </button>
                             <button
                               onClick={() => handleNextStep(2)}
-                              className="h-[32px] w-full rounded-[4px] hover:bg-slate-50 font-['Inter',sans-serif] font-semibold text-[13px] text-[#768ea7] transition-colors"
+                              className="h-[32px] w-full rounded-[4px] hover:bg-slate-50 font-['Inter',sans-serif] font-medium text-[13px] text-[#768ea7] transition-colors"
                             >
                               Skip
                             </button>
@@ -687,7 +687,7 @@ export const PaymentLinkWidget: React.FC<PaymentLinkWidgetProps> = ({
                   <button
                     disabled={!isFormValid || status === 'submitting'}
                     onClick={handleSubmit}
-                    className={`w-full h-[40px] rounded-[8px] font-['Inter',sans-serif] font-semibold text-[14px] transition-all duration-200 flex items-center justify-center
+                    className={`w-full h-[40px] rounded-[8px] font-['Inter',sans-serif] font-medium text-[14px] transition-all duration-200 flex items-center justify-center
                       ${isFormValid
                         ? 'bg-gradient-to-r from-[#1566f1] to-[#4793fd] text-white hover:opacity-90 shadow-[inset_0px_2px_0px_0px_rgba(255,255,255,0.2)] active:scale-[0.98]'
                         : 'bg-slate-200 text-slate-400 cursor-not-allowed'

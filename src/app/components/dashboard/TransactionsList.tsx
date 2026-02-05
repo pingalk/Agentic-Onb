@@ -736,9 +736,9 @@ export const TransactionsList: React.FC<TransactionsListProps> = ({ onViewDetail
                  </svg>
              </div>
              <div className="flex flex-col gap-[4px]">
-                 <span className="text-[14px] font-semibold text-[#1291D0]">Ray Insight</span>
+                 <span className="text-[14px] font-medium text-[#1291D0]">Ray Insight</span>
                  <p className="text-[15px] leading-[24px] text-[#40566d]">
-                     30% of your failed payments this week were due to <span className="font-semibold text-[#192839]">insufficient funds</span>.
+                     30% of your failed payments this week were due to <span className="font-medium text-[#192839]">insufficient funds</span>.
                  </p>
              </div>
              <div className="ml-auto">

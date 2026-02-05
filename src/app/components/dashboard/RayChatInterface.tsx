@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { RayMessageRenderer, RayResponseData } from './chat/RayMessageRenderer';
-import { AddFundsWidget } from './chat/AddFundsWidget';
+import { AddFundsModal } from './chat/AddFundsModal';
 import { PaymentLinkPrefill, parsePaymentLinkIntent } from './chat/PaymentLinkWidget';
 import { PaymentLinkModal } from './chat/PaymentLinkModal';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
 import { TransactionPreviewPane, TransactionData } from './chat/TransactionPreviewPane';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles, Square } from 'lucide-react';
+import { RayInputBox } from './RayInputBox';
 import { useDemo } from '@/context/DemoContext';
 import { useDemoScript } from './useDemoScript';
 import { motion, AnimatePresence } from 'motion/react';
+import { SparkRipplesBackground } from './SparkRipplesBackground';
+import { useMagicColor } from '@/context/MagicColorContext';
 
 // EXPERIMENTAL: Roll-up animation for user messages
 // Set to true to enable user messages scrolling to top before Ray responds
@@ -95,6 +98,7 @@ interface RayChatInterfaceProps {
 
 export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProps) => {
   const { currentPersona } = useDemo();
+  const { config: currentMagicColor } = useMagicColor();
   const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, briefingReviewResponses } = useDemoScript();
   const [messages, setMessages] = useState<RayResponseData[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -142,6 +146,10 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
 
   // Streaming state - shows stop button while Ray is responding
   const [isStreaming, setIsStreaming] = useState(false);
+
+  // Post-streaming glow state - shows SparkRipples behind input for 3-4s after streaming completes
+  const [showPostStreamingGlow, setShowPostStreamingGlow] = useState(false);
+  const wasStreamingRef = useRef(false);
 
   // Input ref for focus checking
   const inputRef = useRef<HTMLInputElement>(null);
@@ -210,6 +218,19 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
   useEffect(() => {
     demoFlowStartedRef.current = false;
   }, [currentPersona.id]);
+
+  // Detect when streaming ends and trigger post-streaming glow
+  useEffect(() => {
+    if (wasStreamingRef.current && !isStreaming) {
+      // Streaming just ended, show glow behind input for 3.5s
+      setShowPostStreamingGlow(true);
+      const timer = setTimeout(() => {
+        setShowPostStreamingGlow(false);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+    wasStreamingRef.current = isStreaming;
+  }, [isStreaming]);
 
   // EXPERIMENTAL: Pin-to-top / Roll-up animation - scroll to show newest content
   useEffect(() => {
@@ -372,7 +393,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                         msg.id === 'ai-response-1' ? generateArjunData() : msg
                     ));
                     setTimeout(() => setIsStreaming(false), 3000);
-                }, 2000); // 2s thinking time
+                }, 15000); // 15s thinking time
             }, 600);
         }, 600);
     }
@@ -412,7 +433,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                     ));
                     setSarahFlowStep(1);
                     // Capture card will appear via onStreamComplete callback when streaming finishes
-                }, 2000); // 2s thinking time
+                }, 15000); // 15s thinking time
             }, 600);
         }, 600);
     }
@@ -451,7 +472,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                         } : msg
                     ));
                     setTimeout(() => setIsStreaming(false), 3000);
-                }, 2000); // 2s thinking time
+                }, 15000); // 15s thinking time
             }, 600);
         }, 600);
     }
@@ -491,7 +512,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                     ));
                     // Keep streaming for a bit while content animates, then stop
                     setTimeout(() => setIsStreaming(false), 3000);
-                }, 2000); // 2s thinking time
+                }, 15000); // 15s thinking time
             }, 600);
         }, 600);
     }
@@ -541,7 +562,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                         } : msg
                     ));
                     setTimeout(() => setIsStreaming(false), 3000);
-                }, 2000);
+                }, 15000); // 15s thinking time
             }, 600);
         }, 600);
     }
@@ -581,7 +602,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                         } : msg
                     ));
                     setTimeout(() => setIsStreaming(false), 3000);
-                }, 2000);
+                }, 15000); // 15s thinking time
             }, 600);
         }, 600);
     }
@@ -629,7 +650,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                                 } : msg
                             ));
                             setTimeout(() => setIsStreaming(false), 3000);
-                        }, 1500);
+                        }, 15000); // 15s thinking time
                     });
                 }, 100);
             }, 600);
@@ -661,7 +682,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
                             } : msg
                         ));
                         setTimeout(() => setIsStreaming(false), 3000);
-                    }, 2000);
+                    }, 15000); // 15s thinking time
                 }, 600);
             }, 600);
         }
@@ -727,7 +748,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
               sender: 'ai' as const
             } : msg
           ));
-        }, 2000);
+        }, 15000); // 15s thinking time
       }, 600);
     }, 400);
   }, [initialQuery, briefingReviewHandled, messages.length, currentPersona.theme, briefingReviewResponses]);
@@ -1597,6 +1618,36 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
   return (
     <div className="flex h-full relative bg-white font-sans overflow-hidden">
 
+      {/* Spark Ripples WebGL Background - shows during streaming/thinking, positioned below chain of thought */}
+      <AnimatePresence>
+        {isStreaming && (
+          <motion.div
+            className="absolute top-[140px] w-full max-w-2xl h-[250px] pointer-events-none z-0 overflow-hidden"
+            style={{ left: 'calc(50% - 120px)', transform: 'translateX(-50%)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, delay: 2 }}
+          >
+            {/* Top fade from white */}
+            <div className="absolute inset-x-0 top-0 h-[80px] bg-gradient-to-b from-white via-white/90 to-transparent z-10" />
+            {/* Zoomed-in top portion of the animation */}
+            <div
+              className="absolute inset-0"
+              style={{
+                transform: 'translateY(-180px) scale(2)',
+                transformOrigin: 'top center',
+                filter: `hue-rotate(${currentMagicColor.hueRotate})`
+              }}
+            >
+              <SparkRipplesBackground opacity={0.5} loop={false} />
+            </div>
+            {/* Bottom fade to white */}
+            <div className="absolute inset-x-0 bottom-0 h-[100px] bg-gradient-to-t from-white via-white/95 to-transparent" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Main Chat Container - animates width when preview is open */}
       <motion.div
         className="flex flex-col h-full relative"
@@ -1617,7 +1668,7 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
           onScroll={handleScroll}
           className={`flex-1 overflow-y-auto px-3 md:px-6 pt-4 md:pt-6 pb-32 md:pb-56 scrollbar-hide ${ENABLE_PIN_TO_TOP ? 'flex flex-col' : ''}`}
         >
-           <div className={`flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full ${selectedTransaction ? 'max-w-full md:max-w-[600px]' : 'max-w-full md:max-w-[800px]'} ${ENABLE_PIN_TO_TOP ? 'flex-col-reverse mt-auto' : 'flex-col'}`}>
+           <div className={`flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full ${selectedTransaction ? 'max-w-full md:max-w-[600px]' : 'max-w-full md:max-w-2xl'} ${ENABLE_PIN_TO_TOP ? 'flex-col-reverse mt-auto' : 'flex-col'}`}>
               {messages.map((msg, index) => {
                  // When pin-to-top is enabled, "isLast" should be the most recent message (highest index)
                  // which will appear at the TOP of the reversed layout
@@ -1684,56 +1735,53 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
       {/* 2. Pinned Glass Input (Bottom) */}
       <div className="absolute bottom-0 left-0 right-0">
 
-         {/* Add Funds Widget - Floats above input */}
-         <AnimatePresence>
-           {showAddFundsWidget && (
-             <AddFundsWidget 
-               initialAmount={widgetAmount}
-               onClose={() => setShowAddFundsWidget(false)}
-               onConfirm={(amt, purpose) => {
-                 console.log("Adding funds:", amt, purpose);
-                 setShowAddFundsWidget(false);
-                 setInputValue(''); // Clear input
-                 
-                 // 1. User Message
+         {/* Add Funds Modal */}
+         <AddFundsModal
+           isOpen={showAddFundsWidget}
+           initialAmount={widgetAmount}
+           onClose={() => setShowAddFundsWidget(false)}
+           onComplete={(amt, purpose) => {
+             console.log("Adding funds:", amt, purpose);
+             setShowAddFundsWidget(false);
+             setInputValue(''); // Clear input
+
+             // 1. User Message
+             setMessages(prev => [...prev, {
+                id: `u-${Date.now()}`,
+                sender: 'user',
+                blocks: [{ type: 'text', content: `Add ₹${amt} for ${purpose}` }]
+             }]);
+
+             // 2. Thinking State
+             setTimeout(() => {
                  setMessages(prev => [...prev, {
-                    id: `u-${Date.now()}`,
-                    sender: 'user',
-                    blocks: [{ type: 'text', content: `Add ₹${amt} for ${purpose}` }]
+                    id: `ai-think-${Date.now()}`,
+                    sender: 'ai',
+                    isThinking: true
                  }]);
 
-                 // 2. Thinking State
+                 // 3. Success Response
                  setTimeout(() => {
-                     setMessages(prev => [...prev, {
-                        id: `ai-think-${Date.now()}`,
-                        sender: 'ai',
-                        isThinking: true
-                     }]);
+                     const stepData = arjunScript.arjun_step_3;
+                     setMessages(prev => {
+                        // Remove thinking
+                        const withoutThinking = prev.filter(m => !m.isThinking);
 
-                     // 3. Success Response
-                     setTimeout(() => {
-                         const stepData = arjunScript.arjun_step_3;
-                         setMessages(prev => {
-                            // Remove thinking
-                            const withoutThinking = prev.filter(m => !m.isThinking);
-                            
-                            return [...withoutThinking, {
-                                id: `ai-${Date.now()}`,
-                                sender: 'ai',
-                                headline: stepData.headline,
-                                artifact: stepData.artifact,
-                                blocks: [
-                                    { type: 'text', content: stepData.subtext }
-                                ],
-                                resolution: stepData.resolution
-                            }];
-                         });
-                     }, 1500);
-                 }, 600);
-               }}
-             />
-           )}
-         </AnimatePresence>
+                        return [...withoutThinking, {
+                            id: `ai-${Date.now()}`,
+                            sender: 'ai',
+                            headline: stepData.headline,
+                            artifact: stepData.artifact,
+                            blocks: [
+                                { type: 'text', content: stepData.subtext }
+                            ],
+                            resolution: stepData.resolution
+                        }];
+                     });
+                 }, 1500);
+             }, 600);
+           }}
+         />
 
          {/* Payment Link Modal - Opens with scrim, chat input stays above */}
          <PaymentLinkModal
@@ -1846,64 +1894,34 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
          {/* Top Fade Gradient */}
          <div className="h-16 w-full bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-30" />
 
-         {/* Footer Background - z-30 (below scrim) */}
-         <div className="bg-white/80 backdrop-blur-xl border-t border-slate-100 px-3 md:px-4 pb-4 md:pb-6 pt-3 md:pt-4 z-30">
-            {/* Spacer for input */}
-            <div className="h-[52px] w-full max-w-full md:max-w-[700px] mx-auto min-w-[475px]" />
-
-            <div className="flex justify-center items-center gap-2 mt-3 opacity-60">
-                <Sparkles size={10} className="text-slate-400" />
-                <p className="text-center text-[11px] text-slate-400 font-medium">
-                   Ray can make mistakes. Please check important info.
-                </p>
-            </div>
+         {/* Bottom fade gradient - chat content fades out towards input */}
+         {/* Structure: 120px gradient (0→100 opacity) on top, 120px solid white below */}
+         <div className="fixed bottom-0 left-0 right-0 h-[240px] pointer-events-none z-[65]">
+            {/* Top 120px: gradient from transparent to white */}
+            <div className="absolute inset-x-0 top-0 h-[120px] bg-gradient-to-b from-transparent to-white" />
+            {/* Bottom 120px: solid white */}
+            <div className="absolute inset-x-0 bottom-0 h-[120px] bg-white" />
          </div>
 
-         {/* Input Container - z-70 (above modal) - separate from footer for stacking context */}
-         <div className="fixed bottom-[58px] left-0 right-0 z-[70] px-3 md:px-4 pointer-events-none">
-            <div className="w-full max-w-[475px] mx-auto relative group">
-               <input
-                  ref={inputRef}
-                  type="text"
+         {/* Input Container - z-70 (above modal) - using RayInputBox for consistency */}
+         <div className="fixed bottom-[8px] left-0 right-0 z-[70] px-3 md:px-4 pointer-events-none">
+            <div className="w-full max-w-2xl mx-auto relative pointer-events-auto">
+               <RayInputBox
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onFocus={() => setIsInputFocused(true)}
-                  onBlur={() => setIsInputFocused(false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && inputValue.trim()) {
-                      e.preventDefault();
-                      handleInputSubmit();
-                    }
-                  }}
+                  onChange={setInputValue}
+                  onSend={handleInputSubmit}
+                  variant="compact"
                   placeholder="Ask anything..."
-                  className="w-full h-[52px] pl-5 pr-14 bg-white border border-slate-200 hover:border-slate-300 focus:border-blue-500 rounded-full text-[15px] outline-none transition-all shadow-[0_2px_10px_-2px_rgba(0,0,0,0.05)] placeholder:text-slate-400"
                />
-
-               {/* Right Actions */}
-               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                  {!isStreaming && inputValue.length === 0 && (
-                     <>
-                        <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100"><Plus size={20} /></button>
-                        <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100"><Mic size={20} /></button>
-                     </>
-                  )}
-                  {isStreaming ? (
-                    <button
-                      onClick={() => setIsStreaming(false)}
-                      className="w-9 h-9 flex items-center justify-center bg-[#0a0a0a] text-white rounded-full hover:bg-black transition-all shadow-sm active:scale-95"
-                    >
-                      <Square size={14} fill="white" />
-                    </button>
-                  ) : (
-                    <button
-                      disabled={!inputValue}
-                      onClick={handleInputSubmit}
-                      className="w-9 h-9 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:bg-slate-300 transition-all shadow-sm active:scale-95"
-                    >
-                      <ArrowUp size={18} strokeWidth={2.5} />
-                    </button>
-                  )}
-               </div>
+               {/* Stop button overlay when streaming */}
+               {isStreaming && (
+                  <button
+                    onClick={() => setIsStreaming(false)}
+                    className="absolute right-[20px] bottom-[16px] w-[32px] h-[32px] flex items-center justify-center bg-[#0a0a0a] text-white rounded-full hover:bg-black transition-all shadow-sm active:scale-95 z-10"
+                  >
+                    <Square size={14} fill="white" />
+                  </button>
+               )}
             </div>
          </div>
         </div>
@@ -1911,49 +1929,28 @@ export const RayChatInterface = ({ initialQuery, isSplit }: RayChatInterfaceProp
 
       {/* Modal Overlay Input - Only shows when a modal is open, rendered via portal at z-70 */}
       {(isPaymentLinkModalOpen || isCaptureSettingsModalOpen) && createPortal(
-        <div className="fixed bottom-[58px] left-0 right-0 z-[70] px-3 md:px-4">
+        <div className="fixed bottom-[8px] left-0 right-0 z-[70] px-3 md:px-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[475px] mx-auto relative group"
+            className="w-full max-w-2xl mx-auto relative"
           >
-            <input
-              type="text"
+            <RayInputBox
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && inputValue.trim()) {
-                  e.preventDefault();
-                  handleInputSubmit();
-                }
-              }}
+              onChange={setInputValue}
+              onSend={handleInputSubmit}
+              variant="compact"
               placeholder="Ask anything..."
-              className="w-full h-[52px] pl-5 pr-14 bg-white border border-slate-200 hover:border-slate-300 focus:border-blue-500 rounded-full text-[15px] outline-none transition-all shadow-[0_4px_20px_-2px_rgba(0,0,0,0.15)] placeholder:text-slate-400"
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              {!isStreaming && inputValue.length === 0 && (
-                <>
-                  <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100"><Plus size={20} /></button>
-                  <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100"><Mic size={20} /></button>
-                </>
-              )}
-              {isStreaming ? (
-                <button
-                  onClick={() => setIsStreaming(false)}
-                  className="w-9 h-9 flex items-center justify-center bg-[#0a0a0a] text-white rounded-full hover:bg-black transition-all shadow-sm active:scale-95"
-                >
-                  <Square size={14} fill="white" />
-                </button>
-              ) : (
-                <button
-                  disabled={!inputValue}
-                  onClick={handleInputSubmit}
-                  className="w-9 h-9 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:bg-slate-300 transition-all shadow-sm active:scale-95"
-                >
-                  <ArrowUp size={18} strokeWidth={2.5} />
-                </button>
-              )}
-            </div>
+            {/* Stop button overlay when streaming */}
+            {isStreaming && (
+              <button
+                onClick={() => setIsStreaming(false)}
+                className="absolute right-[20px] bottom-[16px] w-[32px] h-[32px] flex items-center justify-center bg-[#0a0a0a] text-white rounded-full hover:bg-black transition-all shadow-sm active:scale-95 z-10"
+              >
+                <Square size={14} fill="white" />
+              </button>
+            )}
           </motion.div>
         </div>,
         document.body

@@ -101,10 +101,12 @@ export const PerplexityStreamText = ({
     const shadowBlur2 = intensity * 8;
     const textBlur = intensity * 0.4 * 8;
 
+    // Use CSS variable for magic color theme
+    // Default fallback is green (Razorpay brand)
     return {
       display: 'inline-block',
-      color: `rgba(16, 185, 129, ${colorOpacity})`,
-      textShadow: `0 0 ${shadowBlur1}px rgba(52, 211, 153, ${shadowOpacity1}), 0 0 ${shadowBlur2}px rgba(16, 185, 129, ${shadowOpacity2})`,
+      color: `color-mix(in srgb, var(--magic-primary, rgb(16, 185, 129)) ${Math.round(colorOpacity * 100)}%, transparent)`,
+      textShadow: `0 0 ${shadowBlur1}px color-mix(in srgb, var(--magic-primary, rgb(16, 185, 129)) ${Math.round(shadowOpacity1 * 100)}%, transparent), 0 0 ${shadowBlur2}px color-mix(in srgb, var(--magic-primary, rgb(16, 185, 129)) ${Math.round(shadowOpacity2 * 100)}%, transparent)`,
       filter: `blur(${textBlur}px)`,
       transition: 'color 0.3s ease-out, text-shadow 0.3s ease-out, filter 0.3s ease-out',
     };
@@ -178,7 +180,7 @@ export const PerplexityStreamText = ({
               className={clsx(
                 inheritStyles
                   ? (segment.isBold ? "font-bold" : "")
-                  : (segment.isBold ? "font-semibold" : "font-normal")
+                  : (segment.isBold ? "font-medium" : "font-normal")
               )}
             >
               {char === ' ' ? '\u00A0' : char}
@@ -187,7 +189,7 @@ export const PerplexityStreamText = ({
         });
 
         elements.push(
-          <span key={i} className={style === 'gradient' ? 'text-emerald-500' : ''}>
+          <span key={i} style={style === 'gradient' ? { color: 'var(--magic-primary, #10b981)' } : undefined}>
             {charElements}
           </span>
         );
@@ -200,7 +202,7 @@ export const PerplexityStreamText = ({
             className={clsx(
               inheritStyles
                 ? (segment.isBold ? "font-bold" : "")
-                : (segment.isBold ? "font-semibold text-slate-900" : "font-normal text-slate-600")
+                : (segment.isBold ? "font-medium text-slate-900" : "font-normal text-slate-600")
             )}
           >
             {textSlice}
@@ -226,6 +228,26 @@ export const PerplexityStreamText = ({
 
     return elements;
   };
+
+  // During streaming, use inline-grid to overlay streaming text on invisible full text
+  // This reserves the full space and prevents layout shift during word wrapping
+  if (!isComplete && content) {
+    return (
+      <span
+        className={clsx(inheritStyles ? "" : "text-[15px] leading-[1.6]", className)}
+        style={{ display: 'inline-grid' }}
+      >
+        {/* Full text rendered invisibly to reserve space - grid area 1/1 */}
+        <span className="invisible" style={{ gridArea: '1/1' }} aria-hidden="true">
+          <SmartHighlightWithBold text={content} className={inheritStyles ? "" : "text-slate-600"} />
+        </span>
+        {/* Streaming content overlaid on same grid cell - grid area 1/1 */}
+        <span style={{ gridArea: '1/1' }}>
+          {renderContent()}
+        </span>
+      </span>
+    );
+  }
 
   return (
     <span className={clsx(inheritStyles ? "inline" : "inline text-[15px] leading-[1.6]", className)}>

@@ -1,0 +1,509 @@
+/**
+ * Blade AI Global Styles
+ *
+ * Import this file in your app to get base styles:
+ * ```javascript
+ * import '@aspect-ui/blade-ai/styles';
+ * ```
+ */
+
+/* Base reset for Blade AI components */
+.blade-ai-reset,
+.blade-ai-reset *,
+.blade-ai-reset *::before,
+.blade-ai-reset *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Typography base */
+.blade-ai-text {
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+.blade-ai-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e2 transparent;
+}
+
+.blade-ai-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.blade-ai-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.blade-ai-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e2;
+  border-radius: 3px;
+}
+
+.blade-ai-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* Hide scrollbar but keep functionality */
+.blade-ai-scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.blade-ai-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* Focus ring */
+.blade-ai-focus-ring:focus-visible {
+  outline: 2px solid #305eff;
+  outline-offset: 2px;
+}
+
+/* Streaming text glow effect */
+.blade-ai-streaming-glow {
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+/* Shimmer background */
+.blade-ai-shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    #f1f5f9 25%,
+    #e2e8f0 50%,
+    #f1f5f9 75%
+  );
+  background-size: 200% 100%;
+  animation: blade-ai-shimmer 2s linear infinite;
+}
+
+@keyframes blade-ai-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Typing cursor */
+.blade-ai-typing-cursor::after {
+  content: '|';
+  animation: blade-ai-blink 1s ease-in-out infinite;
+}
+
+@keyframes blade-ai-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Message bubble transitions */
+.blade-ai-message-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.blade-ai-message-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out;
+}
+
+/* Blur in effect */
+.blade-ai-blur-in {
+  animation: blade-ai-blur-in 0.4s ease-out forwards;
+}
+
+@keyframes blade-ai-blur-in {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Stepped rotation for thinking */
+.blade-ai-rotate-stepped {
+  animation: blade-ai-rotate-stepped 2s ease-in-out infinite;
+}
+
+@keyframes blade-ai-rotate-stepped {
+  0% {
+    transform: rotate(0deg);
+  }
+  12.5% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  37.5% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  62.5% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  87.5% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Code block syntax highlighting base */
+.blade-ai-code {
+  font-family:
+    'SF Mono',
+    'Fira Code',
+    'Fira Mono',
+    Menlo,
+    Monaco,
+    'Courier New',
+    monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+/* Markdown content styling */
+.blade-ai-markdown {
+  line-height: 1.6;
+}
+
+.blade-ai-markdown p {
+  margin-bottom: 0.75em;
+}
+
+.blade-ai-markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.blade-ai-markdown strong {
+  font-weight: 600;
+  color: #192839;
+}
+
+.blade-ai-markdown em {
+  font-style: italic;
+}
+
+.blade-ai-markdown code {
+  background-color: #f1f5f9;
+  padding: 0.125em 0.375em;
+  border-radius: 4px;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.9em;
+}
+
+.blade-ai-markdown a {
+  color: #305eff;
+  text-decoration: none;
+}
+
+.blade-ai-markdown a:hover {
+  text-decoration: underline;
+}
+
+.blade-ai-markdown ul,
+.blade-ai-markdown ol {
+  margin-left: 1.25em;
+  margin-bottom: 0.75em;
+}
+
+.blade-ai-markdown li {
+  margin-bottom: 0.25em;
+}
+
+.blade-ai-markdown blockquote {
+  border-left: 3px solid #cbd5e2;
+  padding-left: 1em;
+  margin-left: 0;
+  color: #64748b;
+}
+
+/* Smart highlight for emphasized text */
+.blade-ai-highlight {
+  background: linear-gradient(
+    120deg,
+    rgba(48, 94, 255, 0.1) 0%,
+    rgba(48, 94, 255, 0.1) 100%
+  );
+  padding: 0 0.125em;
+  border-radius: 2px;
+}
+
+/* Pill/chip base styles */
+.blade-ai-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375em 0.75em;
+  border-radius: 9999px;
+  font-size: 0.875em;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+/* Card base */
+.blade-ai-card {
+  background: #ffffff;
+  border: 1px solid #e3eaf3;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.blade-ai-card-elevated {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.blade-ai-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.blade-ai-table th {
+  text-align: left;
+  font-weight: 600;
+  color: #40566d;
+  padding: 0.75em 1em;
+  border-bottom: 1px solid #e3eaf3;
+  background: #f8fafc;
+}
+
+.blade-ai-table td {
+  padding: 0.75em 1em;
+  border-bottom: 1px solid #f1f5f9;
+  color: #192839;
+}
+
+.blade-ai-table tr:last-child td {
+  border-bottom: none;
+}
+
+.blade-ai-table tr:hover td {
+  background: #f8fafc;
+}
+
+/* Button base */
+.blade-ai-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.625em 1em;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.1s;
+  border: none;
+  outline: none;
+}
+
+.blade-ai-button:active {
+  transform: scale(0.98);
+}
+
+.blade-ai-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.blade-ai-button-primary {
+  background: #305eff;
+  color: #ffffff;
+}
+
+.blade-ai-button-primary:hover:not(:disabled) {
+  background: #2449cc;
+}
+
+.blade-ai-button-secondary {
+  background: #f1f5f9;
+  color: #192839;
+  border: 1px solid #e3eaf3;
+}
+
+.blade-ai-button-secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.blade-ai-button-ghost {
+  background: transparent;
+  color: #40566d;
+}
+
+.blade-ai-button-ghost:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+/* Input base */
+.blade-ai-input {
+  width: 100%;
+  padding: 0.75em 1em;
+  border: 1px solid #e3eaf3;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #192839;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.blade-ai-input:focus {
+  border-color: #305eff;
+}
+
+.blade-ai-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Textarea base */
+.blade-ai-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.75em 1em;
+  border: 1px solid #e3eaf3;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #192839;
+  background: #ffffff;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.blade-ai-textarea:focus {
+  border-color: #305eff;
+}
+
+/* Icon button */
+.blade-ai-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.blade-ai-icon-button:hover {
+  background: #f1f5f9;
+  color: #192839;
+}
+
+/* Tooltip */
+.blade-ai-tooltip {
+  position: relative;
+}
+
+.blade-ai-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5em 0.75em;
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  margin-bottom: 6px;
+}
+
+.blade-ai-tooltip:hover::after {
+  opacity: 1;
+}
+
+/* Divider */
+.blade-ai-divider {
+  height: 1px;
+  background: #e3eaf3;
+  margin: 1em 0;
+}
+
+/* Badge */
+.blade-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25em 0.5em;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.blade-ai-badge-success {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.blade-ai-badge-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.blade-ai-badge-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.blade-ai-badge-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+
+.blade-ai-badge-neutral {
+  background: #f1f5f9;
+  color: #64748b;
+}

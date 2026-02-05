@@ -41,7 +41,7 @@ export const CaptureSettingsMiniCard: React.FC<CaptureSettingsMiniCardProps> = (
         {/* Content */}
         <div className="px-3 py-2.5 border-t border-[#f1f5f9]">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-[15px] font-semibold text-[#1e293b]">
+            <span className="text-[15px] font-medium text-[#1e293b]">
               Auto Capture
             </span>
             <span className="text-[#cbd5e1]">•</span>
@@ -90,7 +90,7 @@ export const CaptureSettingsMiniCard: React.FC<CaptureSettingsMiniCardProps> = (
         ) : (
           <>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[15px] font-semibold text-[#1e293b]">
+              <span className="text-[15px] font-medium text-[#1e293b]">
                 {currentSetting === 'manual' ? 'Manual Capture' : 'Auto Capture'}
               </span>
               <span className="text-[#cbd5e1]">•</span>

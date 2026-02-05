@@ -3,7 +3,7 @@ import React from 'react';
 function CurrencySymbolContainer() {
   return (
     <div className="content-stretch flex items-baseline opacity-64 relative shrink-0" data-name="currency-symbol-container">
-      <p className="font-['Inter'] font-semibold leading-[26px] not-italic relative shrink-0 text-[#192839] text-[20px] text-right">₹</p>
+      <p className="font-['Inter'] font-medium leading-[26px] not-italic relative shrink-0 text-[#192839] text-[20px] text-right">₹</p>
     </div>
   );
 }
@@ -11,7 +11,7 @@ function CurrencySymbolContainer() {
 function MainValueContainer() {
   return (
     <div className="content-stretch flex items-baseline relative shrink-0" data-name="main-value-container">
-      <p className="font-['TASA_Orbiter_Display'] font-semibold leading-[38px] not-italic relative shrink-0 text-[#192839] text-[32px] text-right">46,000</p>
+      <p className="font-['TASA_Orbiter_Display'] font-medium leading-[38px] not-italic relative shrink-0 text-[#192839] text-[32px] text-right">46,000</p>
     </div>
   );
 }
@@ -19,7 +19,7 @@ function MainValueContainer() {
 function DecimalContainer() {
   return (
     <div className="content-stretch flex items-baseline opacity-64 relative shrink-0" data-name="decimal-container">
-      <p className="font-['TASA_Orbiter_Display'] font-semibold leading-[26px] not-italic relative shrink-0 text-[#192839] text-[20px] text-right">.00</p>
+      <p className="font-['TASA_Orbiter_Display'] font-medium leading-[26px] not-italic relative shrink-0 text-[#192839] text-[20px] text-right">.00</p>
     </div>
   );
 }
@@ -134,7 +134,7 @@ function Frame4() {
 export const FundsAddedCard: React.FC = () => {
   return (
     <div className="bg-white border border-[rgba(181,217,250,0.13)] border-solid overflow-clip relative rounded-[12px] shadow-[0px_6px_32px_4px_rgba(184,196,214,0.06)] h-[210px] w-full max-w-[580px]">
-      <p className="absolute font-['TASA_Orbiter_Display'] font-semibold leading-[24px] left-[237px] not-italic text-[#192839] text-[18px] top-[23px]">Funds were added successfully</p>
+      <p className="absolute font-['TASA_Orbiter_Display'] font-medium leading-[24px] left-[237px] not-italic text-[#192839] text-[18px] top-[23px]">Funds were added successfully</p>
       <Frame3 />
       <Frame1 />
       <Frame5 />

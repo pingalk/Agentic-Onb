@@ -31,7 +31,7 @@ export const HeroSection: React.FC = () => {
             <div className="min-w-0 w-full">
               <div className="flex items-center gap-2 mb-1">
                  <div className="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"></div>
-                 <span className="text-slate-700 font-semibold">Today's settlement</span>
+                 <span className="text-slate-700 font-medium">Today's settlement</span>
               </div>
               <div className="text-2xl font-bold flex items-baseline gap-1 mb-2">
                 <span className="text-slate-500 text-sm">₹</span>

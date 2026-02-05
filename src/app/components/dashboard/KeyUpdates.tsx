@@ -85,7 +85,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ icon, title, description, highl
     <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer group relative">
       <div className="mt-1">{icon}</div>
       <div>
-        <div className={`font-semibold text-sm mb-1 ${highlight ? 'text-red-600' : 'text-slate-800'}`}>
+        <div className={`font-medium text-sm mb-1 ${highlight ? 'text-red-600' : 'text-slate-800'}`}>
           {title}
         </div>
         <div className="text-xs text-slate-500 leading-relaxed">
