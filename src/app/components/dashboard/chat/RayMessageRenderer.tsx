@@ -448,9 +448,10 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
   const [subtextStarted, setSubtextStarted] = useState(false);
   const [statsStarted, setStatsStarted] = useState(false);
   const [tableStarted, setTableStarted] = useState(false);
+  const [narrativeComplete, setNarrativeComplete] = useState(false);
   const [allStreamingComplete, setAllStreamingComplete] = useState(false);
 
-  const { phase, onNarrativeComplete } = useStreamSequencer({
+  const { phase, onNarrativeComplete, onDataAssetComplete, onInsightComplete, onFooterComplete } = useStreamSequencer({
     hasDataAsset: !!data.table,
     hasInsight: !!data.resolution,
     hasSuggestions: data.suggestions?.length > 0,
@@ -470,7 +471,7 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
     } else {
       setTimeout(() => {
         setTableStarted(true);
-        setAllStreamingComplete(true);
+        setNarrativeComplete(true);
       }, timing.sequentialDelay);
     }
     onNarrativeComplete();
@@ -480,9 +481,20 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
   const handleStatsComplete = React.useCallback(() => {
     setTimeout(() => {
       setTableStarted(true);
-      setAllStreamingComplete(true);
+      setNarrativeComplete(true);
     }, timing.sequentialDelay);
   }, [timing.sequentialDelay]);
+
+  // Set allStreamingComplete after ALL phases are done (phase >= 5 = suggestions phase)
+  React.useEffect(() => {
+    if (phase >= 5 && narrativeComplete && !allStreamingComplete) {
+      // Phase 5 means all content has appeared, add small buffer for final animations
+      const timer = setTimeout(() => {
+        setAllStreamingComplete(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, narrativeComplete, allStreamingComplete]);
 
   // Determine ChainOfThought mode - only complete when phase >= 5 AND all streaming is done
   const chainOfThoughtMode = (phase >= 5 && allStreamingComplete) ? 'complete' : 'streaming';
@@ -547,7 +559,13 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
 
             {/* 4. Table Section - waits for stats to complete */}
             {tableStarted && data.table && (
-              <div className="pl-0 py-[12px]">
+              <motion.div
+                className="pl-0 py-[12px]"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                onAnimationComplete={onDataAssetComplete}
+              >
                 <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={48} borderRadius="12px">
                   <div>
                     <h4 className="text-[15px] font-bold text-slate-900 mb-3">Your recent refunds:</h4>
@@ -601,15 +619,16 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
                     </div>
                   </div>
                 </AnimatedLoadingCard>
-              </div>
+              </motion.div>
             )}
 
             {/* 5. Resolution (Phase 3+) */}
-            {phase >= 3 && (
+            {phase >= 3 && data.resolution && (
               <motion.div
                 initial={{ opacity: 0, y: 5, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0)' }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
+                onAnimationComplete={onInsightComplete}
                 className="flex flex-col gap-[4px]"
               >
                 <h3 className="text-[18px] leading-[24px] font-medium text-[#020202]">
@@ -647,34 +666,35 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
             )}
           </div>
 
-          {/* 6. Footer Actions Strip (Phase 4+) - Only visible for last message */}
-          {phase >= 4 && (
+          {/* 6. Footer Actions Strip - Only visible after ALL streaming is complete */}
+          {phase >= 4 && allStreamingComplete && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.2 }}
+              onAnimationComplete={onFooterComplete}
               className="flex items-center justify-between w-full"
             >
               <div className="flex gap-[8px] items-center">
                 <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <div className="size-[16px]">
                       <Copy />
                     </div>
                   </button>
                 </Tooltip>
                 <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
@@ -683,8 +703,8 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
             </motion.div>
           )}
 
-        {/* 7. Divider (Phase 5+) - Only if it's the last message */}
-        {phase >= 5 && isLast && (
+        {/* 7. Divider - Only after ALL streaming is complete and if it's the last message */}
+        {phase >= 5 && allStreamingComplete && isLast && (
           <motion.div
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
@@ -702,6 +722,199 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
             highlightedSuggestionIndex={highlightedSuggestionIndex}
           />
         )}
+    </motion.div>
+  );
+};
+
+// --- Payment Link Form Card Artifact Component ---
+const PaymentLinkFormCardArtifact = ({
+  data,
+  onMiniCardClick,
+  onMiniCardAnimationComplete,
+  animatingCardId,
+  isLast,
+  onSuggestionClick,
+  highlightedSuggestionIndex,
+  onStreamComplete
+}: {
+  data: any;
+  onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void;
+  onMiniCardAnimationComplete?: (formId: string) => void;
+  animatingCardId?: string | null;
+  isLast: boolean;
+  onSuggestionClick?: (suggestion: string) => void;
+  highlightedSuggestionIndex?: number | null;
+  onStreamComplete?: () => void;
+}) => {
+  const timing = useTimingSettingsOptional();
+  const [subtextStarted, setSubtextStarted] = useState(false);
+  const [cardStarted, setCardStarted] = useState(false);
+  const [allStreamingComplete, setAllStreamingComplete] = useState(false);
+
+  const { phase, onNarrativeComplete, onDataAssetComplete, onFooterComplete } = useStreamSequencer({
+    hasDataAsset: true,
+    hasInsight: false,
+    hasSuggestions: data.suggestions?.length > 0,
+    thinkingDuration: data.headline ? 1500 : 0, // Brief spotlight before streaming if there's content
+    onStreamComplete
+  });
+
+  // Start subtext after cognitive pause following headline
+  const handleHeadlineComplete = React.useCallback(() => {
+    setTimeout(() => setSubtextStarted(true), timing.cognitiveDelay);
+  }, [timing.cognitiveDelay]);
+
+  // Start card after subtext completes
+  const handleSubtextComplete = React.useCallback(() => {
+    setTimeout(() => {
+      setCardStarted(true);
+      setAllStreamingComplete(true);
+    }, timing.sequentialDelay);
+    onNarrativeComplete();
+  }, [onNarrativeComplete, timing.sequentialDelay]);
+
+  // If no headline, show card immediately
+  React.useEffect(() => {
+    if (!data.headline) {
+      setCardStarted(true);
+      setAllStreamingComplete(true);
+    }
+  }, [data.headline]);
+
+  const chainOfThoughtMode = (phase >= 5 && allStreamingComplete) ? 'complete' : 'streaming';
+
+  return (
+    <motion.div
+      className="flex flex-col gap-[24px] w-full mt-2"
+      initial="hidden"
+      animate="visible"
+      variants={containerVar}
+    >
+      {/* Primary Content Section - shows after spotlight animation (phase >= 1) */}
+      {phase >= 1 && (
+      <div className="flex flex-col gap-[16px]">
+        {/* Headline + Subtext */}
+        {data.headline && (
+          <div className="flex flex-col gap-[4px] px-[0px] py-[4px]">
+            {/* Headline (streamed) */}
+            <motion.div variants={itemVar}>
+              <h3 className="text-[18px] leading-[24px] font-medium text-[#020202]">
+                <PerplexityStreamText
+                  content={data.headline}
+                  speed={timing.textStreamSpeed + 7}
+                  style={timing.streamingStyle}
+                  glowIntensity={timing.streamingGlowIntensity}
+                  trailLength={timing.streamingTrailLength}
+                  onComplete={handleHeadlineComplete}
+                  inheritStyles
+                />
+              </h3>
+            </motion.div>
+
+            {/* Subtext (streamed after cognitive pause) */}
+            {subtextStarted && data.subtext && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-[16px] text-[#40566d] leading-[26px] tracking-[0.16px]"
+              >
+                <PerplexityStreamText
+                  content={data.subtext}
+                  speed={timing.textStreamSpeed}
+                  style={timing.streamingStyle}
+                  glowIntensity={timing.streamingGlowIntensity}
+                  trailLength={timing.streamingTrailLength}
+                  onComplete={handleSubtextComplete}
+                />
+              </motion.div>
+            )}
+          </div>
+        )}
+
+        {/* Mini Card - appears after text streaming or immediately if no text */}
+        {cardStarted && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            onAnimationComplete={() => {
+              onDataAssetComplete();
+              // Notify parent when mini card animation is complete (for auto-open modal)
+              if (!data.isLoading) {
+                onMiniCardAnimationComplete?.(data.formId);
+              }
+            }}
+          >
+            <PaymentLinkMiniCard
+              formData={data.prefill}
+              status={data.status}
+              onClick={(sourceRect) => onMiniCardClick?.(data.formId, sourceRect)}
+              isLoading={data.isLoading}
+              linkUrl={data.linkUrl}
+              isAnimatingToModal={animatingCardId === data.formId}
+              formId={data.formId}
+            />
+          </motion.div>
+        )}
+      </div>
+      )}
+
+      {/* Footer Actions Strip - Only visible after ALL streaming is complete */}
+      {phase >= 4 && allStreamingComplete && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          onAnimationComplete={onFooterComplete}
+          className="flex items-center justify-between w-full"
+        >
+          <div className="flex gap-[8px] items-center">
+            <Tooltip text="Good response" position="bottom">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
+                <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
+              </button>
+            </Tooltip>
+            <Tooltip text="Bad response" position="bottom">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
+                <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
+              </button>
+            </Tooltip>
+            <Tooltip text="Copy to clipboard" position="bottom">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
+                <div className="size-[16px]">
+                  <Copy />
+                </div>
+              </button>
+            </Tooltip>
+            <Tooltip text="Share" position="bottom">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
+                <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
+              </button>
+            </Tooltip>
+          </div>
+          <RelativeTimestamp />
+        </motion.div>
+      )}
+
+      {/* Divider - Only after ALL streaming is complete and if it's the last message */}
+      {phase >= 5 && allStreamingComplete && isLast && (
+        <motion.div
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ duration: 0.3 }}
+          className="w-full h-[0.5px] bg-[#CBD5E2] origin-left"
+        />
+      )}
+
+      {/* ChainOfThought with suggestions */}
+      {isLast && (
+        <ChainOfThought
+          mode={chainOfThoughtMode}
+          suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+          onSuggestionClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
+        />
+      )}
     </motion.div>
   );
 };
@@ -808,24 +1021,24 @@ const FollowupQuestionArtifact = ({
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]">
                   <Copy />
                 </div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -927,24 +1140,24 @@ const SimpleTextArtifact = ({
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]">
                   <Copy />
                 </div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -1050,24 +1263,24 @@ const BulletListWithButtonsArtifact = ({
             >
               <div className="flex gap-[8px] items-center">
                 <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <div className="size-[16px]">
                       <Copy />
                     </div>
                   </button>
                 </Tooltip>
                 <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
@@ -1205,24 +1418,24 @@ const SettingUpdatedWithBulletsArtifact = ({
             >
               <div className="flex gap-[8px] items-center">
                 <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <div className="size-[16px]">
                       <Copy />
                     </div>
                   </button>
                 </Tooltip>
                 <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
@@ -1426,24 +1639,24 @@ const PaymentLinksCreatedArtifact = ({
             >
               <div className="flex gap-[8px] items-center">
                 <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <div className="size-[16px]">
                       <Copy />
                     </div>
                   </button>
                 </Tooltip>
                 <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
@@ -1632,24 +1845,24 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
             >
               <div className="flex gap-[8px] items-center">
                 <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <div className="size-[16px]">
                       <Copy />
                     </div>
                   </button>
                 </Tooltip>
                 <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
@@ -1763,22 +1976,22 @@ const MayaDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highlightedSug
             >
               <div className="flex gap-[8px] items-center">
                 <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
                 <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <div className="size-[16px]"><Copy /></div>
                   </button>
                 </Tooltip>
                 <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                     <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
                   </button>
                 </Tooltip>
@@ -1906,22 +2119,22 @@ const MayaDraftMessageArtifact = ({ data, onSuggestionClick, isLast, highlighted
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]"><Copy /></div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -2143,22 +2356,22 @@ const SupportTicketStatusArtifact = ({ data, onButtonClick, onSuggestionClick, i
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]"><Copy /></div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -2297,22 +2510,22 @@ const TicketEscalatedArtifact = ({ data, onSuggestionClick, isLast, highlightedS
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]"><Copy /></div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -2337,9 +2550,11 @@ const TicketEscalatedArtifact = ({ data, onSuggestionClick, isLast, highlightedS
 // --- Shyam's Failed Payment Diagnosis Artifact ---
 const FailedPaymentDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highlightedSuggestionIndex = null }: any) => {
   const [subtextStarted, setSubtextStarted] = useState(false);
+  const [allStepsComplete, setAllStepsComplete] = useState(false);
   const narrativeCompleteCalledRef = React.useRef(false);
+  const stepsCompleteCount = React.useRef(0);
 
-  const { phase, onNarrativeComplete } = useStreamSequencer({
+  const { phase, onNarrativeComplete, onInsightComplete, onFooterComplete } = useStreamSequencer({
     hasDataAsset: false,
     hasInsight: true,
     hasSuggestions: data.suggestions?.length > 0,
@@ -2358,8 +2573,18 @@ const FailedPaymentDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highl
     }
   }, [onNarrativeComplete]);
 
-  // ChainOfThought mode based on phase
-  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'streaming';
+  // Handle when a resolution step completes streaming
+  const totalSteps = data.resolution?.steps?.length || 0;
+  const handleStepComplete = React.useCallback(() => {
+    stepsCompleteCount.current += 1;
+    if (stepsCompleteCount.current >= totalSteps) {
+      setAllStepsComplete(true);
+      onInsightComplete();
+    }
+  }, [totalSteps, onInsightComplete]);
+
+  // ChainOfThought mode - only complete when phase >= 5 AND all steps are done
+  const chainOfThoughtMode = (phase >= 5 && allStepsComplete) ? 'complete' : 'streaming';
 
   return (
     <motion.div
@@ -2445,6 +2670,7 @@ const FailedPaymentDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highl
                       speed={8}
                       style="glow"
                       delay={contentDelay}
+                      onComplete={handleStepComplete}
                     />
                   </p>
                 </motion.div>
@@ -2454,31 +2680,32 @@ const FailedPaymentDiagnosisArtifact = ({ data, onSuggestionClick, isLast, highl
         </motion.div>
       )}
 
-      {/* Footer Actions (Phase 4+) */}
-      {phase >= 4 && (
+      {/* Footer Actions (Phase 4+ AND all steps complete) */}
+      {phase >= 4 && allStepsComplete && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          onAnimationComplete={onFooterComplete}
           className="flex items-center justify-between w-full"
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]"><Copy /></div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -2654,22 +2881,22 @@ const PaymentLinkCreatedArtifact = ({ data, onSuggestionClick, isLast, highlight
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]"><Copy /></div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -2776,22 +3003,22 @@ const RefundStatusReportArtifact = ({ data, onSuggestionClick, isLast, highlight
         >
           <div className="flex gap-[8px] items-center">
             <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
             <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <div className="size-[16px]"><Copy /></div>
               </button>
             </Tooltip>
             <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                 <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
               </button>
             </Tooltip>
@@ -2884,12 +3111,10 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
           transition={{ duration: 0.4 }}
         >
           <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={80} borderRadius="12px">
-            <ConfigurableSettlementCard
+            <SettlementCard
               amount={data.settlement.amount}
-              scheduledFor={data.settlement.scheduledFor}
-              status={data.settlement.status}
-              type="regular"
-              progressSteps={1}
+              date={data.settlement.scheduledFor}
+              step={1}
             />
           </AnimatedLoadingCard>
         </motion.div>
@@ -3059,38 +3284,41 @@ const InstantSettlementOfferArtifact = ({ data, onSuggestionClick, isLast, highl
           </motion.div>
         )}
 
-        {/* Instant Settlement Card */}
+        {/* Instant Settlement Card - Premium styling */}
         {subtextStarted && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="relative w-full max-w-[400px] h-[180px] rounded-[12px] border border-[#dee1e3] overflow-hidden shadow-[0px_6px_32px_4px_rgba(184,196,214,0.06)]"
-            style={{ background: 'linear-gradient(180deg, rgb(240, 249, 255) 0%, rgb(255, 255, 255) 28%, rgb(255, 255, 255) 72%, rgb(224, 242, 254) 100%)' }}
+            transition={{ delay: 0.3, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+            className="w-full max-w-[320px] rounded-xl overflow-hidden border border-[#d1fae5] transition-shadow hover:shadow-md"
+            style={{ background: 'linear-gradient(180deg, rgb(255,255,255) 0%, rgb(255,255,255) 72%, rgb(240,253,244) 100%)' }}
           >
-            {/* Title */}
-            <p className="absolute left-[20px] top-[18px] font-['TASA_Orbiter_Display',sans-serif] font-medium text-[18px] leading-[24px] text-[#192839]">
-              Instant Settlements
-            </p>
+            <div className="p-4">
+              {/* Label */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#22c55e]/10">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </div>
+                <span className="text-[12px] font-medium text-[#22c55e] tracking-[-0.3px]">Instant Settlements</span>
+              </div>
 
-            {/* Checkmark items */}
-            <div className="absolute left-[19px] bottom-[21px] flex flex-col gap-[4px]">
-              {['works even on bank holidays, non-banking hours', 'same day settlements', 'bank transfers in 10s'].map((text, i) => (
-                <div key={i} className="flex items-center gap-[8px]">
-                  <div className="size-[24px] flex items-center justify-center">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              {/* Headline */}
+              <p className="text-[16px] font-medium text-[#050505] mb-3">Get paid instantly</p>
+
+              {/* Checklist */}
+              <div className="flex flex-col gap-2">
+                {['works even on bank holidays, non-banking hours', 'same day settlements', 'bank transfers in 10s'].map((text, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
+                    <span className="text-[14px] text-[#7d7d7d]">{text}</span>
                   </div>
-                  <p className="font-['Inter',sans-serif] font-medium text-[12px] leading-[18px] text-[#768ea7]">
-                    {text}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-
-            {/* Inner shadow overlay */}
-            <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_1px_white]" />
           </motion.div>
         )}
       </div>
@@ -3461,22 +3689,22 @@ const FundsAddedMessage = ({ data, isLast, onSuggestionClick, highlightedSuggest
               >
                 <div className="flex gap-[8px] items-center">
                   <Tooltip text="Good response" position="bottom">
-                    <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                       <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
                     </button>
                   </Tooltip>
                   <Tooltip text="Bad response" position="bottom">
-                    <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                       <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
                     </button>
                   </Tooltip>
                   <Tooltip text="Copy to clipboard" position="bottom">
-                    <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                       <div className="size-[16px]"><Copy /></div>
                     </button>
                   </Tooltip>
                   <Tooltip text="Share" position="bottom">
-                    <button className="group relative size-[32px] bg-white hover:bg-[#f1f5fa] rounded-full flex items-center justify-center transition-colors">
+                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
                       <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
                     </button>
                   </Tooltip>
@@ -3499,20 +3727,20 @@ const FundsAddedMessage = ({ data, isLast, onSuggestionClick, highlightedSuggest
   );
 };
 
-// Stylized screenshot thumbnail mockup for chat stream
+// WhatsApp-style chat thumbnail mockup for chat stream (square)
 const ScreenshotThumbnail = () => (
-  <div className="w-[32px] h-[40px] rounded-[4px] overflow-hidden shadow-[0px_2px_16px_0px_rgba(25,40,57,0.09)] bg-[#efe6f7] relative shrink-0">
-    {/* Purple header bar */}
-    <div className="absolute top-0 left-0 right-0 h-[6px] bg-[#5f259e]" />
-    {/* White content rows */}
-    <div className="absolute top-[7px] left-[1px] right-[1px] h-[6px] bg-white rounded-[1px]" />
-    <div className="absolute top-[14px] left-[1px] right-[1px] h-[9px] bg-white rounded-[1px]">
-      <div className="absolute left-[2px] top-[3px] w-[4px] h-[4px] bg-[#7034b2] rounded-[1px]" />
+  <div className="w-[40px] h-[40px] rounded-[6px] overflow-hidden shadow-[0px_2px_8px_0px_rgba(0,0,0,0.12)] bg-[#efeae2] relative shrink-0">
+    {/* WhatsApp green header bar */}
+    <div className="absolute top-0 left-0 right-0 h-[10px] bg-[#008069]" />
+    {/* Chat background with message bubbles */}
+    <div className="absolute top-[12px] left-[3px] right-[3px] bottom-[3px]">
+      {/* Incoming message (white, left) */}
+      <div className="absolute top-0 left-0 w-[20px] h-[8px] bg-white rounded-[2px]" />
+      {/* Outgoing message (green, right) */}
+      <div className="absolute top-[10px] right-0 w-[16px] h-[8px] bg-[#d9fdd3] rounded-[2px]" />
+      {/* Another incoming message */}
+      <div className="absolute top-[20px] left-0 w-[24px] h-[6px] bg-white rounded-[2px]" />
     </div>
-    <div className="absolute top-[24px] left-[1px] right-[1px] h-[9px] bg-white rounded-[1px]">
-      <div className="absolute left-[2px] top-[2px] w-[4px] h-[4px] bg-white rounded-[1px]" />
-    </div>
-    <div className="absolute top-[34px] left-[1px] right-[1px] h-[6px] bg-white rounded-[1px]" />
   </div>
 );
 
@@ -3535,7 +3763,7 @@ const ChatAttachmentPill = ({ filename, fileType, onClick }: { filename: string;
   );
 };
 
-export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onStreamComplete, animatingCardId, personaId }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string }) => {
+export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string }) => {
   // State for WhatsApp preview modal
   const [isWhatsAppPreviewOpen, setIsWhatsAppPreviewOpen] = useState(false);
 
@@ -3859,19 +4087,22 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     );
   }
 
-  // 22. Payment Link Form Card (Mini-Card for Modal)
+  // 22. Payment Link Form Card (Mini-Card for Modal) - with streaming text, footer, and suggestions
   if (data.artifact?.type === 'payment_link_form_card') {
+    const { headline, subtext, suggestions } = data.artifact.data;
+    const hasTextContent = headline || subtext;
+
     return (
-      <div className="w-full animate-fade-in-up">
-        <PaymentLinkMiniCard
-          formData={data.artifact.data.prefill}
-          status={data.artifact.data.status}
-          onClick={(sourceRect) => onMiniCardClick?.(data.artifact.data.formId, sourceRect)}
-          isLoading={data.artifact.data.isLoading}
-          linkUrl={data.artifact.data.linkUrl}
-          isAnimatingToModal={animatingCardId === data.artifact.data.formId}
-        />
-      </div>
+      <PaymentLinkFormCardArtifact
+        data={data.artifact.data}
+        onMiniCardClick={onMiniCardClick}
+        onMiniCardAnimationComplete={onMiniCardAnimationComplete}
+        animatingCardId={animatingCardId}
+        isLast={isLast}
+        onSuggestionClick={onSuggestionClick}
+        highlightedSuggestionIndex={highlightedSuggestionIndex}
+        onStreamComplete={onStreamComplete}
+      />
     );
   }
 
@@ -3883,6 +4114,19 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           formData={data.artifact.data.prefill}
           onClick={() => onMiniCardClick?.(data.artifact.data.formId)}
           isLoading={data.artifact.data.isLoading}
+        />
+      </div>
+    );
+  }
+
+  // 23.5. Settlement Card (standalone card in chat)
+  if (data.artifact?.type === 'settlement_card') {
+    return (
+      <div className="w-full animate-fade-in-up">
+        <SettlementCard
+          amount={data.artifact.data.amount}
+          date={data.artifact.data.date}
+          step={data.artifact.data.step}
         />
       </div>
     );

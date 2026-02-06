@@ -11,20 +11,20 @@ interface ImageAttachmentChipProps {
   onRemove?: () => void;
 }
 
-// Stylized screenshot thumbnail mockup
-const ScreenshotThumbnail = () => (
-  <div className="w-[32px] h-[40px] rounded-[4px] overflow-hidden shadow-[0px_2px_16px_0px_rgba(25,40,57,0.09)] bg-[#efe6f7] relative">
-    {/* Purple header bar */}
-    <div className="absolute top-0 left-0 right-0 h-[6px] bg-[#5f259e]" />
-    {/* White content rows */}
-    <div className="absolute top-[7px] left-[1px] right-[1px] h-[6px] bg-white rounded-[1px]" />
-    <div className="absolute top-[14px] left-[1px] right-[1px] h-[9px] bg-white rounded-[1px]">
-      <div className="absolute left-[2px] top-[3px] w-[4px] h-[4px] bg-[#7034b2] rounded-[1px]" />
+// WhatsApp-style chat thumbnail mockup (square)
+const WhatsAppThumbnail = () => (
+  <div className="w-[40px] h-[40px] rounded-[6px] overflow-hidden shadow-[0px_2px_8px_0px_rgba(0,0,0,0.12)] bg-[#efeae2] relative">
+    {/* WhatsApp green header bar */}
+    <div className="absolute top-0 left-0 right-0 h-[10px] bg-[#008069]" />
+    {/* Chat background with message bubbles */}
+    <div className="absolute top-[12px] left-[3px] right-[3px] bottom-[3px]">
+      {/* Incoming message (white, left) */}
+      <div className="absolute top-0 left-0 w-[20px] h-[8px] bg-white rounded-[2px]" />
+      {/* Outgoing message (green, right) */}
+      <div className="absolute top-[10px] right-0 w-[16px] h-[8px] bg-[#d9fdd3] rounded-[2px]" />
+      {/* Another incoming message */}
+      <div className="absolute top-[20px] left-0 w-[24px] h-[6px] bg-white rounded-[2px]" />
     </div>
-    <div className="absolute top-[24px] left-[1px] right-[1px] h-[9px] bg-white rounded-[1px]">
-      <div className="absolute left-[2px] top-[2px] w-[4px] h-[4px] bg-white rounded-[1px]" />
-    </div>
-    <div className="absolute top-[34px] left-[1px] right-[1px] h-[6px] bg-white rounded-[1px]" />
   </div>
 );
 
@@ -41,8 +41,8 @@ export const ImageAttachmentChip: React.FC<ImageAttachmentChipProps> = ({
         background: 'linear-gradient(135deg, #EEF4FF 0%, #E0ECFF 50%, #D4E4FF 100%)',
       }}
     >
-      {/* Stylized screenshot thumbnail */}
-      <ScreenshotThumbnail />
+      {/* WhatsApp-style chat thumbnail */}
+      <WhatsAppThumbnail />
 
       {/* File info */}
       <div className="flex flex-col justify-center">
@@ -232,7 +232,7 @@ export const RayInputBox: React.FC<RayInputBoxProps> = ({
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               autoFocus={autoFocus}
-              placeholder={animatePlaceholder ? '' : placeholder}
+              placeholder={attachmentChip ? 'Ask me anything about this image...' : (animatePlaceholder ? '' : placeholder)}
               rows={1}
               className="w-full bg-transparent border-none outline-none resize-none font-['TASA_Orbiter_Display',sans-serif] leading-[24px] text-[#40566d] text-[16px] tracking-[0.32px] placeholder:text-[#768ea7]"
               style={{
@@ -242,8 +242,8 @@ export const RayInputBox: React.FC<RayInputBoxProps> = ({
                 overflow: value.includes('\n') ? 'auto' : 'hidden'
               }}
             />
-            {/* Animated placeholder overlay */}
-            {animatePlaceholder && !value && (
+            {/* Animated placeholder overlay - stops cycling when attachment is present */}
+            {animatePlaceholder && !value && !attachmentChip && (
               <AnimatePresence mode="wait">
                 <motion.div
                   key={placeholder}

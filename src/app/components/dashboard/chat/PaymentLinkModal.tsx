@@ -311,181 +311,178 @@ export const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({
                     </div>
 
                     {/* Scrollable Form Content */}
-                    <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
-                      <div className="flex flex-col gap-5">
+                    <div className="flex-1 overflow-y-auto px-6 py-5 min-h-0">
+                      <div className="flex flex-col gap-6">
 
-                        {/* Amount */}
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Amount<span className="text-red-500">*</span>
-                          </label>
-                          <div className="flex items-center h-[44px] border border-[#e2e8f0] rounded-[6px] bg-white focus-within:border-[#305EFF] focus-within:ring-1 focus-within:ring-[#305EFF] transition-all">
-                            <div className="flex items-center justify-center w-[44px] h-full border-r border-[#e2e8f0] bg-[#f8fafc]">
-                              <span className="text-[16px] font-medium text-[#64748b]">₹</span>
+                        {/* ═══════════════════════════════════════════════════════════════
+                            SECTION 1: Payment Details (Essential)
+                        ═══════════════════════════════════════════════════════════════ */}
+                        <div className="flex flex-col gap-4">
+                          {/* Amount - Hero field */}
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-[13px] font-medium text-[#64748b] uppercase tracking-wide">
+                              Amount<span className="text-red-500 ml-0.5">*</span>
+                            </label>
+                            <div className="flex items-center h-[52px] border border-[#e2e8f0] rounded-lg bg-white focus-within:border-[#305EFF] focus-within:ring-2 focus-within:ring-[#305EFF]/20 transition-all">
+                              <div className="flex items-center justify-center w-[52px] h-full border-r border-[#e2e8f0] bg-[#f8fafc] rounded-l-lg">
+                                <span className="text-[18px] font-medium text-[#64748b]">₹</span>
+                              </div>
+                              <input
+                                ref={amountRef}
+                                type="text"
+                                value={formData.amount}
+                                onChange={(e) => updateField('amount', e.target.value)}
+                                className="flex-1 h-full px-4 text-[18px] font-medium text-[#1e293b] outline-none bg-transparent placeholder:text-[#94a3b8] placeholder:font-normal"
+                                placeholder="0.00"
+                              />
                             </div>
+                          </div>
+
+                          {/* Purpose */}
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-[13px] font-medium text-[#64748b] uppercase tracking-wide">
+                              Description
+                            </label>
                             <input
-                              ref={amountRef}
                               type="text"
-                              value={formData.amount}
-                              onChange={(e) => updateField('amount', e.target.value)}
-                              className="flex-1 h-full px-3 text-[15px] text-[#1e293b] outline-none bg-transparent placeholder:text-[#94a3b8]"
-                              placeholder="100.00"
+                              value={formData.purpose}
+                              onChange={(e) => updateField('purpose', e.target.value)}
+                              className="h-[44px] px-3 border border-[#e2e8f0] rounded-lg text-[15px] text-[#1e293b] outline-none bg-white focus:border-[#305EFF] focus:ring-2 focus:ring-[#305EFF]/20 transition-all placeholder:text-[#94a3b8]"
+                              placeholder="What is this payment for?"
                             />
                           </div>
                         </div>
 
-                        {/* Payment For */}
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Payment For
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.purpose}
-                            onChange={(e) => updateField('purpose', e.target.value)}
-                            className="h-[44px] px-3 border border-[#e2e8f0] rounded-[6px] text-[15px] text-[#1e293b] outline-none bg-white focus:border-[#305EFF] focus:ring-1 focus:ring-[#305EFF] transition-all placeholder:text-[#94a3b8]"
-                            placeholder="Payment description"
-                          />
+                        {/* Divider */}
+                        <div className="h-px bg-[#e2e8f0]" />
+
+                        {/* ═══════════════════════════════════════════════════════════════
+                            SECTION 2: Customer Information
+                        ═══════════════════════════════════════════════════════════════ */}
+                        <div className="flex flex-col gap-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[13px] font-medium text-[#64748b] uppercase tracking-wide">
+                              Send To
+                            </span>
+                            <span className="text-[12px] text-[#94a3b8]">Optional</span>
+                          </div>
+
+                          {/* Email */}
+                          <div className="flex items-center h-[44px] border border-[#e2e8f0] rounded-lg bg-white focus-within:border-[#305EFF] focus-within:ring-2 focus-within:ring-[#305EFF]/20 transition-all">
+                            <div className="flex items-center justify-center w-[44px] h-full">
+                              <Mail size={16} className="text-[#94a3b8]" />
+                            </div>
+                            <input
+                              type="email"
+                              value={formData.email}
+                              onChange={(e) => updateField('email', e.target.value)}
+                              className="flex-1 h-full pr-3 text-[15px] text-[#1e293b] outline-none bg-transparent placeholder:text-[#94a3b8]"
+                              placeholder="customer@email.com"
+                            />
+                            {formData.email && (
+                              <label className="flex items-center gap-1.5 pr-3 cursor-pointer select-none">
+                                <div
+                                  onClick={() => updateField('notifyEmail', !formData.notifyEmail)}
+                                  className={`w-4 h-4 rounded border flex items-center justify-center transition-all
+                                    ${formData.notifyEmail ? 'bg-[#305EFF] border-[#305EFF]' : 'border-[#cbd5e1] hover:border-[#94a3b8]'}`}
+                                >
+                                  {formData.notifyEmail && <Check size={10} strokeWidth={3} className="text-white" />}
+                                </div>
+                                <span className="text-[12px] text-[#64748b]">Notify</span>
+                              </label>
+                            )}
+                          </div>
+
+                          {/* Phone */}
+                          <div className="flex items-center h-[44px] border border-[#e2e8f0] rounded-lg bg-white focus-within:border-[#305EFF] focus-within:ring-2 focus-within:ring-[#305EFF]/20 transition-all">
+                            <div className="flex items-center justify-center w-[44px] h-full">
+                              <Phone size={16} className="text-[#94a3b8]" />
+                            </div>
+                            <input
+                              type="text"
+                              value={formData.phone}
+                              onChange={(e) => updateField('phone', e.target.value)}
+                              className="flex-1 h-full pr-3 text-[15px] text-[#1e293b] outline-none bg-transparent placeholder:text-[#94a3b8]"
+                              placeholder="+91 9876543210"
+                            />
+                            {formData.phone && (
+                              <label className="flex items-center gap-1.5 pr-3 cursor-pointer select-none">
+                                <div
+                                  onClick={() => updateField('notifySms', !formData.notifySms)}
+                                  className={`w-4 h-4 rounded border flex items-center justify-center transition-all
+                                    ${formData.notifySms ? 'bg-[#305EFF] border-[#305EFF]' : 'border-[#cbd5e1] hover:border-[#94a3b8]'}`}
+                                >
+                                  {formData.notifySms && <Check size={10} strokeWidth={3} className="text-white" />}
+                                </div>
+                                <span className="text-[12px] text-[#64748b]">SMS</span>
+                              </label>
+                            )}
+                          </div>
                         </div>
 
-                        {/* Customer Details */}
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Customer Details
-                          </label>
+                        {/* Divider */}
+                        <div className="h-px bg-[#e2e8f0]" />
+
+                        {/* ═══════════════════════════════════════════════════════════════
+                            SECTION 3: Link Settings (Collapsible)
+                        ═══════════════════════════════════════════════════════════════ */}
+                        <div className="flex flex-col gap-4">
+                          <span className="text-[13px] font-medium text-[#64748b] uppercase tracking-wide">
+                            Link Settings
+                          </span>
+
+                          {/* Reference ID + Expiry in a row */}
                           <div className="flex gap-3">
-                            {/* Email */}
-                            <div className="flex-1 flex items-center h-[44px] border border-[#e2e8f0] rounded-[6px] bg-white focus-within:border-[#305EFF] focus-within:ring-1 focus-within:ring-[#305EFF] transition-all">
-                              <div className="flex items-center justify-center w-[40px] h-full">
-                                <Mail size={16} className="text-[#94a3b8]" />
-                              </div>
-                              <input
-                                type="email"
-                                value={formData.email}
-                                onChange={(e) => updateField('email', e.target.value)}
-                                className="flex-1 h-full pr-3 text-[15px] text-[#1e293b] outline-none bg-transparent placeholder:text-[#94a3b8]"
-                                placeholder="john@example.c"
-                              />
-                            </div>
-                            {/* Phone */}
-                            <div className="flex-1 flex items-center h-[44px] border border-[#e2e8f0] rounded-[6px] bg-white focus-within:border-[#305EFF] focus-within:ring-1 focus-within:ring-[#305EFF] transition-all">
-                              <div className="flex items-center justify-center w-[40px] h-full">
-                                <Phone size={16} className="text-[#94a3b8]" />
-                              </div>
+                            {/* Reference ID */}
+                            <div className="flex-1 flex flex-col gap-1.5">
+                              <label className="text-[13px] text-[#64748b]">Reference ID</label>
                               <input
                                 type="text"
-                                value={formData.phone}
-                                onChange={(e) => updateField('phone', e.target.value)}
-                                className="flex-1 h-full pr-3 text-[15px] text-[#1e293b] outline-none bg-transparent placeholder:text-[#94a3b8]"
-                                placeholder="+91 9876543210"
+                                value={formData.referenceId}
+                                onChange={(e) => updateField('referenceId', e.target.value)}
+                                className="h-[40px] px-3 border border-[#e2e8f0] rounded-lg text-[14px] text-[#1e293b] outline-none bg-white focus:border-[#305EFF] focus:ring-2 focus:ring-[#305EFF]/20 transition-all placeholder:text-[#94a3b8]"
+                                placeholder="INV-001"
                               />
                             </div>
-                          </div>
 
-                          {/* Notify checkboxes */}
-                          <div className="flex gap-6 mt-2">
-                            <Checkbox
-                              checked={formData.notifyEmail}
-                              onChange={(checked) => updateField('notifyEmail', checked)}
-                              label="Notify via Email"
-                            />
-                            <Checkbox
-                              checked={formData.notifySms}
-                              onChange={(checked) => updateField('notifySms', checked)}
-                              label="Notify via SMS"
-                            />
-                          </div>
-
-                          {/* More ways to notify */}
-                          <a
-                            href="#"
-                            className="flex items-center gap-1 text-[14px] text-[#305EFF] hover:text-[#1a4cd6] mt-1 w-fit"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            More ways to notify
-                            <ExternalLink size={14} />
-                          </a>
-                        </div>
-
-                        {/* Reference Id */}
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Reference Id
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.referenceId}
-                            onChange={(e) => updateField('referenceId', e.target.value)}
-                            className="h-[44px] px-3 border border-[#e2e8f0] rounded-[6px] text-[15px] text-[#1e293b] outline-none bg-white focus:border-[#305EFF] focus:ring-1 focus:ring-[#305EFF] transition-all placeholder:text-[#94a3b8]"
-                            placeholder="123456"
-                          />
-                        </div>
-
-                        {/* Link Expiry */}
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Link Expiry
-                          </label>
-                          <Checkbox
-                            checked={formData.noExpiry}
-                            onChange={(checked) => updateField('noExpiry', checked)}
-                            label="No Expiry"
-                          />
-                          <div className="flex items-center h-[44px] w-[180px] border border-[#e2e8f0] rounded-[6px] bg-white">
-                            <input
-                              type="text"
-                              value={formData.expiryDate}
-                              onChange={(e) => updateField('expiryDate', e.target.value)}
-                              disabled={formData.noExpiry}
-                              className={`flex-1 h-full px-3 text-[15px] outline-none bg-transparent placeholder:text-[#94a3b8] ${formData.noExpiry ? 'text-[#94a3b8]' : 'text-[#1e293b]'}`}
-                              placeholder="DD-MM-YYYY"
-                            />
-                            <div className="flex items-center justify-center w-[40px] h-full border-l border-[#e2e8f0] bg-[#f8fafc] rounded-r-[6px]">
-                              <Calendar size={16} className="text-[#64748b]" />
+                            {/* Expiry */}
+                            <div className="flex-1 flex flex-col gap-1.5">
+                              <label className="text-[13px] text-[#64748b]">Expires</label>
+                              <div className="flex items-center h-[40px] border border-[#e2e8f0] rounded-lg bg-white overflow-hidden">
+                                <input
+                                  type="text"
+                                  value={formData.noExpiry ? '' : formData.expiryDate}
+                                  onChange={(e) => {
+                                    updateField('expiryDate', e.target.value);
+                                    if (e.target.value) updateField('noExpiry', false);
+                                  }}
+                                  className="flex-1 h-full px-3 text-[14px] text-[#1e293b] outline-none bg-transparent placeholder:text-[#94a3b8]"
+                                  placeholder="Never"
+                                />
+                                <div className="flex items-center justify-center w-[36px] h-full border-l border-[#e2e8f0] bg-[#f8fafc]">
+                                  <Calendar size={14} className="text-[#64748b]" />
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Reminders */}
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Reminders
-                          </label>
-                          <p className="text-[14px] text-[#64748b]">
-                            Reminders is not set to payment links with no expiry date.
-                          </p>
+                          {/* Toggle options */}
+                          <div className="flex flex-wrap gap-x-6 gap-y-2">
+                            <Checkbox
+                              checked={formData.enablePartialPayment}
+                              onChange={(checked) => updateField('enablePartialPayment', checked)}
+                              label="Allow partial payments"
+                            />
+                          </div>
+
+                          {/* Notes link */}
                           <a
                             href="#"
-                            className="text-[14px] text-[#305EFF] hover:text-[#1a4cd6] w-fit"
+                            className="flex items-center gap-1.5 text-[13px] text-[#305EFF] hover:text-[#1a4cd6] w-fit"
                             onClick={(e) => e.preventDefault()}
                           >
-                            Set it up here
-                          </a>
-                        </div>
-
-                        {/* Partial Payment */}
-                        <div className="flex flex-col gap-2">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Partial Payment
-                          </label>
-                          <Checkbox
-                            checked={formData.enablePartialPayment}
-                            onChange={(checked) => updateField('enablePartialPayment', checked)}
-                            label="Enable Partial Payment"
-                          />
-                        </div>
-
-                        {/* Notes */}
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[14px] font-medium text-[#3a4755]">
-                            Notes
-                          </label>
-                          <a
-                            href="#"
-                            className="text-[14px] text-[#305EFF] hover:text-[#1a4cd6] w-fit"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            + Add New
+                            <span className="text-[16px] leading-none">+</span>
+                            Add notes or custom fields
                           </a>
                         </div>
 

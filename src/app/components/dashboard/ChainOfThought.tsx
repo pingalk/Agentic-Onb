@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { useDemo } from '@/context/DemoContext';
 import { thinkingSteps, defaultThinkingSteps } from './useDemoScript';
 import Ray from '@/imports/Ray';
-import SparkRipplesBackground from './SparkRipplesBackground';
 
 export interface ChainOfThoughtProps {
   steps?: string[];
@@ -157,33 +156,6 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
         )}
       </div>
 
-      {/* Spark Ripples - shown during waiting/streaming modes - matches home page style */}
-      <AnimatePresence>
-        {(isWaiting || isStreaming) && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 120 }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-            className="relative w-full overflow-hidden"
-          >
-            {/* Scaled animation like home page */}
-            <motion.div
-              className="absolute inset-0"
-              style={{
-                transform: 'translateY(-60px) scale(1.5)',
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <SparkRipplesBackground opacity={1} loop={false} />
-            </motion.div>
-            {/* Bottom gradient to blend with page */}
-            <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-[#f8f8f8] via-[#f8f8f8]/80 to-transparent" />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Suggestions - only shown in complete mode */}
       {isComplete && suggestions.length > 0 && (

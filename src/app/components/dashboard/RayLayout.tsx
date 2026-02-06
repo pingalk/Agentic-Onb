@@ -2,30 +2,38 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useFormStore, FormProvider } from './FormStore';
 import { RayChatInterface } from './RayChatInterface';
+import { CardShowcase } from './CardShowcase';
 import { ArtifactRenderer } from './ArtifactRenderer';
 import { ActionAccordion } from './ActionAccordion';
 import { ActionWidgetVariant2 } from './ActionWidgetVariant2';
 import { ViewModeToggle } from './ViewModeToggle';
+import { useDemo } from '@/context/DemoContext';
 
 const RayLayoutContent = ({ initialQuery, isEntering }: { initialQuery?: string; isEntering?: boolean }) => {
   const flow = useFormStore();
   const { viewMode, isOpen, intent } = flow;
-  
+  const { currentPersona } = useDemo();
+
+  // Showcase persona gets storybook-style page instead of chat
+  if (currentPersona.id === 'showcase') {
+    return <CardShowcase />;
+  }
+
   // If the flow is open and mode is 'split', we show split view.
   // Otherwise we show full width chat.
-  
+
   const isSplitActive = isOpen && viewMode === 'split';
   const isCardActive = isOpen && viewMode === 'card';
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-slate-50/30 relative gap-6">
-      
+
       {/* LEFT PANEL: CHAT STREAM */}
-      <motion.div 
-        layout 
-        className="h-full relative z-10 transition-all duration-700 ease-[0.2,0,0,1]" 
+      <motion.div
+        layout
+        className="h-full relative z-10 transition-all duration-700 ease-[0.2,0,0,1]"
         initial={false}
-        animate={{ 
+        animate={{
           width: isSplitActive ? '55%' : '100%',
           opacity: isCardActive ? 0 : 1,
           pointerEvents: isCardActive ? 'none' : 'auto'
@@ -33,8 +41,8 @@ const RayLayoutContent = ({ initialQuery, isEntering }: { initialQuery?: string;
         style={{
             paddingRight: isSplitActive ? '0' : '0'
         }}
-        transition={{ 
-          duration: 0.7, 
+        transition={{
+          duration: 0.7,
           ease: [0.2, 0, 0, 1] // Rauno Bezier
         }}
       >

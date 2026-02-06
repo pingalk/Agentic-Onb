@@ -181,6 +181,13 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
       setIsOnRayLandingPage(false);
     };
   }, [view, setIsInChatView, setIsOnRayLandingPage]);
+
+  // Auto-switch to chat view for showcase persona (shows CardShowcase)
+  React.useEffect(() => {
+    if (currentPersona.id === 'showcase') {
+      setView('chat');
+    }
+  }, [currentPersona.id]);
   const [prompt, setPrompt] = useState(initialQuery || '');
   const [waveTrigger, setWaveTrigger] = useState(0);
   const [lastQuery, setLastQuery] = useState("");
@@ -701,7 +708,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                      {/* Input Box with Spotlight Animation - moves to bottom and fades out during transition */}
                      <motion.div
                         ref={inputRef}
-                        className={`max-w-2xl mb-8 ${viewTransition === 'exiting' ? 'fixed z-50 left-1/2 -translate-x-1/2' : 'relative w-full'}`}
+                        className={`max-w-2xl mb-6 ${viewTransition === 'exiting' ? 'fixed z-50 left-1/2 -translate-x-1/2' : 'relative w-full'}`}
                         style={viewTransition === 'exiting' && inputStartRect ? {
                             top: inputStartRect.top,
                             width: inputStartRect.width,
@@ -759,13 +766,16 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                         </motion.div>
                      </motion.div>
 
-                     {/* Suggestion Chips Panel - appears after animation completes */}
+                     {/* Suggestion Chips Panel - appears after animation completes, fades out on transition */}
                      {animPhase >= 7 && (
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                            className="mt-6"
+                            animate={{
+                                opacity: viewTransition === 'exiting' ? 0 : 1,
+                                y: viewTransition === 'exiting' ? -10 : 0
+                            }}
+                            transition={{ duration: viewTransition === 'exiting' ? 0.2 : 0.4, delay: viewTransition === 'exiting' ? 0 : 0.2, ease: [0.4, 0, 0.2, 1] }}
+                            className="mt-0"
                         >
                             <SuggestionChipsPanel onPromptSelect={setPrompt} />
                         </motion.div>

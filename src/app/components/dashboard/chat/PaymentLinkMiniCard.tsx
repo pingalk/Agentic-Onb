@@ -20,6 +20,8 @@ export interface PaymentLinkMiniCardProps {
   isLoading?: boolean;
   linkUrl?: string;
   isAnimatingToModal?: boolean;
+  formId?: string; // Used for querying the element for auto-open animations
+  onAnimationComplete?: () => void; // Called when card animation finishes
 }
 
 export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
@@ -28,7 +30,9 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
   onClick,
   isLoading = false,
   linkUrl,
-  isAnimatingToModal = false
+  isAnimatingToModal = false,
+  formId,
+  onAnimationComplete
 }) => {
   const [copied, setCopied] = useState(false);
   const cardRef = useRef<HTMLButtonElement>(null);
@@ -70,58 +74,55 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
 
   const isCompleted = status === 'completed';
 
-  // When completed, render as a div (non-clickable)
+  // When completed, render as a div (non-clickable) - Premium styling
   if (isCompleted) {
     return (
       <motion.div
-        className="w-full max-w-[320px] text-left bg-white border border-[#22c55e]/30 rounded-[12px] overflow-hidden"
-        initial={{ opacity: 0, y: 10 }}
+        className="w-full max-w-[420px] text-left rounded-xl overflow-hidden border border-[#d1fae5] transition-shadow hover:shadow-md"
+        style={{ background: 'linear-gradient(180deg, rgb(255,255,255) 0%, rgb(255,255,255) 72%, rgb(240,253,244) 100%)' }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+        onAnimationComplete={onAnimationComplete}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 bg-[#22c55e]/5">
-          <div className="flex items-center gap-2">
+        <div className="p-4">
+          {/* Success label */}
+          <div className="flex items-center gap-2 mb-3">
             <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#22c55e]/10">
-              <Check size={14} className="text-[#22c55e]" />
+              <Check size={12} className="text-[#22c55e]" />
             </div>
-            <span className="text-[13px] font-medium text-[#22c55e]">
+            <span className="text-[12px] font-medium text-[#22c55e] tracking-[-0.3px]">
               Payment Link Created
             </span>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="px-3 py-2.5 border-t border-[#f1f5f9]">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[15px] font-medium text-[#1e293b]">
-              ₹{formatAmount(formData.amount)}
-            </span>
-            {formData.purpose && (
-              <>
-                <span className="text-[#cbd5e1]">•</span>
-                <span className="text-[13px] text-[#64748b]">
-                  {truncatePurpose(formData.purpose)}
-                </span>
-              </>
-            )}
+          {/* Amount - Display font */}
+          <div className="text-[24px] font-['TASA_Orbiter_Display'] font-medium text-[#050505]">
+            ₹{formatAmount(formData.amount)}
           </div>
+
+          {/* Purpose */}
+          {formData.purpose && (
+            <p className="text-[14px] text-[#7d7d7d] mt-1 leading-[20px]">
+              {truncatePurpose(formData.purpose)}
+            </p>
+          )}
+
+          {/* Email */}
           {formData.email && (
-            <div className="mt-1 text-[12px] text-[#94a3b8]">
-              {formData.email}
-            </div>
+            <p className="text-[12px] text-[#a0a0a0] mt-1">{formData.email}</p>
           )}
 
           {/* Link URL with copy button */}
           {linkUrl && (
-            <div className="mt-3 flex items-center gap-2 p-2 bg-[#f8fafc] rounded-[6px] border border-[#e2e8f0]">
+            <div className="mt-3 flex items-center gap-2 p-2.5 bg-[#f8fafc] rounded-lg border border-[#e2e8f0]">
               <Link2 size={14} className="text-[#64748b] flex-shrink-0" />
               <span className="text-[13px] text-[#305EFF] truncate flex-1">
                 {linkUrl}
               </span>
               <button
                 onClick={handleCopyLink}
-                className="flex items-center justify-center w-7 h-7 rounded-[4px] hover:bg-[#e2e8f0] transition-colors flex-shrink-0"
+                className="flex items-center justify-center w-7 h-7 rounded hover:bg-[#e2e8f0] transition-colors flex-shrink-0"
               >
                 {copied ? (
                   <CheckCircle size={14} className="text-[#22c55e]" />
@@ -136,79 +137,62 @@ export const PaymentLinkMiniCard: React.FC<PaymentLinkMiniCardProps> = ({
     );
   }
 
-  // Draft state - clickable button
+  // Draft state - clickable button - Premium styling
   // When animating to modal, hide entire card instantly (morphing element takes over)
   return (
     <motion.button
       ref={cardRef}
       onClick={handleClick}
-      className={`
-        w-full max-w-[320px] text-left relative
-        bg-white border rounded-[12px] overflow-hidden
-        transition-shadow duration-200
-        border-[#305EFF]/30 hover:border-[#305EFF]/50 hover:shadow-md
-      `}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{
-        opacity: 1,
-        y: 0,
+      data-form-id={formId}
+      className="w-full max-w-[420px] text-left relative rounded-xl overflow-hidden border border-[#dee1e3] transition-shadow hover:shadow-md"
+      style={{
+        background: 'linear-gradient(180deg, rgb(255,255,255) 0%, rgb(255,255,255) 72%, rgb(247,247,248) 100%)',
+        pointerEvents: isAnimatingToModal ? 'none' : 'auto',
+        visibility: isAnimatingToModal ? 'hidden' : 'visible'
       }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       whileHover={isAnimatingToModal ? {} : { scale: 1.01 }}
       whileTap={isAnimatingToModal ? {} : { scale: 0.99 }}
-      transition={{
-        type: 'spring',
-        damping: 20,
-        stiffness: 300,
-      }}
-      style={{
-        pointerEvents: isAnimatingToModal ? 'none' : 'auto',
-        visibility: isAnimatingToModal ? 'hidden' : 'visible' // Instant hide, no flicker
-      }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      onAnimationComplete={onAnimationComplete}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 bg-[#305EFF]/5">
-        <div className="flex items-center gap-2">
+      <div className="p-4">
+        {/* Label row */}
+        <div className="flex items-center gap-2 mb-3">
           <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#305EFF]/10">
-            <Link2 size={14} className="text-[#305EFF]" />
+            <Link2 size={12} className="text-[#305EFF]" />
           </div>
-          <span className="text-[13px] font-medium text-[#305EFF]">
+          <span className="text-[12px] font-medium text-[#7d7d7d] tracking-[-0.3px]">
             Payment Link Draft
           </span>
+          <ChevronRight size={14} className="text-[#7d7d7d] ml-auto" />
         </div>
-        <ChevronRight size={16} className="text-[#94a3b8]" />
-      </div>
 
-      {/* Content */}
-      <div className="px-3 py-2.5 border-t border-[#f1f5f9]">
         {isLoading ? (
           /* Skeleton State */
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-1.5">
-              <div className="h-[18px] w-[72px] bg-[#e2e8f0] rounded animate-pulse" />
-              <div className="h-[14px] w-[140px] bg-[#e2e8f0] rounded animate-pulse" />
-            </div>
+            <div className="h-[28px] w-[100px] bg-[#e2e8f0] rounded animate-pulse" />
+            <div className="h-[16px] w-[180px] bg-[#e2e8f0] rounded animate-pulse" />
             <div className="h-[14px] w-[120px] bg-[#e2e8f0] rounded animate-pulse" />
           </div>
         ) : (
-          /* Actual Content */
           <>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-[15px] font-medium text-[#1e293b]">
-                ₹{formatAmount(formData.amount)}
-              </span>
-              {formData.purpose && (
-                <>
-                  <span className="text-[#cbd5e1]">•</span>
-                  <span className="text-[13px] text-[#64748b]">
-                    {truncatePurpose(formData.purpose)}
-                  </span>
-                </>
-              )}
+            {/* Amount - Display font */}
+            <div className="text-[24px] font-['TASA_Orbiter_Display'] font-medium text-[#050505]">
+              ₹{formatAmount(formData.amount)}
             </div>
+
+            {/* Purpose */}
+            {formData.purpose && (
+              <p className="text-[14px] text-[#7d7d7d] mt-1 leading-[20px]">
+                {truncatePurpose(formData.purpose)}
+              </p>
+            )}
+
+            {/* Email */}
             {formData.email && (
-              <div className="mt-1 text-[12px] text-[#94a3b8]">
-                {formData.email}
-              </div>
+              <p className="text-[12px] text-[#a0a0a0] mt-1">{formData.email}</p>
             )}
           </>
         )}

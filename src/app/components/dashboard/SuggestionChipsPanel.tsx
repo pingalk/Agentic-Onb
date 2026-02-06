@@ -106,7 +106,7 @@ export const SuggestionChipsPanel: React.FC<SuggestionChipsPanelProps> = ({
         ))}
       </div>
 
-      {/* Expandable Panel - appears below chips */}
+      {/* Expandable Panel - appears below chips as overlay (absolute positioned) */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -114,7 +114,7 @@ export const SuggestionChipsPanel: React.FC<SuggestionChipsPanelProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-            className="mt-4"
+            className="absolute left-0 right-0 top-full mt-4 z-50"
           >
             <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] py-2">
               {/* Prompts - Single Column with Dividers */}

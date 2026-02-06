@@ -62,66 +62,43 @@ export const FundsAddedBody = () => {
   );
 };
 
-export const SettlementCard = () => {
+export const SettlementCard = ({ amount = '3,10,000', date = 'Will deposit tomorrow 10:00 AM', step = 1 }: { amount?: string; date?: string; step?: number }) => {
   return (
-    <div className="relative rounded-[12px] w-full max-w-[573px] overflow-hidden border border-[rgba(181,217,250,0.23)] shadow-[0px_6px_32px_4px_rgba(184,196,214,0.06)] h-[108px]" 
-         style={{ backgroundImage: "linear-gradient(rgb(255, 255, 255) 0%, rgb(255, 255, 255) 27.731%, rgb(255, 255, 255) 71.787%, rgb(227, 246, 255) 100%)" }}>
-      
-      {/* Icon Box Frame3 -> Frame2 -> Frame5 */}
-      <div className="absolute left-[8px] top-[8px] size-[96px]">
-        {/* Frame2 */}
-        <div className="absolute inset-0 rounded-[6px] overflow-clip" style={{ backgroundImage: "linear-gradient(115.198deg, rgb(255, 255, 255) 22.005%, rgb(234, 245, 251) 90.552%)" }}>
-           {/* Frame5 */}
-           <div className="absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] rounded-[135.714px] overflow-clip size-[76px]">
-               <CreditCardClockIcon />
-           </div>
+    <div
+      className="w-full max-w-[420px] rounded-xl overflow-hidden border border-[#dee1e3] transition-shadow hover:shadow-md"
+      style={{ background: 'linear-gradient(180deg, rgb(255,255,255) 0%, rgb(255,255,255) 72%, rgb(247,247,248) 100%)' }}
+    >
+      <div className="p-4">
+        {/* Label */}
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#305EFF]/10">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#305EFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+          </div>
+          <span className="text-[12px] font-medium text-[#7d7d7d] tracking-[-0.3px]">Settlement</span>
         </div>
+
+        {/* Amount - Display font */}
+        <div className="text-[32px] font-['TASA_Orbiter_Display'] font-medium text-[#050505] leading-tight">
+          ₹{amount}
+        </div>
+
+        {/* Date */}
+        <p className="text-[14px] text-[#7d7d7d] mt-1">{date}</p>
+
+        {/* Progress bar */}
+        <div className="mt-3 flex gap-[2px]">
+          {[1, 2, 3, 4].map((s) => (
+            <div
+              key={s}
+              className={`h-1 flex-1 ${s <= step ? 'bg-[#10c382]' : 'bg-[#dfdfdf]'}`}
+            />
+          ))}
+        </div>
+        <p className="text-[10px] text-[#7d7d7d] opacity-50 mt-1.5 font-medium">Settlement status: Scheduled</p>
       </div>
-
-      {/* Progress Bars Frame4 */}
-      <div className="absolute flex gap-[2px] items-center left-[115px] top-[71px] content-stretch">
-        <div className="bg-[#10c382] h-[4px] shrink-0 w-[77px]" />
-        <div className="bg-[#dfdfdf] h-[4px] shrink-0 w-[77px]" />
-        <div className="bg-[#dfdfdf] h-[4px] shrink-0 w-[77px]" />
-        <div className="bg-[#dfdfdf] h-[4px] shrink-0 w-[77px]" />
-      </div>
-
-      {/* Status Text */}
-      <p className="absolute left-[115px] top-[83px] text-[10px] text-black opacity-50 font-medium leading-[14px] font-sans">
-        Settlement status: Scheduled
-      </p>
-
-      {/* Main Content Text */}
-      <div className="absolute left-[118px] top-[12px] leading-[0]">
-         <span className="block leading-[24px] text-[#0f78ad] text-[18px] font-sans font-medium">Settlement on the way</span>
-         <span className="block h-[2px]" /> {/* Spacer per Figma <br> */}
-         <span className="block leading-[20px] text-[#768ea7] text-[14px] font-normal font-sans">Settlement scheduled for Jan 24, 2026 10:00 AM</span>
-      </div>
-
-      {/* Amount - Right Aligned - Amount -> Root -> AmountBase */}
-      <div className="absolute right-[16px] top-[12px] flex items-end justify-end">
-         <div className="flex items-baseline relative shrink-0 gap-[2px]">
-            {/* Currency Symbol */}
-            <div className="flex items-baseline opacity-64 relative shrink-0">
-               <p className="font-medium leading-[20px] text-[#192839] text-[14px] text-right font-sans">₹</p>
-            </div>
-            
-            {/* Value Container */}
-            <div className="flex items-baseline relative shrink-0">
-               {/* Main Value */}
-               <div className="flex items-baseline relative shrink-0">
-                  <p className="font-medium leading-[26px] text-[#192839] text-[20px] text-right font-sans">1,26,000</p>
-               </div>
-               {/* Decimal Container */}
-               <div className="flex items-baseline opacity-64 relative shrink-0">
-                  <p className="font-medium leading-[20px] text-[#192839] text-[14px] text-right font-sans">.00</p>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      {/* Inner Shadow overlay */}
-      <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_1px_white,inset_0px_1.5px_0px_1px_white]" />
     </div>
   );
 };

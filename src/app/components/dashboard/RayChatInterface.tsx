@@ -216,9 +216,10 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     });
   };
 
-  // Reset demo flow ref when persona changes
+  // Reset demo flow and clear messages when persona changes
   useEffect(() => {
     demoFlowStartedRef.current = false;
+    setMessages([]);
   }, [currentPersona.id]);
 
   // Detect when streaming ends and trigger post-streaming glow
@@ -759,34 +760,13 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     }, 400);
   }, [initialQuery, briefingReviewHandled, messages.length, currentPersona.theme, briefingReviewResponses]);
 
-  // Auto-scroll: AI messages show start (user message scroll handled by smart scroll effect above)
-  // Note: prevMessageCountRef is updated in the effect above, so we use a local comparison here
+  // Gemini-style scroll: NO auto-scroll during AI streaming
+  // User message is already scrolled to top by the smart scroll effect above
+  // We intentionally don't scroll during AI response to enable easy reading
   const prevAiScrollLengthRef = useRef(0);
   useEffect(() => {
-    if (!scrollContainerRef.current || messages.length === 0) return;
-
-    const isNewMessage = messages.length > prevAiScrollLengthRef.current;
     prevAiScrollLengthRef.current = messages.length;
-
-    if (!isNewMessage) return;
-
-    const lastMessage = messages[messages.length - 1];
-
-    // Only handle AI message scrolling here - user message scroll is handled by the smart scroll effect
-    if (lastMessage.sender !== 'ai' || lastMessage.isThinking) return;
-
-    // Skip auto-scroll for Varun's elegant scroll flow - the user message is already positioned at top
-    // and we don't want to interfere with the smooth animation sequence
-    if (VARUN_ELEGANT_SCROLL && currentPersona.id === 'varun') return;
-
-    setTimeout(() => {
-      const messageEl = messageRefs.current.get(lastMessage.id);
-      if (!messageEl || !scrollContainerRef.current) return;
-
-      // AI message: scroll to show start of response
-      messageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  }, [messages.length, currentPersona.id]);
+  }, [messages.length]);
 
   // Handle Scroll to toggle button visibility
   const handleScroll = () => {
@@ -1007,7 +987,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
             };
             setPaymentLinkPrefill(prefillData);
 
-            // Remove thinking, add mini-card with skeleton loading state
+            // Remove thinking, add mini-card artifact
+            // The artifact handles its own streaming phases (headline → subtext → card)
+            // Modal opens automatically via onMiniCardAnimationComplete callback
             setMessages(prev => {
               const filtered = prev.filter(m => m.id !== thinkingId);
               return [...filtered, {
@@ -1019,35 +1001,16 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                     formId: formCardId,
                     status: 'draft' as const,
                     prefill: prefillData,
-                    isLoading: true
+                    isLoading: false, // Let artifact handle reveal via streaming phases
+                    headline: "I'll create a payment link for Rahul",
+                    subtext: "Based on the failed transaction, I've pre-filled the details. You can review and adjust before sending.",
+                    suggestions: ['Send this link via WhatsApp', 'Send this link via Email', 'View all payment links']
                   }
                 }
               }];
             });
 
-            // After 2 seconds, show mini-card details
-            setTimeout(() => {
-              setMessages(prev => prev.map(msg =>
-                msg.id === formCardId ? {
-                  ...msg,
-                  artifact: {
-                    ...msg.artifact,
-                    data: {
-                      ...msg.artifact?.data,
-                      isLoading: false
-                    }
-                  }
-                } : msg
-              ));
-
-              setIsStreaming(false);
-
-              // After a brief delay, open the modal
-              setTimeout(() => {
-                setIsPaymentLinkModalOpen(true);
-                setShyamFlowStep(2);
-              }, 500);
-            }, 2000);
+            setIsStreaming(false);
           }, 15000);
         }, 300);
         return;
@@ -1210,11 +1173,11 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
 
     // Handle question while payment link modal is open
     if (isPaymentLinkModalOpen) {
-      // Capture prefill data before closing modal
-      const savedPrefill = paymentLinkPrefill || {
-        amount: '15000',
-        purpose: 'Payment retry for failed transaction',
-        email: 'rahul@gmail.com'
+      // Capture prefill data before closing modal - use field-level fallbacks
+      const savedPrefill = {
+        amount: paymentLinkPrefill?.amount || '15000',
+        purpose: paymentLinkPrefill?.purpose || 'Payment retry for failed transaction',
+        email: paymentLinkPrefill?.email || 'rahul@gmail.com'
       };
 
       setInputValue('');
@@ -1237,42 +1200,34 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
           isThinking: true
         }]);
 
-        // Show response after delay
+        // Show combined response with text + mini card (single message)
         setTimeout(() => {
+          const continueCardId = `continue-card-${Date.now()}`;
+          setActiveFormCardId(continueCardId);
           setMessages(prev => {
             const withoutThinking = prev.filter(m => !m.isThinking);
             return [...withoutThinking, {
-              id: `ai-response-${Date.now()}`,
-              sender: 'ai' as const,
-              artifact: {
-                type: 'simple_text',
-                data: {
-                  headline: 'Happy to help!',
-                  body: getContextualResponse(userQuestion),
-                }
-              }
-            }];
-          });
-          setIsStreaming(false);
-
-          // Show mini card to continue after response has fully streamed (7s delay)
-          setTimeout(() => {
-            const continueCardId = `continue-card-${Date.now()}`;
-            setActiveFormCardId(continueCardId);
-            setMessages(prev => [...prev, {
               id: continueCardId,
               sender: 'ai' as const,
               artifact: {
                 type: 'payment_link_form_card' as const,
                 data: {
                   formId: continueCardId,
+                  headline: 'Happy to help!',
+                  subtext: getContextualResponse(userQuestion),
                   status: 'draft' as const,
                   prefill: savedPrefill,
-                  isLoading: false
+                  isLoading: false,
+                  suggestions: [
+                    'What happens after payment?',
+                    'Can I track this payment?',
+                    'Send payment reminder'
+                  ]
                 }
               }
-            }]);
-          }, 7000);
+            }];
+          });
+          setIsStreaming(false);
         }, 1500);
       }, 300);
 
@@ -1325,18 +1280,18 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
           });
           setIsStreaming(false);
 
-          // Show mini card to continue after response has fully streamed (7s delay)
+          // Show settlement card to continue after response has fully streamed (7s delay)
           setTimeout(() => {
             const continueCardId = `continue-add-funds-${Date.now()}`;
             setMessages(prev => [...prev, {
               id: continueCardId,
               sender: 'ai' as const,
               artifact: {
-                type: 'add_funds_form_card' as const,
+                type: 'settlement_card' as const,
                 data: {
-                  formId: continueCardId,
-                  prefill: savedAddFundsData,
-                  isLoading: false
+                  amount: savedAddFundsData.amount ? new Intl.NumberFormat('en-IN').format(parseInt(savedAddFundsData.amount)) : '46,000',
+                  date: 'Will deposit tomorrow 10:00 AM',
+                  step: 1
                 }
               }
             }]);
@@ -1642,7 +1597,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className={`flex-1 overflow-y-auto px-3 md:px-6 pt-4 md:pt-6 pb-32 md:pb-56 scrollbar-hide ${ENABLE_PIN_TO_TOP ? 'flex flex-col' : ''}`}
+          className={`flex-1 overflow-y-auto px-3 md:px-6 pt-4 md:pt-6 pb-[80vh] scrollbar-hide ${ENABLE_PIN_TO_TOP ? 'flex flex-col' : ''}`}
         >
            <div className={`flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full ${selectedTransaction ? 'max-w-full md:max-w-[600px]' : 'max-w-full md:max-w-2xl'} ${ENABLE_PIN_TO_TOP ? 'flex-col-reverse mt-auto' : 'flex-col'}`}>
               {messages.map((msg, index) => {
@@ -1688,6 +1643,23 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                             setIsPaymentLinkModalOpen(true);
                           }
                         }}
+                        onMiniCardAnimationComplete={(formId) => {
+                          // Auto-open modal when mini card animation completes (for Shyam flow)
+                          if (currentPersona.id === 'shyam' && shyamFlowStep === 1 && formId === activeFormCardId) {
+                            const miniCardElement = document.querySelector(`[data-form-id="${formId}"]`);
+                            if (miniCardElement) {
+                              const rect = miniCardElement.getBoundingClientRect();
+                              setPaymentLinkSourceRect({
+                                top: rect.top,
+                                left: rect.left,
+                                width: rect.width,
+                                height: rect.height
+                              });
+                            }
+                            setIsPaymentLinkModalOpen(true);
+                            setShyamFlowStep(2);
+                          }
+                        }}
                         onStreamComplete={msg.id === 'sarah-ai-1' ? handleSarahStreamComplete : undefined}
                       />
                    </motion.div>
@@ -1704,7 +1676,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             onClick={scrollToNext}
-            className="absolute bottom-[130px] left-1/2 -translate-x-1/2 z-[68] size-9 bg-white border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.06)] rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors"
+            className="absolute bottom-[72px] left-1/2 -translate-x-1/2 z-[68] size-9 bg-white border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.06)] rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors"
           >
             <ArrowDown size={18} />
           </motion.button>

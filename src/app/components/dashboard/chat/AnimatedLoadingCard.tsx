@@ -124,7 +124,7 @@ export const AnimatedLoadingCard: React.FC<AnimatedLoadingCardProps> = ({
       {/* Main animated container */}
       <motion.div
         ref={contentRef}
-        className="relative overflow-hidden bg-white"
+        className="relative overflow-hidden"
         style={{ borderRadius }}
         initial={{ height: loadingHeight }}
         animate={{

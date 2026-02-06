@@ -25,6 +25,9 @@ export type TimingSettings = {
   thinkingDuration: number;
   cognitiveDelay: number;
   sequentialDelay: number;
+
+  // Showcase Mode - skip all streaming animations
+  skipStreaming: boolean;
 };
 
 // Default configuration
@@ -52,6 +55,9 @@ export const DEFAULT_SETTINGS: TimingSettings = {
   thinkingDuration: 15000,
   cognitiveDelay: 1300,
   sequentialDelay: 800,
+
+  // Showcase Mode
+  skipStreaming: false,
 };
 
 // Presets
@@ -108,8 +114,8 @@ interface TimingSettingsContextType {
 
 const TimingSettingsContext = createContext<TimingSettingsContextType | null>(null);
 
-export const TimingSettingsProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState<TimingSettings>(DEFAULT_SETTINGS);
+export const TimingSettingsProvider = ({ children, overrides }: { children: ReactNode; overrides?: Partial<TimingSettings> }) => {
+  const [settings, setSettings] = useState<TimingSettings>({ ...DEFAULT_SETTINGS, ...overrides });
 
   const updateSettings = useCallback((updates: Partial<TimingSettings>) => {
     setSettings(prev => ({ ...prev, ...updates }));
