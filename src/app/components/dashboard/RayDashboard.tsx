@@ -49,6 +49,46 @@ function SuggestionChip({ icon, label, onClick }: { icon: React.ReactNode, label
   );
 }
 
+// --- Contextual Prompts Panel ---
+// Bullet-point alerts that appear below input instead of cards
+import { ContextPrompt } from '../../../data/demoConfig';
+
+interface ContextualPromptsPanelProps {
+  prompts: ContextPrompt[];
+  onPromptClick?: (text: string) => void;
+}
+
+const ContextualPromptsPanel = ({ prompts, onPromptClick }: ContextualPromptsPanelProps) => {
+  const getStatusColor = (status: ContextPrompt['status']) => {
+    switch (status) {
+      case 'critical': return 'bg-red-500';
+      case 'info': return 'bg-blue-500';
+      case 'success': return 'bg-green-500';
+      default: return 'bg-gray-400';
+    }
+  };
+
+  return (
+    <div className="mt-4 px-2 pb-4 flex flex-col gap-1">
+      {prompts.map((prompt) => (
+        <div
+          key={prompt.id}
+          className="flex items-center gap-3 cursor-pointer px-3 py-2.5 rounded-lg transition-all hover:bg-gray-50 group"
+          onClick={() => onPromptClick?.(prompt.text)}
+        >
+          <div className={`w-2 h-2 rounded-full shrink-0 ${getStatusColor(prompt.status)}`} />
+          <span className="text-[15px] text-[#192839] leading-[22px] flex-1">{prompt.text}</span>
+          {prompt.cta && (
+            <span className="text-[13px] font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              {prompt.cta}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // --- EXPERIMENTAL: Hover Affordance Component ---
 // Reusable "Review with Ray" / "Fix with Ray" affordance
 interface HoverAffordanceProps {
@@ -774,11 +814,25 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                                 attachmentChip={shyamAttachment}
                                 onRemoveAttachment={() => setShyamAttachment(null)}
                             />
+                            {/* Contextual Prompts - shown instead of cards when hideCards is true */}
+                            {currentPersona.landing.hideCards && currentPersona.landing.contextPrompts && animPhase >= 7 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.4, delay: 0.2 }}
+                                >
+                                    <ContextualPromptsPanel
+                                        prompts={currentPersona.landing.contextPrompts}
+                                        onPromptClick={(text) => setPrompt(`Tell me about ${text}`)}
+                                    />
+                                </motion.div>
+                            )}
                         </motion.div>
                      </motion.div>
 
                      {/* Suggestion Chips Panel - appears after animation completes, fades out on transition */}
-                     {animPhase >= 7 && (
+                     {/* Hidden when persona has hideCards=true (contextual prompts variant) */}
+                     {animPhase >= 7 && !currentPersona.landing.hideCards && (
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{
@@ -884,6 +938,8 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                      </div>
 
                      {/* Dynamic Cards Grid - fades out during transition */}
+                     {/* Hidden when persona has hideCards=true (contextual prompts variant) */}
+                     {!currentPersona.landing.hideCards && (
                      <motion.div
                         className="w-full max-w-full md:max-w-[850px] mt-[80px]"
                         animate={{
@@ -895,6 +951,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                      >
                         <HomeCards animPhase={animPhase} onPromptSelect={setPrompt} />
                      </motion.div>
+                     )}
 
                      {/* OLD CARDS GRID - REPLACED BY HomeCards */}
                      {false && <div className="OLD_REMOVED_hidden">
