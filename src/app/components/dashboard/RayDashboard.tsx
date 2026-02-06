@@ -21,6 +21,7 @@ import { SparkRipplesBackground } from './SparkRipplesBackground';
 import { AvatarMenu } from '../AvatarMenu';
 import { SuggestionChipsPanel } from './SuggestionChipsPanel';
 import { HomeCards } from './HomeCards';
+import { FloatingImageUpload } from './FloatingImageUpload';
 
 // --- Helper Components ---
 
@@ -333,6 +334,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
 
   // State for Shyam's image attachment
   const [shyamAttachment, setShyamAttachment] = useState<{ filename: string; fileType: string; thumbnailUrl?: string } | null>(null);
+  const [showFloatingImage, setShowFloatingImage] = useState(false);
 
   // Track if user has manually selected a story (to distinguish from initial load)
   const hasUserSelectedStory = useRef(false);
@@ -350,18 +352,21 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
     // When user selects a story, fill the input with that story's prompt
     if (personaChanged || hasUserSelectedStory.current) {
       hasUserSelectedStory.current = true;
-      // Special handling for Shyam - show attachment chip instead of text
+      // Special handling for Shyam - show floating image instead of attachment in input
       if (currentPersona.id === 'shyam') {
-        setPrompt(''); // Clear text, show chip instead
-        setShyamAttachment({ filename: 'Whatsapp Image', fileType: 'PNG', thumbnailUrl: '/screenshot-failed-payment.png' });
+        setPrompt(''); // Clear text
+        setShyamAttachment(null); // Don't show in input yet
+        setShowFloatingImage(true); // Show floating image
       } else {
         setPrompt(currentPersona.landing.initialPrompt);
         setShyamAttachment(null);
+        setShowFloatingImage(false);
       }
     } else {
       // Initial load - empty input
       setPrompt('');
       setShyamAttachment(null);
+      setShowFloatingImage(false);
     }
   }, [currentPersona, view, initialQuery]);
 
@@ -429,6 +434,12 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
         }, 600);
       }, 700); // 700ms exit animation - gives hero time to fade smoothly
     }, 1000); // 1s spotlight hold
+  };
+
+  // Handle floating image drop - adds attachment to input
+  const handleFloatingImageDrop = () => {
+    setShowFloatingImage(false);
+    setShyamAttachment({ filename: 'Whatsapp Image', fileType: 'PNG', thumbnailUrl: '/screenshot-failed-payment.png' });
   };
 
   const handleHomeClick = () => {
@@ -1329,6 +1340,13 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
 
         </div>
       </div>
+
+      {/* Floating Image Upload (Shyam flow on landing page) */}
+      <FloatingImageUpload
+        imageSrc="/screenshot-failed-payment.png"
+        isVisible={showFloatingImage && view === 'landing'}
+        onDrop={handleFloatingImageDrop}
+      />
     </div>
   );
 };

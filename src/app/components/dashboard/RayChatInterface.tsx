@@ -7,6 +7,7 @@ import { PaymentLinkModal } from './chat/PaymentLinkModal';
 import { SourceRect } from './chat/PaymentLinkMiniCard';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
 import { TransactionPreviewPane, TransactionData } from './chat/TransactionPreviewPane';
+import { FloatingImageUpload } from './FloatingImageUpload';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
 import { RayInputBox } from './RayInputBox';
 import { useDemo } from '@/context/DemoContext';
@@ -136,6 +137,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
 
   // Shyam Flow State
   const [shyamFlowStep, setShyamFlowStep] = useState(0);
+  const [showFloatingImage, setShowFloatingImage] = useState(false);
 
   // Kiara Flow State
   const [kiaraFlowStep, setKiaraFlowStep] = useState(0);
@@ -520,51 +522,57 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
   useEffect(() => {
     if (currentPersona.id === 'shyam' && messages.length === 0 && !demoFlowStartedRef.current) {
         demoFlowStartedRef.current = true;
-        // Step 1: User sends message with image attachment
-        // Use the actual user input (initialQuery) if provided
+        // Show floating image instead of immediately adding to chat
         setTimeout(() => {
-            const userText = initialQuery || '';
-            const blocks: { type: string; content: string }[] = [];
-
-            // Add text block if user typed something
-            if (userText.trim()) {
-              blocks.push({ type: 'text', content: userText });
-            }
-            // Add image attachment
-            blocks.push({ type: 'image', content: '/screenshot-failed-payment.png' });
-
-            setMessages([{
-                id: 'shyam-u1',
-                sender: 'user',
-                blocks
-            }]);
-            setShyamFlowStep(1);
-
-            // Step 2: Show Thinking State
-            setTimeout(() => {
-                setIsStreaming(true);
-                const thinkingMsg: RayResponseData = {
-                    id: 'shyam-ai-1',
-                    sender: 'ai',
-                    isThinking: true
-                };
-                setMessages(prev => [...prev, thinkingMsg]);
-
-                // Step 3: Replace with Failed Payment Diagnosis after delay
-                setTimeout(() => {
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === 'shyam-ai-1' ? {
-                            ...shyamScript.shyam_step_1,
-                            id: 'shyam-ai-1',
-                            sender: 'ai' as const
-                        } : msg
-                    ));
-                    setTimeout(() => setIsStreaming(false), 3000);
-                }, 15000); // 15s thinking time
-            }, 600);
+            setShowFloatingImage(true);
         }, 600);
     }
-  }, [currentPersona.id, messages.length, shyamScript, initialQuery]);
+  }, [currentPersona.id, messages.length]);
+
+  // Handle floating image drop - adds image to chat and starts Shyam flow
+  const handleFloatingImageDrop = useCallback(() => {
+    setShowFloatingImage(false);
+
+    const userText = initialQuery || '';
+    const blocks: { type: string; content: string }[] = [];
+
+    // Add text block if user typed something
+    if (userText.trim()) {
+      blocks.push({ type: 'text', content: userText });
+    }
+    // Add image attachment
+    blocks.push({ type: 'image', content: '/screenshot-failed-payment.png' });
+
+    setMessages([{
+        id: 'shyam-u1',
+        sender: 'user',
+        blocks
+    }]);
+    setShyamFlowStep(1);
+
+    // Step 2: Show Thinking State
+    setTimeout(() => {
+        setIsStreaming(true);
+        const thinkingMsg: RayResponseData = {
+            id: 'shyam-ai-1',
+            sender: 'ai',
+            isThinking: true
+        };
+        setMessages(prev => [...prev, thinkingMsg]);
+
+        // Step 3: Replace with Failed Payment Diagnosis after delay
+        setTimeout(() => {
+            setMessages(prev => prev.map(msg =>
+                msg.id === 'shyam-ai-1' ? {
+                    ...shyamScript.shyam_step_1,
+                    id: 'shyam-ai-1',
+                    sender: 'ai' as const
+                } : msg
+            ));
+            setTimeout(() => setIsStreaming(false), 3000);
+        }, 15000); // 15s thinking time
+    }, 600);
+  }, [initialQuery, shyamScript]);
 
   // Triggers for demo flow - Kiara
   useEffect(() => {
@@ -1685,6 +1693,13 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
 
       {/* 2. Pinned Glass Input (Bottom) */}
       <div className="absolute bottom-0 left-0 right-0">
+
+         {/* Floating Image Upload (Shyam flow) */}
+         <FloatingImageUpload
+           imageSrc="/screenshot-failed-payment.png"
+           isVisible={showFloatingImage}
+           onDrop={handleFloatingImageDrop}
+         />
 
          {/* Add Funds Modal */}
          <AddFundsModal
