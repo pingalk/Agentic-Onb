@@ -68,15 +68,6 @@ const ContextualPromptsPanel = ({ prompts, onPromptClick }: ContextualPromptsPan
     }
   };
 
-  const getCtaColor = (status: ContextPrompt['status']) => {
-    switch (status) {
-      case 'critical': return 'text-red-600 hover:text-red-700';
-      case 'info': return 'text-blue-600 hover:text-blue-700';
-      case 'success': return 'text-green-600 hover:text-green-700';
-      default: return 'text-gray-600 hover:text-gray-700';
-    }
-  };
-
   return (
     <div className="mt-4 px-2 pb-4 flex flex-col gap-1">
       {prompts.map((prompt) => (
@@ -88,7 +79,7 @@ const ContextualPromptsPanel = ({ prompts, onPromptClick }: ContextualPromptsPan
           <div className={`w-2 h-2 rounded-full shrink-0 ${getStatusColor(prompt.status)}`} />
           <span className="text-[15px] text-[#192839] leading-[22px] flex-1">{prompt.text}</span>
           {prompt.cta && (
-            <span className={`text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-opacity ${getCtaColor(prompt.status)}`}>
+            <span className="text-[13px] font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
               {prompt.cta}
             </span>
           )}
