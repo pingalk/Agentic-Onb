@@ -1,6 +1,6 @@
 // src/data/demoConfig.ts
 
-export type PersonaId = 'blank' | 'maya' | 'arjun' | 'sarah' | 'sam' | 'shyam' | 'kiara' | 'varun' | 'spark' | 'showcase';
+export type PersonaId = 'blank' | 'maya' | 'arjun' | 'sarah' | 'sam' | 'shyam' | 'kiara' | 'varun' | 'spark' | 'showcase' | 'context';
 export type Theme = 'positive' | 'negative' | 'neutral';
 
 export interface DashboardCard {
@@ -14,6 +14,12 @@ export interface DashboardCard {
   status?: 'healthy' | 'critical' | 'paused';
 }
 
+export interface ContextPrompt {
+  id: string;
+  text: string;
+  status: 'critical' | 'info' | 'success';  // red, blue, green dots
+}
+
 export interface PersonaConfig {
   id: PersonaId;
   name: string;
@@ -23,6 +29,8 @@ export interface PersonaConfig {
     greeting: string;
     initialPrompt: string;
     cards: DashboardCard[];
+    contextPrompts?: ContextPrompt[];  // Alternative to cards - bullet list below input
+    hideCards?: boolean;  // When true, show contextPrompts instead of cards
   };
 }
 
@@ -327,6 +335,35 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
       greeting: "Card Showcase",
       initialPrompt: "",
       cards: []
+    }
+  },
+  context: {
+    id: 'context',
+    name: '💬 Contextual Prompts',
+    subtitle: 'No cards - just bullet-point alerts below input (agentic pattern)',
+    theme: 'neutral',
+    landing: {
+      greeting: "Good afternoon, Ishan",
+      initialPrompt: "Tell me about HDFC Downtime",
+      cards: [],
+      hideCards: true,
+      contextPrompts: [
+        {
+          id: 'hdfc',
+          text: 'HDFC downtime affecting payments',
+          status: 'critical'
+        },
+        {
+          id: 'settlement',
+          text: '₹1,200 settling tonight at 9 PM',
+          status: 'info'
+        },
+        {
+          id: 'ticket',
+          text: 'Ticket #20323783 resolved',
+          status: 'success'
+        }
+      ]
     }
   }
 };
