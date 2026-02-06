@@ -18,6 +18,7 @@ export interface ContextPrompt {
   id: string;
   text: string;
   status: 'critical' | 'info' | 'success';  // red, blue, green dots
+  cta?: string;  // Optional right-aligned CTA text (e.g., "View details →")
 }
 
 export interface PersonaConfig {
@@ -351,17 +352,20 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
         {
           id: 'hdfc',
           text: 'HDFC downtime affecting payments',
-          status: 'critical'
+          status: 'critical',
+          cta: 'View impact →'
         },
         {
           id: 'settlement',
           text: '₹1,200 settling tonight at 9 PM',
-          status: 'info'
+          status: 'info',
+          cta: 'Details →'
         },
         {
           id: 'ticket',
           text: 'Ticket #20323783 resolved',
-          status: 'success'
+          status: 'success',
+          cta: 'View summary →'
         }
       ]
     }
