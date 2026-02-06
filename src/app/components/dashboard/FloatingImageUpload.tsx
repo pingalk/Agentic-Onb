@@ -1,12 +1,38 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence, useDragControls, PanInfo } from 'motion/react';
-import { ImageIcon, Upload } from 'lucide-react';
+import { Upload, Check, CheckCheck } from 'lucide-react';
 
 interface FloatingImageUploadProps {
   imageSrc: string;
   onDrop: () => void;
   isVisible: boolean;
 }
+
+// Mini WhatsApp message component
+const MiniMessage = ({
+  isCustomer,
+  text,
+  time
+}: {
+  isCustomer: boolean;
+  text: string;
+  time: string;
+}) => (
+  <div className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}>
+    <div
+      className={`
+        max-w-[85%] px-2 py-1 rounded-md text-[9px] leading-[12px]
+        ${isCustomer ? 'bg-white' : 'bg-[#d9fdd3]'}
+      `}
+    >
+      <p className="text-[#111b21] line-clamp-2">{text}</p>
+      <div className="flex items-center justify-end gap-0.5 mt-0.5">
+        <span className="text-[7px] text-[#667781]">{time}</span>
+        {!isCustomer && <CheckCheck size={8} className="text-[#53bdeb]" />}
+      </div>
+    </div>
+  </div>
+);
 
 export const FloatingImageUpload: React.FC<FloatingImageUploadProps> = ({
   imageSrc,
@@ -72,7 +98,7 @@ export const FloatingImageUpload: React.FC<FloatingImageUploadProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Floating image card */}
+      {/* Floating WhatsApp Chat Preview card */}
       <motion.div
         drag
         dragControls={dragControls}
@@ -102,12 +128,12 @@ export const FloatingImageUpload: React.FC<FloatingImageUploadProps> = ({
           stiffness: 300,
           damping: 25
         }}
-        className="fixed bottom-24 right-6 z-[102] w-[200px] cursor-grab active:cursor-grabbing pointer-events-auto"
+        className="fixed bottom-24 right-6 z-[102] w-[220px] cursor-grab active:cursor-grabbing pointer-events-auto"
         style={{ touchAction: 'none' }}
       >
-        {/* Card container with macOS-style appearance */}
+        {/* Card container with macOS-style window frame */}
         <div className="bg-white rounded-xl overflow-hidden shadow-2xl border border-gray-200/50">
-          {/* Title bar - macOS style */}
+          {/* macOS title bar */}
           <div className="bg-gray-100 px-3 py-2 flex items-center gap-2 border-b border-gray-200/50">
             <div className="flex gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
@@ -115,22 +141,50 @@ export const FloatingImageUpload: React.FC<FloatingImageUploadProps> = ({
               <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
             </div>
             <span className="text-[11px] text-gray-500 font-medium ml-1 truncate flex-1">
-              Screenshot
+              WhatsApp
             </span>
-            <ImageIcon className="w-3 h-3 text-gray-400" />
           </div>
 
-          {/* Image preview */}
-          <div className="relative aspect-[4/3] bg-gray-50">
-            <img
-              src={imageSrc}
-              alt="Screenshot to upload"
-              className="w-full h-full object-cover"
-              draggable={false}
-            />
+          {/* WhatsApp Header */}
+          <div className="bg-[#008069] px-2.5 py-1.5 flex items-center gap-2">
+            {/* Avatar */}
+            <div className="w-7 h-7 rounded-full bg-[#dfe5e7] flex items-center justify-center text-[#54656f] font-medium text-xs">
+              R
+            </div>
+            {/* Contact Info */}
+            <div className="flex-1 min-w-0">
+              <div className="text-white font-medium text-[11px] truncate">Rahul Sharma</div>
+              <div className="text-white/70 text-[9px]">+91 98765 43210</div>
+            </div>
+          </div>
 
-            {/* Subtle overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
+          {/* Mini Chat Preview */}
+          <div
+            className="bg-[#efeae2] p-2 flex flex-col gap-1.5 h-[140px] overflow-hidden"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z' fill='%23d4cdc4' fill-opacity='0.25' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+            }}
+          >
+            <MiniMessage
+              isCustomer={true}
+              text="Payment of ₹15,000 failed but money got deducted 😟"
+              time="2:36 PM"
+            />
+            <MiniMessage
+              isCustomer={true}
+              text="🏦 HDFC Bank - Transaction Failed - ₹15,000"
+              time="2:36 PM"
+            />
+            <MiniMessage
+              isCustomer={false}
+              text="Let me check with my payment gateway..."
+              time="2:38 PM"
+            />
+            <MiniMessage
+              isCustomer={true}
+              text="Please check soon, I need this urgently 🙏"
+              time="2:40 PM"
+            />
           </div>
 
           {/* Drag hint */}
