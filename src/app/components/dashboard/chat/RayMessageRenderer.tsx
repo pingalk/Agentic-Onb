@@ -3894,14 +3894,14 @@ const InstantSettlementEnabledArtifact = ({ data, onSuggestionClick, onButtonCli
 };
 
 // --- Settlement Explanation With Offer Artifact (Varun Step 2 - New) ---
-const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast }: any) => {
+const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast, onSuggestionClick, highlightedSuggestionIndex = null }: any) => {
   const [subtextStarted, setSubtextStarted] = useState(false);
   const narrativeCompleteCalledRef = React.useRef(false);
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
     hasDataAsset: true,
     hasInsight: false,
-    hasSuggestions: false,
+    hasSuggestions: data.suggestions?.length > 0,
     thinkingDuration: 3000
   });
 
@@ -4056,9 +4056,9 @@ const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast }:
       {isLast && (
         <ChainOfThought
           mode={chainOfThoughtMode}
-          suggestions={[]}
-          onSuggestionClick={() => {}}
-          highlightedSuggestionIndex={null}
+          suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+          onSuggestionClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
         />
       )}
     </motion.div>
@@ -4168,14 +4168,14 @@ const InstantSettlementConfirmedArtifact = ({ data, onSuggestionClick, isLast, h
 };
 
 // --- Early Settlements Enabled Artifact (Varun Step 5 - New) ---
-const EarlySettlementsEnabledArtifact = ({ data, isLast }: any) => {
+const EarlySettlementsEnabledArtifact = ({ data, isLast, onSuggestionClick, highlightedSuggestionIndex = null }: any) => {
   const [subtextStarted, setSubtextStarted] = useState(false);
   const narrativeCompleteCalledRef = React.useRef(false);
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
     hasDataAsset: true,
     hasInsight: false,
-    hasSuggestions: false,
+    hasSuggestions: data.suggestions?.length > 0,
     thinkingDuration: 2000
   });
 
@@ -4273,9 +4273,9 @@ const EarlySettlementsEnabledArtifact = ({ data, isLast }: any) => {
       {isLast && (
         <ChainOfThought
           mode={chainOfThoughtMode}
-          suggestions={[]}
-          onSuggestionClick={() => {}}
-          highlightedSuggestionIndex={null}
+          suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+          onSuggestionClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
         />
       )}
     </motion.div>
@@ -4820,6 +4820,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           data={data.artifact.data}
           isLast={isLast}
           onButtonClick={onSuggestionClick}
+          onSuggestionClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
         />
       </div>
     );
@@ -4846,6 +4848,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
         <EarlySettlementsEnabledArtifact
           data={data.artifact.data}
           isLast={isLast}
+          onSuggestionClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
         />
       </div>
     );

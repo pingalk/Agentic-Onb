@@ -561,6 +561,11 @@ Maya`,
                     },
                     buttons: [
                         { label: "Instantly settle", variant: "primary" }
+                    ],
+                    suggestions: [
+                        "Instantly settle my ₹3L now",
+                        "Show settlement fee breakdown",
+                        "That's all for now"
                     ]
                 }
             }
