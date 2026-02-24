@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDemo } from '../../context/DemoContext';
 import { useMagicColor } from '../../context/MagicColorContext';
-import { RotateCcw, Settings, Palette } from 'lucide-react';
+import { RotateCcw, Settings, Palette, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,7 +16,7 @@ import {
 import { SettingsPanelContent } from './SettingsPanel';
 
 export const AvatarMenu = () => {
-  const { resetDemo, bgHue, setBgHue, bgIntensity, setBgIntensity, gradientConfig, setGradientConfig } = useDemo();
+  const { resetDemo, bgHue, setBgHue, bgIntensity, setBgIntensity, gradientConfig, setGradientConfig, sparkRipplesConfig, setSparkRipplesConfig } = useDemo();
 
   // Compute the current green color from HSL
   const greenColor = `hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%)`;
@@ -234,6 +234,93 @@ export const AvatarMenu = () => {
                 greenHue: 100,
                 greenSaturation: 33,
                 greenLightness: 95
+              })}
+              className="w-full mt-2 py-1.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded transition-colors"
+            >
+              Reset to Default
+            </button>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
+            <Sparkles size={14} className="text-slate-400" />
+            <span className="text-sm">SparkRipples</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="w-72 p-3">
+            {/* Scale */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Scale</span>
+                <span className="text-xs text-slate-400">{sparkRipplesConfig.scale.toFixed(1)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.5"
+                max="4"
+                step="0.1"
+                value={sparkRipplesConfig.scale}
+                onChange={(e) => setSparkRipplesConfig({ scale: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200"
+              />
+            </div>
+
+            {/* Playback Rate */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Speed</span>
+                <span className="text-xs text-slate-400">{sparkRipplesConfig.playbackRate.toFixed(1)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="2"
+                step="0.1"
+                value={sparkRipplesConfig.playbackRate}
+                onChange={(e) => setSparkRipplesConfig({ playbackRate: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200"
+              />
+            </div>
+
+            {/* Opacity */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Opacity</span>
+                <span className="text-xs text-slate-400">{sparkRipplesConfig.opacity}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={sparkRipplesConfig.opacity}
+                onChange={(e) => setSparkRipplesConfig({ opacity: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200"
+              />
+            </div>
+
+            {/* Vertical Offset */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Vertical Offset</span>
+                <span className="text-xs text-slate-400">{sparkRipplesConfig.offsetY}px</span>
+              </div>
+              <input
+                type="range"
+                min="-500"
+                max="200"
+                value={sparkRipplesConfig.offsetY}
+                onChange={(e) => setSparkRipplesConfig({ offsetY: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200"
+              />
+            </div>
+
+            {/* Reset Button */}
+            <button
+              onClick={() => setSparkRipplesConfig({
+                scale: 2,
+                playbackRate: 0.5,
+                opacity: 100,
+                offsetY: -150
               })}
               className="w-full mt-2 py-1.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded transition-colors"
             >

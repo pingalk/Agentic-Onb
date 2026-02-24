@@ -9,6 +9,13 @@ export interface GradientConfig {
   greenLightness: number;  // 0-100, lightness
 }
 
+export interface SparkRipplesConfig {
+  scale: number;         // 0.5-3, scale of the animation
+  playbackRate: number;  // 0.1-2, speed of the animation
+  opacity: number;       // 0-100, opacity
+  offsetY: number;       // -500 to 500, vertical offset
+}
+
 interface DemoContextType {
   isInChatView: boolean;
   setIsInChatView: (value: boolean) => void;
@@ -20,6 +27,8 @@ interface DemoContextType {
   setBgIntensity: (value: number) => void;
   gradientConfig: GradientConfig;
   setGradientConfig: (config: Partial<GradientConfig>) => void;
+  sparkRipplesConfig: SparkRipplesConfig;
+  setSparkRipplesConfig: (config: Partial<SparkRipplesConfig>) => void;
   resetDemo: () => void;
 }
 
@@ -98,6 +107,40 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  // Default SparkRipples config
+  const defaultSparkRipplesConfig: SparkRipplesConfig = {
+    scale: 2,
+    playbackRate: 0.5,
+    opacity: 100,
+    offsetY: -150
+  };
+
+  // Initialize sparkRipplesConfig from localStorage
+  const [sparkRipplesConfig, setSparkRipplesConfigState] = useState<SparkRipplesConfig>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sparkRipplesConfig');
+      if (saved) {
+        try {
+          return { ...defaultSparkRipplesConfig, ...JSON.parse(saved) };
+        } catch {
+          return defaultSparkRipplesConfig;
+        }
+      }
+    }
+    return defaultSparkRipplesConfig;
+  });
+
+  // Wrapper to merge and save SparkRipples config
+  const setSparkRipplesConfig = (config: Partial<SparkRipplesConfig>) => {
+    setSparkRipplesConfigState(prev => {
+      const updated = { ...prev, ...config };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('sparkRipplesConfig', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
   const resetDemo = () => {
     setIsInChatView(false);
     setIsOnRayLandingPage(true);
@@ -115,6 +158,8 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
       setBgIntensity,
       gradientConfig,
       setGradientConfig,
+      sparkRipplesConfig,
+      setSparkRipplesConfig,
       resetDemo
     }}>
       {children}

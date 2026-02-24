@@ -208,7 +208,7 @@ export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
 };
 
 const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQuery, onLogout, onSceneChange }) => {
-  const { setIsInChatView, setIsOnRayLandingPage, bgHue, bgIntensity, gradientConfig } = useDemo();
+  const { setIsInChatView, setIsOnRayLandingPage, bgHue, bgIntensity, gradientConfig, sparkRipplesConfig } = useDemo();
 
   // Compute the gradient green color from HSL config
   const gradientGreenColor = `hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%)`;
@@ -553,14 +553,18 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                      <motion.div
                         className="absolute inset-0"
                         style={{
-                          transform: `translateY(${-150 - scrollY * 0.5}px) scale(2)`,
+                          transform: `translateY(${sparkRipplesConfig.offsetY - scrollY * 0.5}px) scale(${sparkRipplesConfig.scale})`,
                           filter: `hue-rotate(${bgHue}deg)`
                         }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1.5, delay: 0.5 }}
                      >
-                        <SparkRipplesBackground opacity={1} loop={false} playbackRate={0.5} />
+                        <SparkRipplesBackground
+                          opacity={sparkRipplesConfig.opacity / 100}
+                          loop={false}
+                          playbackRate={sparkRipplesConfig.playbackRate}
+                        />
                      </motion.div>
                      <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
                      {/* Bottom fade: transparent at top, fades to match gradient */}
