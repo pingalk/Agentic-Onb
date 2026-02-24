@@ -1585,7 +1585,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
   };
 
   return (
-    <div className="flex h-full relative bg-[#f8f8f8] font-sans overflow-hidden">
+    <div className="flex h-full relative font-sans overflow-hidden">
 
       {/* Main Chat Container - animates width when preview is open */}
       <motion.div
@@ -1867,10 +1867,10 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
          {/* Bottom fade gradient - chat content fades out towards input */}
          {/* Structure: 120px gradient (0→100 opacity) on top, 120px solid below */}
          <div className="fixed bottom-0 left-0 right-0 h-[240px] pointer-events-none z-[65]">
-            {/* Top 120px: gradient from transparent to #f8f8f8 */}
-            <div className="absolute inset-x-0 top-0 h-[120px] bg-gradient-to-b from-transparent to-[#f8f8f8]" />
-            {/* Bottom 120px: solid #f8f8f8 */}
-            <div className="absolute inset-x-0 bottom-0 h-[120px] bg-[#f8f8f8]" />
+            {/* Top 120px: transparent to show gradient */}
+            <div className="absolute inset-x-0 top-0 h-[120px] bg-gradient-to-b from-transparent to-transparent" />
+            {/* Bottom 120px: transparent to show gradient */}
+            <div className="absolute inset-x-0 bottom-0 h-[120px]" />
          </div>
 
          {/* Input Container - z-70 (above modal) - using RayInputBox for consistency */}

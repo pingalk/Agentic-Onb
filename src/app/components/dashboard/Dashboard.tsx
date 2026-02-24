@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
-import { HeroSection } from './HeroSection';
-import { KeyUpdates } from './KeyUpdates';
-import { Overview } from './Overview';
-import { Insights } from './Insights';
-import { ProductPromos } from './ProductPromos';
 import { TransactionsList } from './TransactionsList';
 import { TransactionsListVariantB } from './TransactionsListVariantB';
 import { RayDashboard } from './RayDashboard';
 import { TransactionDetails } from './TransactionDetails';
 import { RaySidePanel } from './RaySidePanel';
 import { RayLayoutToggle } from './RayLayoutToggle';
-import { VariantSwitcher } from './VariantSwitcher';
 import { RayFAB } from './RayFAB';
 import Link from '../../../imports/Link-51-1889';
-import Ray from '../../../imports/Ray';
 import { Toaster } from "@/app/components/ui/sonner";
 import { useDemo } from '@/context/DemoContext';
 import { SparkRipples } from '../SparkRipples';
@@ -77,51 +70,29 @@ export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, o
     setIsRaySidePanelOpen(prev => !prev);
   };
 
-  const handleNavigateToPayments = () => {
-    setCurrentView('home');
-    setVariants(prev => ({ ...prev, home: 'A' }));
-  };
-
   const handleNavigateToDoubleDebit = () => {
     setCurrentView('home');
     setVariants(prev => ({ ...prev, home: 'DOUBLE_DEBIT' }));
   };
 
-  const isRayActive = currentView === 'home' && (variants.home === 'B' || variants.home === 'B_DEEP_LINK' || variants.home === 'DOUBLE_DEBIT');
-  const isPaymentsDashboard = currentView === 'home' && variants.home === 'A';
-  const showRayToggle = currentView === 'transactions' || currentView === 'transaction-details' || isPaymentsDashboard;
+  const isRayActive = currentView === 'home';
+  const showRayToggle = currentView === 'transactions' || currentView === 'transaction-details';
 
   const renderContent = () => {
     switch (currentView) {
-      case 'home':
-        if (variants.home === 'B' || variants.home === 'B_DEEP_LINK' || variants.home === 'DOUBLE_DEBIT') { 
-          let initialQuery = undefined;
-          let autoSubmit = false;
-          
-          if (variants.home === 'B_DEEP_LINK') {
-            initialQuery = "Show recent transactions from arvind@gmail.com";
-          } else if (variants.home === 'DOUBLE_DEBIT') {
-            initialQuery = "Show recent transactions from arvind@gmail.com";
-            autoSubmit = false; // User manually presses Enter on landing page
-          }
-          
-          return <RayDashboard onNavigate={setCurrentView} onNavigateToPayments={handleNavigateToPayments} initialQuery={initialQuery} autoSubmit={autoSubmit} onLogout={onLogout} onSceneChange={onSceneChange} />; 
+      case 'home': {
+        let initialQuery = undefined;
+        let autoSubmit = false;
+
+        if (variants.home === 'B_DEEP_LINK') {
+          initialQuery = "Show recent transactions from arvind@gmail.com";
+        } else if (variants.home === 'DOUBLE_DEBIT') {
+          initialQuery = "Show recent transactions from arvind@gmail.com";
+          autoSubmit = false;
         }
-        return (
-          <div className="max-w-6xl mx-auto w-full">
-            <HeroSection />
-            <KeyUpdates />
-            <Overview />
-            <Insights />
-            <ProductPromos />
-            
-            <div className="h-12 flex items-center justify-center gap-4 text-xs text-slate-400 mt-8">
-               <span>© Razorpay 2024</span>
-               <span>Privacy</span>
-               <span>Terms</span>
-            </div>
-          </div>
-        );
+
+        return <RayDashboard onNavigate={setCurrentView} initialQuery={initialQuery} autoSubmit={autoSubmit} onLogout={onLogout} onSceneChange={onSceneChange} />;
+      }
       case 'transactions':
         if (variants.transactions === 'B') {
           return <TransactionsListVariantB onViewDetails={handleViewTransactionDetails} />;
@@ -141,9 +112,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, o
   };
 
   const handleSidebarChangeView = (view: string) => {
-    if (view === 'home') {
-      setVariants(prev => ({ ...prev, home: 'A' }));
-    }
     setCurrentView(view);
   };
 
@@ -178,7 +146,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, o
             />
         )}
         <div className="flex flex-1 overflow-hidden relative">
-          <main className={`flex-1 h-full max-w-full min-w-0 ${isRayActive ? 'p-0 overflow-hidden' : 'p-8 bg-[#F8FAFC] overflow-y-auto overflow-x-hidden flex flex-col gap-8'}`}>
+          <main className={`flex-1 h-full max-w-full min-w-0 ${isRayActive ? 'p-0 overflow-hidden' : 'p-8 overflow-y-auto overflow-x-hidden flex flex-col gap-8'}`}>
             {currentView === 'transaction-details' && (
               <div className="inline-block cursor-pointer" onClick={() => setCurrentView('transactions')}>
                 <Link />

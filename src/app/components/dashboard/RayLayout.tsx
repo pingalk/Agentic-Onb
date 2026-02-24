@@ -26,7 +26,7 @@ const RayLayoutContent = ({ initialQuery, isEntering }: { initialQuery?: string;
   const isCardActive = isOpen && viewMode === 'card';
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-slate-50/30 relative gap-6">
+    <div className="flex h-full w-full overflow-hidden relative gap-6">
 
       {/* LEFT PANEL: CHAT STREAM */}
       <motion.div

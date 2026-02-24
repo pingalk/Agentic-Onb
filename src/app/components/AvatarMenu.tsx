@@ -17,7 +17,7 @@ import {
 import { SettingsPanelContent } from './SettingsPanel';
 
 export const AvatarMenu = () => {
-  const { currentPersonaId, setPersona, resetDemo, currentPersona } = useDemo();
+  const { currentPersonaId, setPersona, resetDemo, currentPersona, bgHue, setBgHue } = useDemo();
   const { magicColor, setMagicColor, config } = useMagicColor();
 
   const isNegative = currentPersona.theme === 'negative';
@@ -65,6 +65,40 @@ export const AvatarMenu = () => {
             Switch to {magicColor === 'blue' ? 'Green' : 'Blue'}
           </span>
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuLabel className="text-xs text-slate-500">Background Hue</DropdownMenuLabel>
+        <div className="px-2 py-2">
+          <input
+            type="range"
+            min="0"
+            max="360"
+            value={bgHue}
+            onChange={(e) => setBgHue(Number(e.target.value))}
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right,
+                hsl(0, 70%, 70%),
+                hsl(60, 70%, 70%),
+                hsl(120, 70%, 70%),
+                hsl(180, 70%, 70%),
+                hsl(240, 70%, 70%),
+                hsl(300, 70%, 70%),
+                hsl(360, 70%, 70%)
+              )`
+            }}
+          />
+          <div className="flex justify-between mt-1">
+            <span className="text-xs text-slate-400">{bgHue}°</span>
+            <button
+              onClick={() => setBgHue(0)}
+              className="text-xs text-slate-400 hover:text-slate-600"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
 
         <DropdownMenuSeparator />
 

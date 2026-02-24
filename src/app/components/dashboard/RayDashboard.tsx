@@ -190,7 +190,6 @@ const BriefingItem = ({ index, children, isHovered, hoveredIndex, onHover, onRev
 
 interface RayDashboardProps {
   onNavigate: (view: 'home' | 'transactions') => void;
-  onNavigateToPayments: () => void;
   initialQuery?: string;
   autoSubmit?: boolean;
   onLogout?: () => void;
@@ -207,8 +206,8 @@ export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
   );
 };
 
-const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNavigateToPayments, initialQuery, onLogout, onSceneChange }) => {
-  const { currentPersona, setIsInChatView, setIsOnRayLandingPage } = useDemo(); // <--- LISTENING TO CONTEXT
+const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQuery, onLogout, onSceneChange }) => {
+  const { currentPersona, setIsInChatView, setIsOnRayLandingPage, bgHue } = useDemo(); // <--- LISTENING TO CONTEXT
 
   const [view, setView] = useState<'landing' | 'chat'>('landing');
 
@@ -511,8 +510,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
 
   return (
     <div
-      className="bg-[#F8FAFC] relative w-full h-full overflow-hidden flex font-sans transition-colors duration-500"
+      className="relative w-full h-full overflow-hidden flex font-sans transition-colors duration-500"
       style={{
+        background: 'transparent',
         '--magic-primary': currentMagicColor.primary,
         '--magic-gradient': currentMagicColor.gradient,
         '--magic-gradient-light': currentMagicColor.gradientLight,
@@ -541,11 +541,11 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
 
       {/* Main Content Area */}
       <div className={clsx(
-        "flex-1 relative flex flex-col h-full bg-white transition-all duration-300",
+        "flex-1 relative flex flex-col h-full transition-all duration-300",
         isSidebarCollapsed ? "md:ml-[72px]" : "md:ml-64"
       )}>
         {/* Top Nav */}
-        <div className="h-14 border-b border-slate-100 flex items-center px-4 md:px-6 justify-between bg-white z-20">
+        <div className="h-14 border-b border-slate-100/50 flex items-center px-4 md:px-6 justify-between z-20">
             <div className="flex items-center gap-3 md:gap-6">
                 <button 
                     className="md:hidden p-1 text-slate-500 hover:bg-slate-100 rounded"
@@ -563,7 +563,6 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                 </div>
                 
                 <div className="hidden md:flex gap-6 text-sm text-slate-500 font-medium items-center">
-                    <span className="hover:text-slate-900 cursor-pointer" onClick={onNavigateToPayments}>Payments</span>
                     <span className="hover:text-slate-900 cursor-pointer">Neobanking</span>
                     <span className="hover:text-slate-900 cursor-pointer">Payroll</span>
                     <DropdownMenu.Root>
@@ -598,28 +597,30 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
         <div className="flex-1 relative overflow-hidden dashboard-bg transition-[background] duration-700">
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-               {/* Spark Ripples WebGL Background - delayed 3s, fades out during transition */}
+               {/* Spark Ripples WebGL Background - delayed 0.5s, fades out during transition */}
                {view === 'landing' && (
                   <motion.div
                      initial={{ opacity: 1 }}
                      animate={{ opacity: viewTransition === 'exiting' ? 0 : 1 }}
                      transition={{ duration: 0.3 }}
                   >
-                     {/* Base background to prevent black flash */}
+                     {/* Base background */}
                      <div className="absolute inset-0 bg-[#f8f8f8]" />
                      <motion.div
                         className="absolute inset-0"
                         style={{
-                          transform: `translateY(${-150 - scrollY * 0.5}px) scale(2)`
+                          transform: `translateY(${-150 - scrollY * 0.5}px) scale(2)`,
+                          filter: `hue-rotate(${bgHue}deg)`
                         }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ duration: 1.5, delay: 3 }}
+                        transition={{ duration: 1.5, delay: 0.5 }}
                      >
                         <SparkRipplesBackground opacity={1} loop={false} playbackRate={0.5} />
                      </motion.div>
                      <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
-                     <div className="absolute inset-x-0 bottom-0 h-[70vh] bg-gradient-to-t from-[#f8f8f8] from-50% via-[#f8f8f8]/95 via-70% to-transparent" />
+                     {/* Bottom fade: transparent at top, fades to match gradient */}
+                     <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(241,247,237,0.6) 25%, rgba(241,247,237,0.95) 40%, #F1F7ED 50%)' }} />
                   </motion.div>
                )}
                {/* Fallback gradient for non-landing views */}
@@ -629,6 +630,12 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, onNaviga
                   </div>
                )}
             </div>
+
+            {/* Gradient Overlay - sits above animation, below content - uses soft-light blend to tint animation */}
+            <div
+              className="absolute inset-0 pointer-events-none z-[1] mix-blend-soft-light"
+              style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F1F7ED 100%)' }}
+            />
 
             {view === 'landing' ? (
                 landingVariant === 'v2' ? (

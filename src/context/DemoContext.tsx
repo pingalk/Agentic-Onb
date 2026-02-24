@@ -11,6 +11,8 @@ interface DemoContextType {
   setIsInChatView: (value: boolean) => void;
   isOnRayLandingPage: boolean;
   setIsOnRayLandingPage: (value: boolean) => void;
+  bgHue: number;
+  setBgHue: (value: number) => void;
 }
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined);
@@ -19,6 +21,23 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentPersonaId, setCurrentPersonaId] = useState<PersonaId>('maya');
   const [isInChatView, setIsInChatView] = useState(false);
   const [isOnRayLandingPage, setIsOnRayLandingPage] = useState(false);
+
+  // Initialize bgHue from localStorage
+  const [bgHue, setBgHueState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bgHue');
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+
+  // Wrapper to save to localStorage when bgHue changes
+  const setBgHue = (value: number) => {
+    setBgHueState(value);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bgHue', value.toString());
+    }
+  };
 
   // Optional: Add a data-theme attribute to body for global CSS variables if needed later
   useEffect(() => {
@@ -39,7 +58,9 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
       isInChatView,
       setIsInChatView,
       isOnRayLandingPage,
-      setIsOnRayLandingPage
+      setIsOnRayLandingPage,
+      bgHue,
+      setBgHue
     }}>
       {children}
     </DemoContext.Provider>
