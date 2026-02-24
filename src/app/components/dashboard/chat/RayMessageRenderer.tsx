@@ -19,6 +19,7 @@ import { SmartHighlight, SmartHighlightWithBold } from './SmartHighlight';
 import { StreamingBulletList } from './StreamingBulletList';
 import { AnimatedLoadingCard } from './AnimatedLoadingCard';
 import { useTimingSettingsOptional } from '@/context/TimingSettingsContext';
+import { SparkRipplesBackground } from '../SparkRipplesBackground';
 
 // --- Elegant Tooltip Component ---
 const Tooltip = ({ children, text, position = 'top' }: { children: React.ReactNode; text: string; position?: 'top' | 'bottom' | 'left' | 'right' }) => {
@@ -1821,18 +1822,28 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
                 className="relative bg-white rounded-[12px] border border-[#dee1e3] overflow-hidden shadow-[0px_6px_32px_4px_rgba(175,182,187,0.06)]"
               >
                 {/* Top gradient */}
-                <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-[#f8fafb] to-transparent pointer-events-none" />
+                <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-[#f8fafb] to-transparent pointer-events-none z-[1]" />
 
-                {/* Blue glow on right side */}
+                {/* Embedded SparkRipples animation on right corner - plays once */}
+                <div className="absolute right-[-60px] top-[-40px] w-[200px] h-[200px] pointer-events-none opacity-60">
+                  <SparkRipplesBackground
+                    loop={false}
+                    playbackRate={0.3}
+                    scale={0.5}
+                    opacity={0.8}
+                  />
+                </div>
+
+                {/* Blue glow on right side (fallback/overlay) */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-24 pointer-events-none"
                   style={{
-                    background: 'linear-gradient(270deg, rgba(37, 99, 235, 0.08) 0%, transparent 100%)',
+                    background: 'linear-gradient(270deg, rgba(37, 99, 235, 0.06) 0%, transparent 100%)',
                   }}
                 />
 
                 {/* Content */}
-                <div className="relative p-[16px] flex flex-col gap-[4px]">
+                <div className="relative p-[16px] flex flex-col gap-[4px] z-[2]">
                   <span className="text-[14px] font-semibold text-[#192839]">Ray Insight</span>
                   <p className="text-[14px] leading-[22px] text-[#40566d]">
                     <SmartHighlightWithBold text={data.insight.text} />
@@ -1840,10 +1851,10 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
                 </div>
 
                 {/* Bottom gradient */}
-                <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#f8fafb] to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#f8fafb] to-transparent pointer-events-none z-[1]" />
 
                 {/* Inner shadow overlay */}
-                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_0px_1px_#dee1e3,inset_0px_-1.5px_0px_1px_white]" />
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_0px_1px_#dee1e3,inset_0px_-1.5px_0px_1px_white] z-[3]" />
               </motion.div>
             )}
           </div>

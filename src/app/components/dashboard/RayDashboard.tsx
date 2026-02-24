@@ -21,7 +21,6 @@ import { SparkRipplesBackground } from './SparkRipplesBackground';
 import { AvatarMenu } from '../AvatarMenu';
 import { SuggestionChipsPanel } from './SuggestionChipsPanel';
 import { HomeCards } from './HomeCards';
-import { RayInsightCard } from './RayInsightCard';
 import { FloatingImageUpload } from './FloatingImageUpload';
 
 // --- Helper Components ---
@@ -851,24 +850,6 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                             className="mt-0"
                         >
                             <SuggestionChipsPanel onPromptSelect={setPrompt} />
-                        </motion.div>
-                     )}
-
-                     {/* Ray Insight Card - contextual prompt below chips */}
-                     {animPhase >= 7 && !currentPersona.landing.hideCards && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{
-                                opacity: viewTransition === 'exiting' ? 0 : 1,
-                                y: viewTransition === 'exiting' ? -10 : 0
-                            }}
-                            transition={{ duration: viewTransition === 'exiting' ? 0.2 : 0.4, delay: viewTransition === 'exiting' ? 0 : 0.3, ease: [0.4, 0, 0.2, 1] }}
-                            className="w-full max-w-2xl mt-4"
-                        >
-                            <RayInsightCard
-                                body="Arvind is a long time customer since 2023. He's placed 13 orders so far. They have a Lifetime Value (LTV) of ₹4.5 Lakhs and, notably, zero refunds on record."
-                                onClick={() => setPrompt("Show me recent payments from arvind@gmail.com, this customer is claiming he was charged twice")}
-                            />
                         </motion.div>
                      )}
 
