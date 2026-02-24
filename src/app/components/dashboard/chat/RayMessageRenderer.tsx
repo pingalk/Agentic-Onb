@@ -3324,7 +3324,7 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
     hasDataAsset: true,
-    hasInsight: false,
+    hasInsight: !!data.insight,
     hasSuggestions: data.suggestions?.length > 0,
     thinkingDuration: 3000
   });
@@ -3398,6 +3398,34 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
               ]}
             />
           </AnimatedLoadingCard>
+        </motion.div>
+      )}
+
+      {/* Ray Insight Card (Phase 3+) */}
+      {phase >= 3 && data.insight && (
+        <motion.div
+          initial={{ opacity: 0, y: 5, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0)' }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="relative bg-white rounded-[12px] border border-[#dee1e3] overflow-hidden shadow-[0px_6px_32px_4px_rgba(175,182,187,0.06)]"
+        >
+          {/* Embedded SparkRipples animation on right end */}
+          <div className="absolute right-[-500px] top-1/2 -translate-y-1/2 w-[1500px] h-[1500px] pointer-events-none opacity-70">
+            <SparkRipplesBackground
+              loop={true}
+              playbackRate={0.4}
+              scale={1}
+              opacity={1}
+            />
+          </div>
+
+          {/* Content */}
+          <div className="relative p-[16px] flex flex-col gap-[4px] z-[2]">
+            <span className="text-[14px] font-semibold text-[#192839]">Ray Insight</span>
+            <p className="text-[14px] leading-[22px] text-[#40566d]">
+              <SmartHighlightWithBold text={data.insight.text} />
+            </p>
+          </div>
         </motion.div>
       )}
 
