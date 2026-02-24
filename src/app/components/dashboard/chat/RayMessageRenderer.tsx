@@ -4227,9 +4227,11 @@ const EarlySettlementsEnabledArtifact = ({ data, isLast, onSuggestionClick, high
           transition={{ duration: 0.4 }}
         >
           <div className="max-w-[480px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
-            {/* Header - Overline style */}
-            <div className="px-4 pt-4 pb-2">
-              <p className="text-[13px] font-medium text-[#768EA7]">Features Included</p>
+            {/* Header - Overline + Anchor */}
+            <div className="px-4 pt-4 pb-3">
+              <p className="text-[13px] font-medium text-[#768EA7] mb-1">Early Settlements</p>
+              <p className="text-[28px] font-semibold text-[#1E7C45] leading-tight tracking-[-0.02em]">Enabled</p>
+              <p className="text-[13px] text-[#768EA7] mt-1">Get paid the same day</p>
             </div>
 
             {/* Features as rows (no dividers) */}
