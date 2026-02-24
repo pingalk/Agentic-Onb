@@ -156,11 +156,12 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
 
 
       {/* Suggestions - only shown in complete mode */}
-      {/* Only the first suggestion is clickable (for demo purposes) */}
+      {/* All suggestions look the same but clicking any triggers the first suggestion's action */}
       {isComplete && suggestions.length > 0 && (
         <div className="flex flex-col gap-1 pl-9">
           {suggestions.map((suggestion, idx) => {
-            const isActive = idx === 0; // Only first suggestion is clickable
+            // All suggestions look active, but clicking any triggers the first suggestion
+            const firstSuggestion = suggestions[0];
             return (
               <motion.button
                 key={idx}
@@ -171,18 +172,16 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
                   duration: 0.4,
                   ease: [0.25, 0.1, 0.25, 1]
                 }}
-                onClick={() => isActive && onSuggestionClick?.(suggestion)}
+                onClick={() => onSuggestionClick?.(firstSuggestion)}
                 className={clsx(
                   "text-left px-3 py-2 text-sm font-medium rounded-lg transition-all",
-                  isActive
-                    ? "hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200 cursor-pointer"
-                    : "cursor-default",
+                  "hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200 cursor-pointer",
                   highlightedSuggestionIndex === idx
                     ? "bg-slate-100 text-slate-900"
-                    : isActive ? "text-slate-600" : "text-slate-400"
+                    : "text-slate-600"
                 )}
               >
-                <span className={clsx("mr-2", isActive ? "text-[#40566d]" : "text-slate-300")}>{idx + 1}.</span>
+                <span className="mr-2 text-[#40566d]">{idx + 1}.</span>
                 {suggestion}
               </motion.button>
             );
