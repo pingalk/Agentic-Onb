@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDemo } from '../../context/DemoContext';
 import { useMagicColor } from '../../context/MagicColorContext';
-import { RotateCcw, Settings, Palette, Sparkles } from 'lucide-react';
+import { RotateCcw, Palette, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,7 +13,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from './ui/dropdown-menu';
-import { SettingsPanelContent } from './SettingsPanel';
 
 export const AvatarMenu = () => {
   const { resetDemo, bgHue, setBgHue, bgIntensity, setBgIntensity, gradientConfig, setGradientConfig, sparkRipplesConfig, setSparkRipplesConfig } = useDemo();
@@ -326,16 +325,6 @@ export const AvatarMenu = () => {
             >
               Reset to Default
             </button>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
-            <Settings size={14} className="text-slate-400" />
-            <span className="text-sm">Animation Settings</span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="w-80 max-h-[70vh] overflow-y-auto">
-            <SettingsPanelContent />
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 
