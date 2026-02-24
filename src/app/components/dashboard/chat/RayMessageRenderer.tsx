@@ -3727,44 +3727,68 @@ const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast }:
         )}
       </div>
 
-      {/* Settlement Table (Phase 2+) */}
-      {phase >= 1 && data.table && (
+      {/* Combined Card: Table + Instant Offer + Button (Phase 2+) */}
+      {phase >= 1 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={80} borderRadius="12px">
-            <SettlementStatusTable rows={data.table.rows} />
+          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={200} borderRadius="12px">
+            <div className="bg-white border border-[#E4E7EC] rounded-[12px] overflow-hidden shadow-[0px_6px_32px_4px_rgba(175,182,187,0.06)]">
+              {/* Table Section */}
+              {data.table && (
+                <div className="border-b border-[#E4E7EC]">
+                  <SettlementStatusTable rows={data.table.rows} />
+                </div>
+              )}
+
+              {/* Instant Eligible Section */}
+              {data.instantEligible && (
+                <div className="p-[16px] bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#22c55e] flex items-center justify-center shrink-0">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-[14px] font-semibold text-[#166534]">Eligible for Instant Settlement</p>
+                      <p className="text-[13px] text-[#15803d]">{data.instantEligible.message}</p>
+                    </div>
+                  </div>
+                  <span className="text-[18px] font-bold text-[#166534]">{data.instantEligible.amount}</span>
+                </div>
+              )}
+
+              {/* Button Section */}
+              {phase >= 3 && data.buttons && (
+                <div className="p-[16px] border-t border-[#E4E7EC] bg-[#fafafa]">
+                  <div className="flex gap-3">
+                    {data.buttons.map((button: { label: string; variant: 'primary' | 'secondary' }, i: number) => (
+                      <button
+                        key={i}
+                        onClick={() => onButtonClick?.(button.label)}
+                        className={clsx(
+                          'px-5 py-2.5 rounded-lg font-medium text-[14px] transition-all duration-200',
+                          button.variant === 'primary'
+                            ? 'bg-[#22c55e] text-white hover:bg-[#16a34a] shadow-sm'
+                            : 'bg-white text-[#40566d] hover:bg-[#f1f5fa] border border-[#e2e8f0]'
+                        )}
+                      >
+                        {button.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </AnimatedLoadingCard>
         </motion.div>
       )}
 
-      {/* Instant Settlement Eligible Card (Phase 3+) */}
-      {phase >= 3 && data.instantEligible && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] border border-[#86efac] rounded-[12px] p-[16px] flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#22c55e] flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-[14px] font-semibold text-[#166534]">Eligible for Instant Settlement</p>
-              <p className="text-[13px] text-[#15803d]">{data.instantEligible.message}</p>
-            </div>
-          </div>
-          <span className="text-[18px] font-bold text-[#166534]">{data.instantEligible.amount}</span>
-        </motion.div>
-      )}
-
-      {/* Primary Button (Phase 4+) */}
-      {phase >= 4 && data.buttons && (
+      {/* Primary Button moved inside card above */}
+      {false && phase >= 4 && data.buttons && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
