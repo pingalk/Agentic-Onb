@@ -3700,7 +3700,7 @@ const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonCli
                 </div>
 
                 {/* Key-Value Pairs (no dividers) */}
-                <div className="px-4 pb-3 border-t border-[#E4E9F1]">
+                <div className="px-4 pb-3">
                   <div className="flex items-center justify-between py-1.5">
                     <span className="text-[13px] text-[#768EA7]">Settlement amount</span>
                     <span className="text-[13px] font-semibold text-[#192839]">{data.fee.settlementAmount}</span>
@@ -3956,7 +3956,7 @@ const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast, o
 
               {/* Key-Value Pairs - Settlement breakdown (no dividers) */}
               {data.table && (
-                <div className="px-4 pb-3 border-t border-[#E4E9F1]">
+                <div className="px-4 pb-3">
                   {data.table.rows.map((row: { status: string; amount: string }, idx: number) => (
                     <div
                       key={idx}
