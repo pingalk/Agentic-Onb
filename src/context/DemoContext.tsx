@@ -1,24 +1,21 @@
 // src/context/DemoContext.tsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { PERSONAS, PersonaId, PersonaConfig } from '../data/demoConfig';
+import React, { createContext, useContext, useState } from 'react';
 
 interface DemoContextType {
-  currentPersonaId: PersonaId;
-  currentPersona: PersonaConfig;
-  setPersona: (id: PersonaId) => void;
-  resetDemo: () => void;
   isInChatView: boolean;
   setIsInChatView: (value: boolean) => void;
   isOnRayLandingPage: boolean;
   setIsOnRayLandingPage: (value: boolean) => void;
   bgHue: number;
   setBgHue: (value: number) => void;
+  bgIntensity: number;
+  setBgIntensity: (value: number) => void;
+  resetDemo: () => void;
 }
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined);
 
 export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentPersonaId, setCurrentPersonaId] = useState<PersonaId>('maya');
   const [isInChatView, setIsInChatView] = useState(false);
   const [isOnRayLandingPage, setIsOnRayLandingPage] = useState(false);
 
@@ -39,28 +36,39 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Optional: Add a data-theme attribute to body for global CSS variables if needed later
-  useEffect(() => {
-    document.body.setAttribute('data-theme', PERSONAS[currentPersonaId].theme);
-  }, [currentPersonaId]);
+  // Initialize bgIntensity from localStorage (0-100, default 100)
+  const [bgIntensity, setBgIntensityState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('bgIntensity');
+      return saved ? parseInt(saved, 10) : 100;
+    }
+    return 100;
+  });
+
+  // Wrapper to save to localStorage when bgIntensity changes
+  const setBgIntensity = (value: number) => {
+    setBgIntensityState(value);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('bgIntensity', value.toString());
+    }
+  };
 
   const resetDemo = () => {
-    setCurrentPersonaId('maya');
-    // Additional reset logic can be added here (e.g., clear chat history, reset demo steps, etc.)
+    setIsInChatView(false);
+    setIsOnRayLandingPage(true);
   };
 
   return (
     <DemoContext.Provider value={{
-      currentPersonaId,
-      currentPersona: PERSONAS[currentPersonaId],
-      setPersona: setCurrentPersonaId,
-      resetDemo,
       isInChatView,
       setIsInChatView,
       isOnRayLandingPage,
       setIsOnRayLandingPage,
       bgHue,
-      setBgHue
+      setBgHue,
+      bgIntensity,
+      setBgIntensity,
+      resetDemo
     }}>
       {children}
     </DemoContext.Provider>

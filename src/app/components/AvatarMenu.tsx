@@ -1,8 +1,7 @@
 import React from 'react';
-import { PERSONAS } from '../../data/demoConfig';
 import { useDemo } from '../../context/DemoContext';
 import { useMagicColor } from '../../context/MagicColorContext';
-import { RotateCcw, Check, Settings } from 'lucide-react';
+import { RotateCcw, Settings } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,38 +16,19 @@ import {
 import { SettingsPanelContent } from './SettingsPanel';
 
 export const AvatarMenu = () => {
-  const { currentPersonaId, setPersona, resetDemo, currentPersona, bgHue, setBgHue } = useDemo();
+  const { resetDemo, bgHue, setBgHue, bgIntensity, setBgIntensity } = useDemo();
   const { magicColor, setMagicColor, config } = useMagicColor();
-
-  const isNegative = currentPersona.theme === 'negative';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-medium uppercase cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-slate-300 transition-all ${isNegative ? 'bg-red-900' : 'bg-slate-900'}`}
+          className="w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-medium uppercase cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-slate-300 transition-all bg-slate-900"
         >
-          {currentPersona.name.charAt(0)}
+          R
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72" align="end" sideOffset={8}>
-        <DropdownMenuLabel className="text-xs text-slate-500">User Stories</DropdownMenuLabel>
-        {Object.values(PERSONAS).map((p) => (
-          <DropdownMenuItem
-            key={p.id}
-            onClick={() => setPersona(p.id)}
-            className="flex items-start justify-between cursor-pointer py-2.5"
-          >
-            <div className="flex flex-col gap-0.5 min-w-0">
-              <span className="text-sm font-medium truncate">{p.name}</span>
-              <span className="text-xs text-slate-500 line-clamp-2">{p.subtitle}</span>
-            </div>
-            {currentPersonaId === p.id && <Check size={14} className="text-blue-600 shrink-0 ml-2 mt-0.5" />}
-          </DropdownMenuItem>
-        ))}
-
-        <DropdownMenuSeparator />
-
         <DropdownMenuLabel className="text-xs text-slate-500">Theme</DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() => setMagicColor(magicColor === 'blue' ? 'green' : 'blue')}
@@ -93,6 +73,34 @@ export const AvatarMenu = () => {
             <span className="text-xs text-slate-400">{bgHue}°</span>
             <button
               onClick={() => setBgHue(0)}
+              className="text-xs text-slate-400 hover:text-slate-600"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <DropdownMenuLabel className="text-xs text-slate-500">Background Intensity</DropdownMenuLabel>
+        <div className="px-2 py-2">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={bgIntensity}
+            onChange={(e) => setBgIntensity(Number(e.target.value))}
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right,
+                rgba(0, 158, 92, 0),
+                rgba(0, 158, 92, 0.5),
+                rgba(0, 158, 92, 1)
+              )`
+            }}
+          />
+          <div className="flex justify-between mt-1">
+            <span className="text-xs text-slate-400">{bgIntensity}%</span>
+            <button
+              onClick={() => setBgIntensity(100)}
               className="text-xs text-slate-400 hover:text-slate-600"
             >
               Reset
