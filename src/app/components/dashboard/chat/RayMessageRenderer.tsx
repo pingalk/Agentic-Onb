@@ -1818,19 +1818,32 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
                 initial={{ opacity: 0, y: 5, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0)' }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="flex gap-[10px] items-start p-[16px] bg-[rgba(18,145,208,0.06)] rounded-[12px] border border-[rgba(18,145,208,0.12)]"
+                className="relative bg-white rounded-[12px] border border-[#dee1e3] overflow-hidden shadow-[0px_6px_32px_4px_rgba(175,182,187,0.06)]"
               >
-                <div className="shrink-0 size-[16px] flex items-center justify-center mt-[2px]">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M8 1L9.79 5.42L14.5 6.02L11 9.34L11.94 14L8 11.77L4.06 14L5 9.34L1.5 6.02L6.21 5.42L8 1Z" fill="#1291D0" stroke="#1291D0" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <div className="flex flex-col gap-[4px]">
-                  <span className="text-[14px] font-medium text-[#1291D0]">Ray Insight</span>
-                  <p className="text-[15px] leading-[24px] text-[#40566d]">
+                {/* Top gradient */}
+                <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-[#f8fafb] to-transparent pointer-events-none" />
+
+                {/* Blue glow on right side */}
+                <div
+                  className="absolute right-0 top-0 bottom-0 w-24 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(270deg, rgba(37, 99, 235, 0.08) 0%, transparent 100%)',
+                  }}
+                />
+
+                {/* Content */}
+                <div className="relative p-[16px] flex flex-col gap-[4px]">
+                  <span className="text-[14px] font-semibold text-[#192839]">Ray Insight</span>
+                  <p className="text-[14px] leading-[22px] text-[#40566d]">
                     <SmartHighlightWithBold text={data.insight.text} />
                   </p>
                 </div>
+
+                {/* Bottom gradient */}
+                <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#f8fafb] to-transparent pointer-events-none" />
+
+                {/* Inner shadow overlay */}
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_0px_1px_#dee1e3,inset_0px_-1.5px_0px_1px_white]" />
               </motion.div>
             )}
           </div>
