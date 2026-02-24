@@ -1,13 +1,11 @@
 import React from 'react';
 import { useDemo } from '../../context/DemoContext';
-import { useMagicColor } from '../../context/MagicColorContext';
 import { RotateCcw, Palette, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubTrigger,
@@ -19,7 +17,6 @@ export const AvatarMenu = () => {
 
   // Compute the current green color from HSL
   const greenColor = `hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%)`;
-  const { magicColor, setMagicColor, config } = useMagicColor();
 
   return (
     <DropdownMenu>
@@ -31,25 +28,6 @@ export const AvatarMenu = () => {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72" align="end" sideOffset={8}>
-        <DropdownMenuLabel className="text-xs text-slate-500">Theme</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => setMagicColor(magicColor === 'blue' ? 'green' : 'blue')}
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <div
-            className="w-3 h-3 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: config.primary }}
-          />
-          <span className="text-sm">
-            {magicColor === 'blue' ? 'Corporate Blue' : 'Razorpay Green'}
-          </span>
-          <span className="ml-auto text-xs text-slate-400">
-            Switch to {magicColor === 'blue' ? 'Green' : 'Blue'}
-          </span>
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
             <Palette size={14} className="text-slate-400" />
