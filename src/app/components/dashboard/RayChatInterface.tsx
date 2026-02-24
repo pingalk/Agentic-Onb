@@ -99,7 +99,7 @@ interface RayChatInterfaceProps {
 }
 
 export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatInterfaceProps) => {
-  const { currentPersona } = useDemo();
+  const { currentPersona, setPersona } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
   const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, briefingReviewResponses, showcaseCards } = useDemoScript();
   const [messages, setMessages] = useState<RayResponseData[]>([]);
@@ -1184,6 +1184,15 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
 
     const text = inputValue.toLowerCase();
     const userQuestion = inputValue;
+
+    // Query-based routing: Detect settlement queries and trigger Varun flow
+    if ((text.includes('settlement') || text.includes('when is my next') || text.includes('upcoming settlement')) &&
+        currentPersona.id !== 'varun' && varunFlowStep === 0) {
+      // Switch to Varun persona and trigger settlement flow
+      setInputValue('');
+      setPersona('varun');
+      return; // The useEffect for varun will handle the flow
+    }
 
     // Handle question while payment link modal is open
     if (isPaymentLinkModalOpen) {
