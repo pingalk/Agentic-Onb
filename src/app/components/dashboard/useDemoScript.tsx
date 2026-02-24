@@ -536,7 +536,9 @@ Maya`,
                         text: "You're a high-value merchant with **340% order surge** this week — record collections! Your settlement volumes are significantly higher than usual."
                     },
                     suggestions: [
-                        "But I have 3L more in my account. When will that be settled?"
+                        "But I have 3L more in my account. When will that be settled?",
+                        "Show me settlement history",
+                        "Why is settlement T+2?"
                     ]
                 }
             }
@@ -595,7 +597,9 @@ Maya`,
                         type: 'instant'
                     },
                     suggestions: [
-                        "Enable Early Settlements for all future settlements?"
+                        "Enable Early Settlements for all future settlements?",
+                        "What is the Instant Settlement fee?",
+                        "Show my settlement history"
                     ]
                 }
             }
@@ -611,7 +615,11 @@ Maya`,
                         "Works on bank holidays",
                         "Automatic for all payments"
                     ],
-                    suggestions: []
+                    suggestions: [
+                        "Show my current settlement schedule",
+                        "How much does Early Settlement cost?",
+                        "Can I disable this later?"
+                    ]
                 }
             }
         }

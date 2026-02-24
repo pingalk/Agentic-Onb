@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import clsx from 'clsx';
-import { useDemo } from '@/context/DemoContext';
-import { thinkingSteps, defaultThinkingSteps } from './useDemoScript';
+import { defaultThinkingSteps } from './useDemoScript';
 import Ray from '@/imports/Ray';
 
 export interface ChainOfThoughtProps {
@@ -26,9 +25,8 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
   onSuggestionClick,
   highlightedSuggestionIndex = null
 }) => {
-  // Auto-detect persona from context if no steps provided
-  const { currentPersonaId } = useDemo();
-  const steps = propSteps || thinkingSteps[currentPersonaId] || defaultThinkingSteps;
+  // Use provided steps or default thinking steps
+  const steps = propSteps || defaultThinkingSteps;
 
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -158,31 +156,37 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
 
 
       {/* Suggestions - only shown in complete mode */}
+      {/* Only the first suggestion is clickable (for demo purposes) */}
       {isComplete && suggestions.length > 0 && (
         <div className="flex flex-col gap-1 pl-9">
-          {suggestions.map((suggestion, idx) => (
-            <motion.button
-              key={idx}
-              initial={{ opacity: 0, x: -8, filter: 'blur(3px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-              transition={{
-                delay: 0.05 + idx * 0.08,
-                duration: 0.4,
-                ease: [0.25, 0.1, 0.25, 1]
-              }}
-              onClick={() => onSuggestionClick?.(suggestion)}
-              className={clsx(
-                "text-left px-3 py-2 text-sm font-medium rounded-lg transition-all",
-                "hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200",
-                highlightedSuggestionIndex === idx
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-600"
-              )}
-            >
-              <span className="text-[#40566d] mr-2">{idx + 1}.</span>
-              {suggestion}
-            </motion.button>
-          ))}
+          {suggestions.map((suggestion, idx) => {
+            const isActive = idx === 0; // Only first suggestion is clickable
+            return (
+              <motion.button
+                key={idx}
+                initial={{ opacity: 0, x: -8, filter: 'blur(3px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{
+                  delay: 0.05 + idx * 0.08,
+                  duration: 0.4,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+                onClick={() => isActive && onSuggestionClick?.(suggestion)}
+                className={clsx(
+                  "text-left px-3 py-2 text-sm font-medium rounded-lg transition-all",
+                  isActive
+                    ? "hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200 cursor-pointer"
+                    : "cursor-default",
+                  highlightedSuggestionIndex === idx
+                    ? "bg-slate-100 text-slate-900"
+                    : isActive ? "text-slate-600" : "text-slate-400"
+                )}
+              >
+                <span className={clsx("mr-2", isActive ? "text-[#40566d]" : "text-slate-300")}>{idx + 1}.</span>
+                {suggestion}
+              </motion.button>
+            );
+          })}
         </div>
       )}
     </motion.div>

@@ -105,19 +105,34 @@ export const MessageFooter = () => (
 );
 
 // --- 4. Suggestion Stack (Numbered) ---
-export const SuggestionStack = ({ items }: { items: string[] }) => (
+// activeCount: number of suggestions that are interactive (default: 1 for demo)
+export const SuggestionStack = ({ items, activeCount = 1, onSuggestionClick }: { items: string[], activeCount?: number, onSuggestionClick?: (item: string) => void }) => (
   <div className="flex flex-col gap-2 mt-6 w-full">
     <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Suggestions</h4>
-    {items.map((item, i) => (
-      <button 
-        key={i}
-        className="text-left px-3 py-2.5 rounded-lg bg-slate-50 border border-transparent hover:border-blue-200 hover:bg-blue-50/50 text-[13px] text-slate-700 transition-all duration-200 flex items-center gap-3 group"
-      >
-        <span className="flex items-center justify-center size-5 rounded bg-white text-[10px] font-bold text-slate-400 shadow-sm border border-slate-100 group-hover:text-blue-500 group-hover:border-blue-100">
-            {i + 1}
-        </span>
-        <span className="flex-1">{item}</span>
-      </button>
-    ))}
+    {items.map((item, i) => {
+      const isActive = i < activeCount;
+      return (
+        <button
+          key={i}
+          onClick={() => isActive && onSuggestionClick?.(item)}
+          className={clsx(
+            "text-left px-3 py-2.5 rounded-lg border text-[13px] transition-all duration-200 flex items-center gap-3 group",
+            isActive
+              ? "bg-slate-50 border-transparent hover:border-blue-200 hover:bg-blue-50/50 text-slate-700 cursor-pointer"
+              : "bg-slate-50/50 border-transparent text-slate-400 cursor-default"
+          )}
+        >
+          <span className={clsx(
+            "flex items-center justify-center size-5 rounded text-[10px] font-bold shadow-sm border",
+            isActive
+              ? "bg-white text-slate-400 border-slate-100 group-hover:text-blue-500 group-hover:border-blue-100"
+              : "bg-slate-100 text-slate-300 border-slate-100"
+          )}>
+              {i + 1}
+          </span>
+          <span className="flex-1">{item}</span>
+        </button>
+      );
+    })}
   </div>
 );

@@ -3102,6 +3102,221 @@ const RefundStatusReportArtifact = ({ data, onSuggestionClick, isLast, highlight
   );
 };
 
+// =============================================================================
+// RAY GEN UI CARD DESIGN FRAMEWORK
+// =============================================================================
+
+// Severity types for the framework
+type SeverityType = 'positive' | 'neutral' | 'warning' | 'critical';
+
+// Severity color mappings
+const severityColors: Record<SeverityType, { bg: string; text: string; border: string; badge: string }> = {
+  positive: { bg: '#f0fdf4', text: '#166534', border: '#86efac', badge: '#22c55e' },
+  neutral: { bg: '#f9fafb', text: '#374151', border: '#e5e7eb', badge: '#6b7280' },
+  warning: { bg: '#fffbeb', text: '#92400e', border: '#fcd34d', badge: '#f59e0b' },
+  critical: { bg: '#fef2f2', text: '#991b1b', border: '#fca5a5', badge: '#ef4444' }
+};
+
+// GenUI Card Component - Following Blade Card Design (max-width 480px)
+interface GenUICardProps {
+  severity?: SeverityType;
+  overline?: string;
+  anchor?: { value: string; unit?: string };
+  trend?: { direction: 'up' | 'down' | 'neutral'; value?: string; label?: string };
+  narrative?: string;
+  keyValues?: Array<{ label: string; value: string }>;
+  children?: React.ReactNode;
+  ctas?: Array<{ label: string; variant: 'primary' | 'secondary'; onClick?: () => void }>;
+  className?: string;
+}
+
+const GenUICard = ({
+  severity = 'neutral',
+  overline,
+  anchor,
+  trend,
+  narrative,
+  keyValues,
+  children,
+  ctas,
+  className
+}: GenUICardProps) => {
+  const colors = severityColors[severity];
+
+  return (
+    <div
+      className={clsx(
+        'max-w-[480px] rounded-[8px] border border-[#E4E9F1] overflow-hidden bg-white',
+        'shadow-[0px_1px_2px_rgba(18,25,38,0.04)]',
+        className
+      )}
+    >
+      {/* Header section */}
+      <div className="px-4 pt-4 pb-3">
+        {/* Overline - small muted text */}
+        {overline && (
+          <p className="text-[13px] font-medium text-[#768EA7] mb-1">
+            {overline}
+          </p>
+        )}
+
+        {/* Anchor (large amount) */}
+        {anchor && (
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-[28px] font-semibold text-[#192839] leading-tight tracking-[-0.02em]">
+              {anchor.value}
+            </span>
+            {anchor.unit && (
+              <span className="text-[14px] font-medium text-[#40566d] ml-1">{anchor.unit}</span>
+            )}
+          </div>
+        )}
+
+        {/* Trend indicator - matches Figma "↑12% vs last week" */}
+        {trend && (
+          <div className="flex items-center gap-1 mt-1">
+            <span className={clsx(
+              'text-[13px] font-medium',
+              trend.direction === 'up' && 'text-[#1E7C45]',
+              trend.direction === 'down' && 'text-[#C72C41]',
+              trend.direction === 'neutral' && 'text-[#768EA7]'
+            )}>
+              {trend.direction === 'up' && '↑'}
+              {trend.direction === 'down' && '↓'}
+              {trend.value}
+            </span>
+            {trend.label && (
+              <span className="text-[13px] text-[#768EA7]">
+                {trend.label}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Narrative body */}
+        {narrative && (
+          <p className="text-[13px] text-[#768EA7] leading-[20px] mt-2">
+            <SmartHighlightWithBold text={narrative} />
+          </p>
+        )}
+      </div>
+
+      {/* Key-Value Pairs - Info Group style (no dividers) */}
+      {keyValues && keyValues.length > 0 && (
+        <div className="px-4 pb-4">
+          {keyValues.map((kv, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between py-1.5"
+            >
+              <span className="text-[13px] text-[#768EA7]">{kv.label}</span>
+              <span className="text-[13px] font-semibold text-[#192839]">{kv.value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Custom children content */}
+      {children}
+
+      {/* CTAs */}
+      {ctas && ctas.length > 0 && (
+        <div className="px-4 pb-4 flex gap-3">
+          {ctas.map((cta, idx) => (
+            <button
+              key={idx}
+              onClick={cta.onClick}
+              className={clsx(
+                'px-4 py-2 rounded-[4px] font-semibold text-[14px] transition-all duration-200',
+                cta.variant === 'primary'
+                  ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]'
+                  : 'bg-white text-[#2563EB] hover:bg-[#f1f5fa] border border-[#E4E9F1]'
+              )}
+            >
+              {cta.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// GenUI Milestone Card Component - Layout G (Success/Milestone) - max-width 480px
+interface GenUIMilestoneCardProps {
+  severity?: SeverityType;
+  icon?: 'check' | 'lightning' | 'clock';
+  headline: string;
+  subtext?: string;
+  children?: React.ReactNode;
+}
+
+const GenUIMilestoneCard = ({
+  severity = 'positive',
+  icon = 'check',
+  headline,
+  subtext,
+  children
+}: GenUIMilestoneCardProps) => {
+  const colors = severityColors[severity];
+
+  const iconSvg = {
+    check: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+        <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+    lightning: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+    clock: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+    )
+  };
+
+  return (
+    <div
+      className="max-w-[480px] rounded-[8px] border overflow-hidden"
+      style={{
+        backgroundColor: colors.bg,
+        borderColor: colors.border
+      }}
+    >
+      <div className="p-4 flex items-start gap-3">
+        {/* Icon */}
+        <div
+          className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+          style={{ backgroundColor: colors.badge }}
+        >
+          {iconSvg[icon]}
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[14px] font-semibold" style={{ color: colors.text }}>
+            {headline}
+          </span>
+          {subtext && (
+            <p className="text-[13px] leading-[20px]" style={{ color: colors.text, opacity: 0.85 }}>
+              <SmartHighlightWithBold text={subtext} />
+            </p>
+          )}
+        </div>
+      </div>
+      {children}
+    </div>
+  );
+};
+
+// =============================================================================
+// SETTLEMENT ARTIFACTS
+// =============================================================================
+
 // --- Settlement Upcoming Artifact (Varun Step 1) ---
 const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlightedSuggestionIndex = null }: any) => {
   const [subtextStarted, setSubtextStarted] = useState(false);
@@ -3109,7 +3324,7 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
     hasDataAsset: true,
-    hasInsight: !!data.insight,
+    hasInsight: false,
     hasSuggestions: data.suggestions?.length > 0,
     thinkingDuration: 3000
   });
@@ -3165,65 +3380,24 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
         )}
       </div>
 
-      {/* Settlement Card (Phase 2+) */}
+      {/* Settlement Card (Phase 2+) - GenUI Framework */}
       {phase >= 1 && data.settlement && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={80} borderRadius="12px">
-            <SettlementCard
-              amount={data.settlement.amount}
-              date={data.settlement.scheduledFor}
-              step={1}
+          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={120} borderRadius="12px">
+            <GenUICard
+              severity="positive"
+              overline="Upcoming Settlement"
+              anchor={{ value: `₹${data.settlement.amount}` }}
+              keyValues={[
+                { label: 'Scheduled for', value: data.settlement.scheduledFor },
+                { label: 'Settlement cycle', value: data.settlement.cycle || 'T+2' }
+              ]}
             />
           </AnimatedLoadingCard>
-        </motion.div>
-      )}
-
-      {/* Ray Insight Card (Phase 3+) */}
-      {phase >= 3 && data.insight && (
-        <motion.div
-          initial={{ opacity: 0, y: 5, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0)' }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="relative bg-white rounded-[12px] border border-[#dee1e3] overflow-hidden shadow-[0px_6px_32px_4px_rgba(175,182,187,0.06)]"
-        >
-          {/* Top gradient */}
-          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-[#f8fafb] to-transparent pointer-events-none z-[1]" />
-
-          {/* Embedded SparkRipples animation on right end */}
-          <div className="absolute right-[-500px] top-1/2 -translate-y-1/2 w-[1500px] h-[1500px] pointer-events-none opacity-70">
-            <SparkRipplesBackground
-              loop={true}
-              playbackRate={0.4}
-              scale={1}
-              opacity={1}
-            />
-          </div>
-
-          {/* Blue glow on right side (fallback/overlay) */}
-          <div
-            className="absolute right-0 top-0 bottom-0 w-24 pointer-events-none"
-            style={{
-              background: 'linear-gradient(270deg, rgba(37, 99, 235, 0.06) 0%, transparent 100%)',
-            }}
-          />
-
-          {/* Content */}
-          <div className="relative p-[16px] flex flex-col gap-[4px] z-[2]">
-            <span className="text-[14px] font-semibold text-[#192839]">Ray Insight</span>
-            <p className="text-[14px] leading-[22px] text-[#40566d]">
-              <SmartHighlightWithBold text={data.insight.text} />
-            </p>
-          </div>
-
-          {/* Bottom gradient */}
-          <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#f8fafb] to-transparent pointer-events-none z-[1]" />
-
-          {/* Inner shadow overlay */}
-          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_0px_1px_#dee1e3,inset_0px_-1.5px_0px_1px_white] z-[3]" />
         </motion.div>
       )}
 
@@ -3508,30 +3682,57 @@ const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonCli
             )}
           </div>
 
-          {/* Prompt Text + Buttons (Phase 3+) */}
-          {phase >= 3 && (
+          {/* Blade Card - Fee Confirmation (max-width 480px) */}
+          {phase >= 2 && data.fee && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col gap-[16px]"
+              transition={{ duration: 0.4 }}
             >
-              <p className="text-[16px] text-[#192839] font-medium">{data.promptText}</p>
-              <div className="flex gap-3">
-                {data.buttons?.map((button: { label: string; variant: 'primary' | 'secondary' }, i: number) => (
-                  <button
-                    key={i}
-                    onClick={() => onButtonClick?.(button.label)}
-                    className={clsx(
-                      'px-4 py-2 rounded-lg font-medium text-[14px] transition-all duration-200',
-                      button.variant === 'primary'
-                        ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8] shadow-sm'
-                        : 'bg-[#f1f5fa] text-[#40566d] hover:bg-[#e2e8f0] border border-[#e2e8f0]'
-                    )}
-                  >
-                    {button.label}
-                  </button>
-                ))}
+              <div className="max-w-[480px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
+                {/* Header - Overline style */}
+                <div className="px-4 pt-4 pb-2">
+                  <p className="text-[13px] font-medium text-[#768EA7]">Fee Breakdown</p>
+                </div>
+
+                {/* Key-Value Pairs (no dividers) */}
+                <div className="px-4 pb-3">
+                  <div className="flex items-center justify-between py-1.5">
+                    <span className="text-[13px] text-[#768EA7]">Settlement amount</span>
+                    <span className="text-[13px] font-semibold text-[#192839]">{data.fee.settlementAmount}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1.5">
+                    <span className="text-[13px] text-[#768EA7]">Instant fee ({data.fee.percentage})</span>
+                    <span className="text-[13px] font-semibold text-[#C72C41]">-{data.fee.amount}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1.5 mt-2 pt-2 border-t border-[#E4E9F1]">
+                    <span className="text-[13px] font-medium text-[#1E7C45]">You'll receive</span>
+                    <span className="text-[16px] font-semibold text-[#1E7C45]">₹2,99,100</span>
+                  </div>
+                </div>
+
+                {/* Prompt + CTAs */}
+                {phase >= 3 && (
+                  <div className="px-4 pb-4">
+                    <p className="text-[13px] text-[#768EA7] mb-3">{data.promptText}</p>
+                    <div className="flex gap-3">
+                      {data.buttons?.map((button: { label: string; variant: 'primary' | 'secondary' }, i: number) => (
+                        <button
+                          key={i}
+                          onClick={() => onButtonClick?.(button.label)}
+                          className={clsx(
+                            'px-4 py-2 rounded-[4px] font-semibold text-[14px] transition-all duration-200',
+                            button.variant === 'primary'
+                              ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]'
+                              : 'bg-white text-[#192839] hover:bg-[#f1f5fa] border border-[#E4E9F1]'
+                          )}
+                        >
+                          {button.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -3727,59 +3928,70 @@ const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast }:
         )}
       </div>
 
-      {/* Combined Card: Table + Instant Offer + Button (Phase 2+) */}
+      {/* Combined Card: Blade Card Design (max-width 480px) */}
       {phase >= 1 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={200} borderRadius="12px">
-            <div className="bg-white border border-[#E4E7EC] rounded-[12px] overflow-hidden shadow-[0px_6px_32px_4px_rgba(175,182,187,0.06)]">
-              {/* Table Section */}
+          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={200} borderRadius="8px">
+            <div className="max-w-[480px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
+              {/* Header - Overline style */}
+              <div className="px-4 pt-4 pb-2">
+                <p className="text-[13px] font-medium text-[#768EA7]">Settlement Status</p>
+              </div>
+
+              {/* Key-Value Pairs - Settlement breakdown (no dividers) */}
               {data.table && (
-                <div className="border-b border-[#E4E7EC]">
-                  <SettlementStatusTable rows={data.table.rows} />
+                <div className="px-4 pb-3">
+                  {data.table.rows.map((row: { status: string; amount: string }, idx: number) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between py-1.5"
+                    >
+                      <span className="text-[13px] text-[#768EA7]">{row.status}</span>
+                      <span className="text-[13px] font-semibold text-[#192839]">{row.amount}</span>
+                    </div>
+                  ))}
                 </div>
               )}
 
-              {/* Instant Eligible Section */}
+              {/* Instant Eligible Section - Highlight Strip */}
               {data.instantEligible && (
-                <div className="p-[16px] bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] flex items-center justify-between">
+                <div className="mx-4 mb-3 px-3 py-3 bg-[#f0fdf4] rounded-[6px] flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#22c55e] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <div className="w-7 h-7 rounded-full bg-[#1E7C45] flex items-center justify-center shrink-0">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
                     <div>
-                      <p className="text-[14px] font-semibold text-[#166534]">Eligible for Instant Settlement</p>
-                      <p className="text-[13px] text-[#15803d]">{data.instantEligible.message}</p>
+                      <p className="text-[13px] font-semibold text-[#1E7C45]">Eligible for Instant Settlement</p>
+                      <p className="text-[12px] text-[#1E7C45]/80">{data.instantEligible.message}</p>
                     </div>
                   </div>
-                  <span className="text-[18px] font-bold text-[#166534]">{data.instantEligible.amount}</span>
+                  <span className="text-[16px] font-semibold text-[#1E7C45]">{data.instantEligible.amount}</span>
                 </div>
               )}
 
-              {/* Button Section */}
+              {/* CTA Section - Blade Button style */}
               {phase >= 3 && data.buttons && (
-                <div className="p-[16px] border-t border-[#E4E7EC] bg-[#fafafa]">
-                  <div className="flex gap-3">
-                    {data.buttons.map((button: { label: string; variant: 'primary' | 'secondary' }, i: number) => (
-                      <button
-                        key={i}
-                        onClick={() => onButtonClick?.(button.label)}
-                        className={clsx(
-                          'px-5 py-2.5 rounded-lg font-medium text-[14px] transition-all duration-200',
-                          button.variant === 'primary'
-                            ? 'bg-[#22c55e] text-white hover:bg-[#16a34a] shadow-sm'
-                            : 'bg-white text-[#40566d] hover:bg-[#f1f5fa] border border-[#e2e8f0]'
-                        )}
-                      >
-                        {button.label}
-                      </button>
-                    ))}
-                  </div>
+                <div className="px-4 pb-4 flex gap-3">
+                  {data.buttons.map((button: { label: string; variant: 'primary' | 'secondary' }, i: number) => (
+                    <button
+                      key={i}
+                      onClick={() => onButtonClick?.(button.label)}
+                      className={clsx(
+                        'px-4 py-2 rounded-[4px] font-semibold text-[14px] transition-all duration-200',
+                        button.variant === 'primary'
+                          ? 'bg-[#1E7C45] text-white hover:bg-[#166534]'
+                          : 'bg-white text-[#192839] hover:bg-[#f1f5fa] border border-[#E4E9F1]'
+                      )}
+                    >
+                      {button.label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -3893,20 +4105,22 @@ const InstantSettlementConfirmedArtifact = ({ data, onSuggestionClick, isLast, h
         )}
       </div>
 
-      {/* Settlement Card (Phase 2+) */}
+      {/* Settlement Card (Phase 2+) - GenUI Milestone Card */}
       {phase >= 1 && data.settlement && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={80} borderRadius="12px">
-            <ConfigurableSettlementCard
-              amount={data.settlement.amount}
-              scheduledFor={data.settlement.scheduledFor}
-              status={data.settlement.status}
-              type="instant"
-              progressSteps={2}
+          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={120} borderRadius="12px">
+            <GenUICard
+              severity="positive"
+              overline="Instant Settlement"
+              anchor={{ value: `₹${data.settlement.amount}` }}
+              keyValues={[
+                { label: 'Settlement time', value: data.settlement.scheduledFor },
+                { label: 'Status', value: data.settlement.status }
+              ]}
             />
           </AnimatedLoadingCard>
         </motion.div>
@@ -3993,29 +4207,36 @@ const EarlySettlementsEnabledArtifact = ({ data, isLast }: any) => {
         )}
       </div>
 
-      {/* Features List (Phase 2+) */}
+      {/* Features List (Phase 2+) - Blade Card Design (max-width 480px) */}
       {phase >= 2 && data.features && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] border border-[#86efac] rounded-[12px] p-[16px]"
         >
-          <div className="flex flex-col gap-2">
-            {data.features.map((feature: string, idx: number) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="flex items-center gap-2"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2">
-                  <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="text-[14px] text-[#166534]">{feature}</span>
-              </motion.div>
-            ))}
+          <div className="max-w-[480px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
+            {/* Header - Overline style */}
+            <div className="px-4 pt-4 pb-2">
+              <p className="text-[13px] font-medium text-[#768EA7]">Features Included</p>
+            </div>
+
+            {/* Features as rows (no dividers) */}
+            <div className="px-4 pb-4">
+              {data.features.map((feature: string, idx: number) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="flex items-center gap-3 py-1.5"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E7C45" strokeWidth="2.5" className="shrink-0">
+                    <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span className="text-[13px] text-[#192839]">{feature}</span>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </motion.div>
       )}
