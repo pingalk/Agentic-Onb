@@ -564,7 +564,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                      </motion.div>
                      <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
                      {/* Bottom fade: transparent at top, fades to match gradient */}
-                     <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(241,247,237,0.6) 25%, rgba(241,247,237,0.95) 40%, #F1F7ED 50%)' }} />
+                     <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, transparent 0%, hsla(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%, 0.6) 25%, hsla(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%, 0.95) 40%, ${gradientGreenColor} 50%)` }} />
                   </motion.div>
                )}
                {/* Fallback gradient for non-landing views */}
