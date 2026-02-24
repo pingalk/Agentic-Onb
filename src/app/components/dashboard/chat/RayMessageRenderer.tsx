@@ -1824,8 +1824,8 @@ const MayaTransactionsReportArtifact = ({ data, onRowClick, onSuggestionClick, i
                 {/* Top gradient */}
                 <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-[#f8fafb] to-transparent pointer-events-none z-[1]" />
 
-                {/* Embedded SparkRipples animation on right corner - plays once */}
-                <div className="absolute right-[-400px] top-[-300px] w-[800px] h-[800px] pointer-events-none opacity-60">
+                {/* Embedded SparkRipples animation on right end - plays once */}
+                <div className="absolute right-[-350px] top-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none opacity-60">
                   <SparkRipplesBackground
                     loop={false}
                     playbackRate={0.3}
