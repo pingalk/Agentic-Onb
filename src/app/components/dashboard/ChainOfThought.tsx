@@ -175,9 +175,9 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
                 onClick={() => onSuggestionClick?.(firstSuggestion)}
                 className={clsx(
                   "text-left px-3 py-2 text-sm font-medium rounded-lg transition-all",
-                  "hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200 cursor-pointer",
+                  "hover:bg-black/[0.04] active:bg-black/[0.06] cursor-pointer",
                   highlightedSuggestionIndex === idx
-                    ? "bg-slate-100 text-slate-900"
+                    ? "bg-black/[0.04] text-slate-900"
                     : "text-slate-600"
                 )}
               >
