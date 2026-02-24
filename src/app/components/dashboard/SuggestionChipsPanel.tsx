@@ -6,9 +6,9 @@ interface Category {
   id: string;
   label: string;
   prompts: string[];
+  enabled: boolean; // Whether this category has working flows
 }
 
-// Only include categories/prompts that have working flows
 const CATEGORIES: Category[] = [
   {
     id: 'recovery',
@@ -16,6 +16,7 @@ const CATEGORIES: Category[] = [
     prompts: [
       'Customer claims double charge — check their payments',
     ],
+    enabled: true,
   },
   {
     id: 'settlements',
@@ -23,6 +24,25 @@ const CATEGORIES: Category[] = [
     prompts: [
       'When is my next settlement?',
     ],
+    enabled: true,
+  },
+  {
+    id: 'manage',
+    label: 'Manage',
+    prompts: [],
+    enabled: false,
+  },
+  {
+    id: 'insights',
+    label: 'Insights',
+    prompts: [],
+    enabled: false,
+  },
+  {
+    id: 'support',
+    label: 'Support',
+    prompts: [],
+    enabled: false,
   },
 ];
 
@@ -35,11 +55,14 @@ export const SuggestionChipsPanel: React.FC<SuggestionChipsPanelProps> = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const handleChipClick = (categoryId: string) => {
-    if (activeCategory === categoryId) {
+  const handleChipClick = (category: Category) => {
+    // Only allow clicking on enabled categories
+    if (!category.enabled) return;
+
+    if (activeCategory === category.id) {
       setActiveCategory(null);
     } else {
-      setActiveCategory(categoryId);
+      setActiveCategory(category.id);
     }
   };
 
@@ -58,12 +81,14 @@ export const SuggestionChipsPanel: React.FC<SuggestionChipsPanelProps> = ({
         {CATEGORIES.map((category) => (
           <button
             key={category.id}
-            onClick={() => handleChipClick(category.id)}
+            onClick={() => handleChipClick(category)}
             className={clsx(
               "h-7 px-3 py-1 rounded-lg font-['Inter',sans-serif] text-[14px] font-normal tracking-[-0.182px] leading-5 transition-all duration-200",
               activeCategory === category.id
                 ? 'bg-[#292f32] text-white border border-transparent'
-                : 'bg-white text-[#292f32] border border-[rgba(67,75,81,0.18)] hover:border-[rgba(67,75,81,0.28)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.04)]'
+                : category.enabled
+                  ? 'bg-white text-[#292f32] border border-[rgba(67,75,81,0.18)] hover:border-[rgba(67,75,81,0.28)] hover:shadow-[0_1px_2px_rgba(0,0,0,0.04)] cursor-pointer'
+                  : 'bg-white text-[#292f32] border border-[rgba(67,75,81,0.18)] cursor-default'
             )}
           >
             {category.label}
