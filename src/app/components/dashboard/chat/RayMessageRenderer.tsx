@@ -3997,7 +3997,7 @@ const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast, o
                       className={clsx(
                         'px-4 py-2 rounded-[4px] font-semibold text-[14px] transition-all duration-200',
                         button.variant === 'primary'
-                          ? 'bg-[#1E7C45] text-white hover:bg-[#166534]'
+                          ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]'
                           : 'bg-white text-[#192839] hover:bg-[#f1f5fa] border border-[#E4E9F1]'
                       )}
                     >
