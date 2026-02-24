@@ -23,7 +23,7 @@ const DonutChart = () => (
       <path d="M90 90 L30 90 A60 60 0 0 1 90 30 Z" fill="#305eff" />
       {/* Green slice - Offline (30%) - middle-right */}
       <path d="M90 90 L90 30 A60 60 0 0 1 138 58 Z" fill="#10b981" />
-      {/* Pink slice - POS (20%) - far right */}
+      {/* Pink slice - i18n (20%) - far right */}
       <path d="M90 90 L138 58 A60 60 0 0 1 150 90 Z" fill="#f472b6" />
       {/* Inner white semi-circle for donut effect */}
       <path d="M90 90 L50 90 A40 40 0 0 1 130 90 Z" fill="white" />
@@ -125,8 +125,8 @@ export const HomeCards: React.FC<HomeCardsProps> = ({ animPhase, onPromptSelect 
     <div className="flex flex-wrap gap-5 items-start w-full max-w-[850px]">
       {/* Critical Downtime Card */}
       <motion.div
-        className="border border-[#fee2e2] flex flex-col gap-2 items-center p-2 rounded-xl shrink-0 w-[269px] cursor-pointer transition-shadow hover:shadow-md"
-        style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 27.731%, rgb(255, 255, 255) 93.453%, rgb(254, 242, 242) 100%)" }}
+        className="border border-[#dee1e3] flex flex-col gap-2 items-center p-2 rounded-xl shrink-0 w-[269px] cursor-pointer transition-shadow hover:shadow-md"
+        style={{ backgroundImage: "linear-gradient(180deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 27.731%, rgb(255, 255, 255) 93.453%, rgb(247, 247, 248) 100%)" }}
         initial={{ opacity: 0, y: 26 }}
         animate={animPhase >= 7 ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
         transition={{ duration: 0.8, delay: 0, ease: [0.16, 1, 0.3, 1] }}
@@ -251,7 +251,7 @@ export const HomeCards: React.FC<HomeCardsProps> = ({ animPhase, onPromptSelect 
             </div>
             <div className="flex gap-2 items-center px-1">
               <div className="bg-[#f472b6] rounded-sm size-3" />
-              <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#768ea7] leading-[20px]">POS</p>
+              <p className="font-['Inter',sans-serif] font-normal text-[14px] text-[#768ea7] leading-[20px]">i18n</p>
             </div>
           </div>
         </div>
