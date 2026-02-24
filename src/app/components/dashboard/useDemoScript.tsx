@@ -532,9 +532,6 @@ Maya`,
                         status: 'Scheduled',
                         cycle: 'T+2'
                     },
-                    insight: {
-                        text: "You're a high-value merchant with **340% order surge** this week — record collections! Your settlement volumes are significantly higher than usual."
-                    },
                     suggestions: [
                         "But I have 3L more in my account. When will that be settled?",
                         "Show me settlement history",
