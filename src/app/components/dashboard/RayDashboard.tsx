@@ -277,26 +277,26 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
     if (animationRanRef.current) return;
     animationRanRef.current = true;
 
-    // For 'default' variant, run animation with deliberate pacing
+    // For 'default' variant, run animation with faster pacing
     if (landingVariant === 'default') {
-      const t1 = setTimeout(() => setAnimPhase(1), 400);      // Ray appears
-      const t2 = setTimeout(() => setAnimPhase(2), 800);      // Greeting starts streaming
-      const t3 = setTimeout(() => setAnimPhase(3), 1200);     // Tagline starts streaming
-      const t4 = setTimeout(() => setAnimPhase(4), 4600);     // Input spotlight border starts
-      const t5 = setTimeout(() => setAnimPhase(5), 5600);     // Spotlight ends
-      const t6 = setTimeout(() => setAnimPhase(6), 5700);     // Input content fades in
-      const t7 = setTimeout(() => setAnimPhase(7), 6500);     // Cards appear
+      const t1 = setTimeout(() => setAnimPhase(1), 200);      // Ray appears
+      const t2 = setTimeout(() => setAnimPhase(2), 400);      // Greeting starts streaming
+      const t3 = setTimeout(() => setAnimPhase(3), 600);      // Tagline starts streaming
+      const t4 = setTimeout(() => setAnimPhase(4), 2000);     // Input spotlight border starts
+      const t5 = setTimeout(() => setAnimPhase(5), 2600);     // Spotlight ends
+      const t6 = setTimeout(() => setAnimPhase(6), 2700);     // Input content fades in
+      const t7 = setTimeout(() => setAnimPhase(7), 3200);     // Cards appear
       return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); clearTimeout(t7); };
     }
 
-    // Story mode animation sequence
-    const t1 = setTimeout(() => setAnimPhase(1), 400);      // Ray appears
-    const t2 = setTimeout(() => setAnimPhase(2), 2000);     // Greeting
-    const t3 = setTimeout(() => setAnimPhase(3), 3200);     // Tagline
-    const t4 = setTimeout(() => setAnimPhase(4), 4400);     // Input spotlight border
-    const t5 = setTimeout(() => setAnimPhase(5), 5400);     // Spotlight ends
-    const t6 = setTimeout(() => setAnimPhase(6), 5500);     // Input content fades in
-    const t7 = setTimeout(() => setAnimPhase(7), 6300);     // Cards appear
+    // Story mode animation sequence (also faster)
+    const t1 = setTimeout(() => setAnimPhase(1), 200);      // Ray appears
+    const t2 = setTimeout(() => setAnimPhase(2), 600);      // Greeting
+    const t3 = setTimeout(() => setAnimPhase(3), 1000);     // Tagline
+    const t4 = setTimeout(() => setAnimPhase(4), 2000);     // Input spotlight border
+    const t5 = setTimeout(() => setAnimPhase(5), 2600);     // Spotlight ends
+    const t6 = setTimeout(() => setAnimPhase(6), 2700);     // Input content fades in
+    const t7 = setTimeout(() => setAnimPhase(7), 3200);     // Cards appear
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); clearTimeout(t6); clearTimeout(t7); };
   }, [view, landingVariant]);
 
