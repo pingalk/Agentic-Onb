@@ -516,7 +516,7 @@ Maya`,
     // Varun's Journey (Instant Settlements / Working Capital)
     const varunScript = {
         varun_step_0: {
-            input: "What is my upcoming settlement?",
+            input: "When is my next settlement?",
             response: null,
             suggestions: []
         },
@@ -524,100 +524,94 @@ Maya`,
             artifact: {
                 type: 'settlement_upcoming',
                 data: {
-                    headline: "Your next settlement is ₹3.1L, scheduled for tomorrow",
-                    subtext: "This settlement includes payments collected on Jan 25, as per your T+2 cycle.",
+                    headline: "Your next settlement is tomorrow",
+                    subtext: "**₹3,10,000** will be credited to your bank account by tomorrow morning.",
                     settlement: {
                         amount: '3,10,000',
-                        scheduledFor: 'Tomorrow, Jan 28, 2026 10:00 AM',
+                        scheduledFor: 'Tomorrow, 10:00 AM',
                         status: 'Scheduled',
                         cycle: 'T+2'
                     },
+                    insight: {
+                        text: "You're a high-value merchant with **340% order surge** this week — record collections! Your settlement volumes are significantly higher than usual."
+                    },
                     suggestions: [
-                        "Show payments not included in this settlement",
-                        "When will the remaining amount settle?",
-                        "What is settlement cycle? How to change it"
+                        "But I have 3L more in my account. When will that be settled?"
                     ]
                 }
             }
         },
         varun_step_2: {
             artifact: {
-                type: 'settlement_explanation',
+                type: 'settlement_explanation_with_offer',
                 data: {
-                    headline: "Most of your recent payments haven't reached the settlement window yet (T+2)",
-                    subtext: "• You're on a T+2 settlement cycle, which means payments take 2 working days to settle.\n• Jan 26 was a national holiday.\n\nBecause of this, recent payments worth ₹7.3L were collected after the cutoff for tomorrow's settlement. Nothing is wrong—this is purely a timing gap.",
+                    headline: "Your ₹3L will settle in 3 days",
+                    subtext: "Due to the T+2 cycle and upcoming **bank holiday**, your remaining **₹3,00,000** will be settled on **Friday, Feb 28**.\n\nBut you're eligible for **Instant Settlement** — get it today instead.",
                     table: {
                         rows: [
-                            { status: 'Settling tomorrow (T+2)', amount: '₹3.1L' },
-                            { status: 'Processing (next 1–2 days)', amount: '₹7.3L' },
-                            { status: 'Total collected (last 2 days)', amount: '₹10.4L' }
+                            { status: 'Settling tomorrow', amount: '₹3,10,000' },
+                            { status: 'Processing (T+2 + holiday)', amount: '₹3,00,000' }
                         ]
                     },
-                    suggestions: [
-                        "When exactly will I receive the remaining ₹7.3L?",
-                        "Can I get this money sooner?"
+                    instantEligible: {
+                        amount: '₹3,00,000',
+                        message: 'Get it settled by EOD today'
+                    },
+                    buttons: [
+                        { label: "Instantly settle", variant: "primary" }
                     ]
                 }
             }
         },
         varun_step_3: {
             artifact: {
-                type: 'instant_settlement_offer',
+                type: 'instant_settlement_charges',
                 data: {
-                    headline: "You can receive up to ₹7L today using Instant Settlements",
-                    subtext: "I audited your profile and found that you're eligible for Instant Settlements. This would let you receive ₹7L by end of day, instead of waiting for the T+2 cycle.",
-                    eligibility: {
-                        amount: '₹7,00,000',
-                        available: true
+                    headline: "Instant Settlement fee",
+                    subtext: "A small fee of **0.3%** will be deducted for instant processing.",
+                    fee: {
+                        percentage: '0.3%',
+                        amount: '₹900',
+                        settlementAmount: '₹3,00,000'
                     },
-                    suggestions: [
-                        "How much does instant settlement cost?",
-                        "Enable instant settlement",
-                        "Are there additional charges?"
+                    promptText: "₹2,99,100 will be settled by EOD today. Settle now?",
+                    buttons: [
+                        { label: "Settle now", variant: "primary" },
+                        { label: "Cancel", variant: "secondary" }
                     ]
                 }
             }
         },
         varun_step_4: {
             artifact: {
-                type: 'instant_settlement_charges',
+                type: 'instant_settlement_confirmed',
                 data: {
-                    headline: "A 0.3% fee applies to the settled amount in Instant Settlements",
-                    subtext: "For ₹7L, the fee would be ₹2,100.\nThere are no setup or subscription charges.",
-                    fee: {
-                        percentage: '0.3%',
-                        amount: '₹2,100',
-                        settlementAmount: '₹7,00,000'
+                    headline: "Done! Settlement initiated",
+                    subtext: "**₹2,99,100** will be credited to your bank account by EOD today.",
+                    settlement: {
+                        amount: '2,99,100',
+                        scheduledFor: 'Today by 6:00 PM',
+                        status: 'Processing',
+                        type: 'instant'
                     },
-                    promptText: "Should I enable instant settlements for you?",
-                    buttons: [
-                        { label: "Yes", variant: "primary" },
-                        { label: "No", variant: "secondary" }
+                    suggestions: [
+                        "Enable Early Settlements for all future settlements?"
                     ]
                 }
             }
         },
         varun_step_5: {
             artifact: {
-                type: 'instant_settlement_enabled',
+                type: 'early_settlements_enabled',
                 data: {
-                    headline: "Instant Settlements enabled 🎉",
-                    subtext: "₹7L will be credited to your bank account by today, EOD. You can turn Instant Settlements on or off anytime.",
-                    settlement: {
-                        amount: '7,10,000',
-                        scheduledFor: 'Today, EOD',
-                        status: 'Scheduled',
-                        type: 'regular'
-                    },
-                    promptText: "Would you like me to notify you as soon as the settlement is credited?",
-                    buttons: [
-                        { label: "Yes", variant: "primary" },
-                        { label: "No", variant: "secondary" }
+                    headline: "Early Settlements enabled!",
+                    subtext: "From now on, get your money the **same day** as your customer pays you. No more waiting for T+2 cycles.",
+                    features: [
+                        "Same-day settlements",
+                        "Works on bank holidays",
+                        "Automatic for all payments"
                     ],
-                    suggestions: [
-                        "Check settlement status",
-                        "Download settlement summary"
-                    ]
+                    suggestions: []
                 }
             }
         }

@@ -1027,37 +1027,43 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
 
     // Handle Varun's flow transitions (Instant Settlements)
     if (currentPersona.id === 'varun') {
-      // Step 1 → Step 2: Why is it low? / Show payments not included
+      // Step 1 → Step 2: "But I have 3L more in my account"
       if (varunFlowStep === 1 && (
-        suggestion.toLowerCase().includes('low') ||
-        suggestion.toLowerCase().includes('not included') ||
-        suggestion.toLowerCase().includes('remaining')
+        suggestion.toLowerCase().includes('3l more') ||
+        suggestion.toLowerCase().includes('more in my account') ||
+        suggestion.toLowerCase().includes('when will that be settled')
       )) {
         handleVarunFlowAdvance(suggestion, varunScript.varun_step_2, 2);
         return;
       }
 
-      // Step 2 → Step 3: Can I get this money sooner?
+      // Step 2 → Step 3: "Instantly settle" button click
       if (varunFlowStep === 2 && (
-        suggestion.toLowerCase().includes('sooner') ||
-        suggestion.toLowerCase().includes('get this money')
+        suggestion.toLowerCase().includes('instantly settle')
       )) {
         handleVarunFlowAdvance(suggestion, varunScript.varun_step_3, 3);
         return;
       }
 
-      // Step 3 → Step 4: Are there any additional charges?
+      // Step 3 → Step 4: "Settle now" button click
       if (varunFlowStep === 3 && (
-        suggestion.toLowerCase().includes('charge') ||
-        suggestion.toLowerCase().includes('cost') ||
-        suggestion.toLowerCase().includes('fee')
+        suggestion.toLowerCase().includes('settle now')
       )) {
         handleVarunFlowAdvance(suggestion, varunScript.varun_step_4, 4);
         return;
       }
 
-      // Step 4 → Step 5: Yes (enable instant settlements)
-      if (varunFlowStep === 4 && suggestion === 'Yes') {
+      // Step 3 → Cancel: User cancels instant settlement
+      if (varunFlowStep === 3 && suggestion.toLowerCase() === 'cancel') {
+        // Just dismiss, don't advance
+        return;
+      }
+
+      // Step 4 → Step 5: "Enable Early Settlements"
+      if (varunFlowStep === 4 && (
+        suggestion.toLowerCase().includes('early settlements') ||
+        suggestion.toLowerCase().includes('enable early')
+      )) {
         handleVarunFlowAdvance(suggestion, varunScript.varun_step_5, 5);
         return;
       }
@@ -1400,31 +1406,31 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       return;
     }
 
-    // Varun: Handle "low" input (Why is it so low?)
-    if (currentPersona.id === 'varun' && varunFlowStep === 1 && text.includes('low')) {
+    // Varun: Handle "3L more" input (But I have 3L more in my account)
+    if (currentPersona.id === 'varun' && varunFlowStep === 1 && (text.includes('3l') || text.includes('more in my account'))) {
       setInputValue('');
       handleVarunFlowAdvance(inputValue, varunScript.varun_step_2, 2);
       return;
     }
 
-    // Varun: Handle "sooner" input (Can I get this money sooner?)
-    if (currentPersona.id === 'varun' && varunFlowStep === 2 && text.includes('sooner')) {
+    // Varun: Handle "instantly" input (Instantly settle)
+    if (currentPersona.id === 'varun' && varunFlowStep === 2 && text.includes('instantly')) {
       setInputValue('');
       handleVarunFlowAdvance(inputValue, varunScript.varun_step_3, 3);
       return;
     }
 
-    // Varun: Handle "charges" input (Are there any additional charges?)
-    if (currentPersona.id === 'varun' && varunFlowStep === 3 && (text.includes('charge') || text.includes('cost') || text.includes('fee'))) {
+    // Varun: Handle "settle now" input
+    if (currentPersona.id === 'varun' && varunFlowStep === 3 && text.includes('settle now')) {
       setInputValue('');
       handleVarunFlowAdvance(inputValue, varunScript.varun_step_4, 4);
       return;
     }
 
-    // Varun: Handle "yes" input (Enable instant settlements)
-    if (currentPersona.id === 'varun' && varunFlowStep === 4 && text.includes('yes')) {
+    // Varun: Handle "early settlements" input
+    if (currentPersona.id === 'varun' && varunFlowStep === 4 && text.includes('early')) {
       setInputValue('');
-      handleVarunFlowAdvance('Yes', varunScript.varun_step_5, 5);
+      handleVarunFlowAdvance(inputValue, varunScript.varun_step_5, 5);
       return;
     }
 

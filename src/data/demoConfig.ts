@@ -148,7 +148,7 @@ export const PERSONAS: Record<PersonaId, PersonaConfig> = {
     theme: 'neutral',
     landing: {
       greeting: "Good afternoon",
-      initialPrompt: "What is my upcoming settlement?",
+      initialPrompt: "When is my next settlement?",
       cards: [
         {
           id: 'briefing',

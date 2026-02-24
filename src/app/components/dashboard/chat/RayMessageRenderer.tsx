@@ -320,6 +320,44 @@ export interface RayResponseData {
         status: 'Scheduled' | 'Processing' | 'Completed';
         cycle: string;
       };
+      insight?: {
+        text: string;
+      };
+      suggestions: string[];
+    };
+  } | {
+    type: 'settlement_explanation_with_offer';
+    data: {
+      headline: string;
+      subtext: string;
+      table: {
+        rows: Array<{ status: string; amount: string }>;
+      };
+      instantEligible: {
+        amount: string;
+        message: string;
+      };
+      buttons: Array<{ label: string; variant: 'primary' | 'secondary' }>;
+    };
+  } | {
+    type: 'instant_settlement_confirmed';
+    data: {
+      headline: string;
+      subtext: string;
+      settlement: {
+        amount: string;
+        scheduledFor: string;
+        status: 'Scheduled' | 'Processing' | 'Completed';
+        type: 'regular' | 'instant';
+      };
+      suggestions: string[];
+    };
+  } | {
+    type: 'early_settlements_enabled';
+    data: {
+      headline: string;
+      subtext: string;
+      features: string[];
       suggestions: string[];
     };
   } | {
@@ -3071,7 +3109,7 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
     hasDataAsset: true,
-    hasInsight: false,
+    hasInsight: !!data.insight,
     hasSuggestions: data.suggestions?.length > 0,
     thinkingDuration: 3000
   });
@@ -3141,6 +3179,51 @@ const SettlementUpcomingArtifact = ({ data, onSuggestionClick, isLast, highlight
               step={1}
             />
           </AnimatedLoadingCard>
+        </motion.div>
+      )}
+
+      {/* Ray Insight Card (Phase 3+) */}
+      {phase >= 3 && data.insight && (
+        <motion.div
+          initial={{ opacity: 0, y: 5, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0)' }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="relative bg-white rounded-[12px] border border-[#dee1e3] overflow-hidden shadow-[0px_6px_32px_4px_rgba(175,182,187,0.06)]"
+        >
+          {/* Top gradient */}
+          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-[#f8fafb] to-transparent pointer-events-none z-[1]" />
+
+          {/* Embedded SparkRipples animation on right end */}
+          <div className="absolute right-[-500px] top-1/2 -translate-y-1/2 w-[1500px] h-[1500px] pointer-events-none opacity-70">
+            <SparkRipplesBackground
+              loop={true}
+              playbackRate={0.4}
+              scale={1}
+              opacity={1}
+            />
+          </div>
+
+          {/* Blue glow on right side (fallback/overlay) */}
+          <div
+            className="absolute right-0 top-0 bottom-0 w-24 pointer-events-none"
+            style={{
+              background: 'linear-gradient(270deg, rgba(37, 99, 235, 0.06) 0%, transparent 100%)',
+            }}
+          />
+
+          {/* Content */}
+          <div className="relative p-[16px] flex flex-col gap-[4px] z-[2]">
+            <span className="text-[14px] font-semibold text-[#192839]">Ray Insight</span>
+            <p className="text-[14px] leading-[22px] text-[#40566d]">
+              <SmartHighlightWithBold text={data.insight.text} />
+            </p>
+          </div>
+
+          {/* Bottom gradient */}
+          <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#f8fafb] to-transparent pointer-events-none z-[1]" />
+
+          {/* Inner shadow overlay */}
+          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_0px_1px_#dee1e3,inset_0px_-1.5px_0px_1px_white] z-[3]" />
         </motion.div>
       )}
 
@@ -3575,6 +3658,351 @@ const InstantSettlementEnabledArtifact = ({ data, onSuggestionClick, onButtonCli
           suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
           onSuggestionClick={onSuggestionClick}
           highlightedSuggestionIndex={highlightedSuggestionIndex}
+        />
+      )}
+    </motion.div>
+  );
+};
+
+// --- Settlement Explanation With Offer Artifact (Varun Step 2 - New) ---
+const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast }: any) => {
+  const [subtextStarted, setSubtextStarted] = useState(false);
+  const narrativeCompleteCalledRef = React.useRef(false);
+
+  const { phase, onNarrativeComplete } = useStreamSequencer({
+    hasDataAsset: true,
+    hasInsight: false,
+    hasSuggestions: false,
+    thinkingDuration: 3000
+  });
+
+  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'streaming';
+
+  const handleHeadlineComplete = React.useCallback(() => {
+    setTimeout(() => setSubtextStarted(true), 800);
+  }, []);
+
+  const handleSubtextComplete = React.useCallback(() => {
+    if (!narrativeCompleteCalledRef.current) {
+      narrativeCompleteCalledRef.current = true;
+      onNarrativeComplete();
+    }
+  }, [onNarrativeComplete]);
+
+  return (
+    <motion.div
+      className="flex flex-col gap-[24px] w-full mt-2"
+      initial="hidden"
+      animate="visible"
+      variants={containerVar}
+    >
+      <div className="flex flex-col gap-[16px]">
+        {/* Headline */}
+        <motion.div variants={itemVar}>
+          <h3 className="text-[18px] leading-[24px] font-medium text-[#020202]">
+            <PerplexityStreamText
+              content={data.headline}
+              speed={15}
+              style="glow"
+              onComplete={handleHeadlineComplete}
+              inheritStyles
+            />
+          </h3>
+        </motion.div>
+
+        {/* Subtext */}
+        {subtextStarted && data.subtext && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[16px] text-[#40566d] leading-[26px] tracking-[0.16px]"
+          >
+            <PerplexityStreamText
+              content={data.subtext}
+              speed={10}
+              style="glow"
+              onComplete={handleSubtextComplete}
+            />
+          </motion.div>
+        )}
+      </div>
+
+      {/* Settlement Table (Phase 2+) */}
+      {phase >= 1 && data.table && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={80} borderRadius="12px">
+            <SettlementStatusTable rows={data.table.rows} />
+          </AnimatedLoadingCard>
+        </motion.div>
+      )}
+
+      {/* Instant Settlement Eligible Card (Phase 3+) */}
+      {phase >= 3 && data.instantEligible && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] border border-[#86efac] rounded-[12px] p-[16px] flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#22c55e] flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-[14px] font-semibold text-[#166534]">Eligible for Instant Settlement</p>
+              <p className="text-[13px] text-[#15803d]">{data.instantEligible.message}</p>
+            </div>
+          </div>
+          <span className="text-[18px] font-bold text-[#166534]">{data.instantEligible.amount}</span>
+        </motion.div>
+      )}
+
+      {/* Primary Button (Phase 4+) */}
+      {phase >= 4 && data.buttons && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          className="flex gap-3"
+        >
+          {data.buttons.map((button: { label: string; variant: 'primary' | 'secondary' }, i: number) => (
+            <button
+              key={i}
+              onClick={() => onButtonClick?.(button.label)}
+              className={clsx(
+                'px-5 py-2.5 rounded-lg font-medium text-[14px] transition-all duration-200',
+                button.variant === 'primary'
+                  ? 'bg-[#22c55e] text-white hover:bg-[#16a34a] shadow-sm'
+                  : 'bg-[#f1f5fa] text-[#40566d] hover:bg-[#e2e8f0] border border-[#e2e8f0]'
+              )}
+            >
+              {button.label}
+            </button>
+          ))}
+        </motion.div>
+      )}
+
+      {/* ChainOfThought */}
+      {isLast && (
+        <ChainOfThought
+          mode={chainOfThoughtMode}
+          suggestions={[]}
+          onSuggestionClick={() => {}}
+          highlightedSuggestionIndex={null}
+        />
+      )}
+    </motion.div>
+  );
+};
+
+// --- Instant Settlement Confirmed Artifact (Varun Step 4 - New) ---
+const InstantSettlementConfirmedArtifact = ({ data, onSuggestionClick, isLast, highlightedSuggestionIndex = null }: any) => {
+  const [subtextStarted, setSubtextStarted] = useState(false);
+  const narrativeCompleteCalledRef = React.useRef(false);
+
+  const { phase, onNarrativeComplete } = useStreamSequencer({
+    hasDataAsset: true,
+    hasInsight: false,
+    hasSuggestions: data.suggestions?.length > 0,
+    thinkingDuration: 2000
+  });
+
+  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'streaming';
+
+  const handleHeadlineComplete = React.useCallback(() => {
+    setTimeout(() => setSubtextStarted(true), 600);
+  }, []);
+
+  const handleSubtextComplete = React.useCallback(() => {
+    if (!narrativeCompleteCalledRef.current) {
+      narrativeCompleteCalledRef.current = true;
+      onNarrativeComplete();
+    }
+  }, [onNarrativeComplete]);
+
+  return (
+    <motion.div
+      className="flex flex-col gap-[24px] w-full mt-2"
+      initial="hidden"
+      animate="visible"
+      variants={containerVar}
+    >
+      <div className="flex flex-col gap-[16px]">
+        {/* Headline with checkmark */}
+        <motion.div variants={itemVar} className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-[#22c55e] flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+              <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h3 className="text-[18px] leading-[24px] font-medium text-[#020202]">
+            <PerplexityStreamText
+              content={data.headline}
+              speed={15}
+              style="glow"
+              onComplete={handleHeadlineComplete}
+              inheritStyles
+            />
+          </h3>
+        </motion.div>
+
+        {/* Subtext */}
+        {subtextStarted && data.subtext && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[16px] text-[#40566d] leading-[26px] tracking-[0.16px]"
+          >
+            <PerplexityStreamText
+              content={data.subtext}
+              speed={10}
+              style="glow"
+              onComplete={handleSubtextComplete}
+            />
+          </motion.div>
+        )}
+      </div>
+
+      {/* Settlement Card (Phase 2+) */}
+      {phase >= 1 && data.settlement && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={80} borderRadius="12px">
+            <ConfigurableSettlementCard
+              amount={data.settlement.amount}
+              scheduledFor={data.settlement.scheduledFor}
+              status={data.settlement.status}
+              type="instant"
+              progressSteps={2}
+            />
+          </AnimatedLoadingCard>
+        </motion.div>
+      )}
+
+      {/* ChainOfThought */}
+      {isLast && (
+        <ChainOfThought
+          mode={chainOfThoughtMode}
+          suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+          onSuggestionClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
+        />
+      )}
+    </motion.div>
+  );
+};
+
+// --- Early Settlements Enabled Artifact (Varun Step 5 - New) ---
+const EarlySettlementsEnabledArtifact = ({ data, isLast }: any) => {
+  const [subtextStarted, setSubtextStarted] = useState(false);
+  const narrativeCompleteCalledRef = React.useRef(false);
+
+  const { phase, onNarrativeComplete } = useStreamSequencer({
+    hasDataAsset: true,
+    hasInsight: false,
+    hasSuggestions: false,
+    thinkingDuration: 2000
+  });
+
+  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'streaming';
+
+  const handleHeadlineComplete = React.useCallback(() => {
+    setTimeout(() => setSubtextStarted(true), 600);
+  }, []);
+
+  const handleSubtextComplete = React.useCallback(() => {
+    if (!narrativeCompleteCalledRef.current) {
+      narrativeCompleteCalledRef.current = true;
+      onNarrativeComplete();
+    }
+  }, [onNarrativeComplete]);
+
+  return (
+    <motion.div
+      className="flex flex-col gap-[24px] w-full mt-2"
+      initial="hidden"
+      animate="visible"
+      variants={containerVar}
+    >
+      <div className="flex flex-col gap-[16px]">
+        {/* Headline with checkmark */}
+        <motion.div variants={itemVar} className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-[#22c55e] flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+              <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h3 className="text-[18px] leading-[24px] font-medium text-[#020202]">
+            <PerplexityStreamText
+              content={data.headline}
+              speed={15}
+              style="glow"
+              onComplete={handleHeadlineComplete}
+              inheritStyles
+            />
+          </h3>
+        </motion.div>
+
+        {/* Subtext */}
+        {subtextStarted && data.subtext && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[16px] text-[#40566d] leading-[26px] tracking-[0.16px]"
+          >
+            <PerplexityStreamText
+              content={data.subtext}
+              speed={10}
+              style="glow"
+              onComplete={handleSubtextComplete}
+            />
+          </motion.div>
+        )}
+      </div>
+
+      {/* Features List (Phase 2+) */}
+      {phase >= 2 && data.features && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] border border-[#86efac] rounded-[12px] p-[16px]"
+        >
+          <div className="flex flex-col gap-2">
+            {data.features.map((feature: string, idx: number) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="flex items-center gap-2"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2">
+                  <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span className="text-[14px] text-[#166534]">{feature}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ChainOfThought */}
+      {isLast && (
+        <ChainOfThought
+          mode={chainOfThoughtMode}
+          suggestions={[]}
+          onSuggestionClick={() => {}}
+          highlightedSuggestionIndex={null}
         />
       )}
     </motion.div>
@@ -4106,6 +4534,45 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           onSuggestionClick={onSuggestionClick}
           onButtonClick={onSuggestionClick}
           highlightedSuggestionIndex={highlightedSuggestionIndex}
+        />
+      </div>
+    );
+  }
+
+  // 21b. Settlement Explanation With Offer (Varun Step 2 - New)
+  if (data.artifact?.type === 'settlement_explanation_with_offer') {
+    return (
+      <div className="w-full animate-fade-in-up">
+        <SettlementExplanationWithOfferArtifact
+          data={data.artifact.data}
+          isLast={isLast}
+          onButtonClick={onSuggestionClick}
+        />
+      </div>
+    );
+  }
+
+  // 21c. Instant Settlement Confirmed (Varun Step 4 - New)
+  if (data.artifact?.type === 'instant_settlement_confirmed') {
+    return (
+      <div className="w-full animate-fade-in-up">
+        <InstantSettlementConfirmedArtifact
+          data={data.artifact.data}
+          isLast={isLast}
+          onSuggestionClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
+        />
+      </div>
+    );
+  }
+
+  // 21d. Early Settlements Enabled (Varun Step 5 - New)
+  if (data.artifact?.type === 'early_settlements_enabled') {
+    return (
+      <div className="w-full animate-fade-in-up">
+        <EarlySettlementsEnabledArtifact
+          data={data.artifact.data}
+          isLast={isLast}
         />
       </div>
     );
