@@ -573,11 +573,12 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
             </div>
 
             {/* Gradient Overlay - sits above animation, below content - uses soft-light blend to tint animation */}
+            {/* Inverted: higher intensity = less white wash = stronger green */}
             <div
               className="absolute inset-0 pointer-events-none z-[1] mix-blend-soft-light transition-opacity duration-300"
               style={{
                 background: 'linear-gradient(180deg, #FFFFFF 0%, #F1F7ED 100%)',
-                opacity: bgIntensity / 100
+                opacity: 1 - (bgIntensity / 100)
               }}
             />
 
