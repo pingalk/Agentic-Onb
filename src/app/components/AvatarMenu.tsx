@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDemo } from '../../context/DemoContext';
 import { useMagicColor } from '../../context/MagicColorContext';
-import { RotateCcw, Settings } from 'lucide-react';
+import { RotateCcw, Settings, Palette } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,7 +16,10 @@ import {
 import { SettingsPanelContent } from './SettingsPanel';
 
 export const AvatarMenu = () => {
-  const { resetDemo, bgHue, setBgHue, bgIntensity, setBgIntensity } = useDemo();
+  const { resetDemo, bgHue, setBgHue, bgIntensity, setBgIntensity, gradientConfig, setGradientConfig } = useDemo();
+
+  // Compute the current green color from HSL
+  const greenColor = `hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%)`;
   const { magicColor, setMagicColor, config } = useMagicColor();
 
   return (
@@ -80,35 +83,164 @@ export const AvatarMenu = () => {
           </div>
         </div>
 
-        <DropdownMenuLabel className="text-xs text-slate-500">Background Intensity</DropdownMenuLabel>
-        <div className="px-2 py-2">
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={bgIntensity}
-            onChange={(e) => setBgIntensity(Number(e.target.value))}
-            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right,
-                rgba(0, 158, 92, 0),
-                rgba(0, 158, 92, 0.5),
-                rgba(0, 158, 92, 1)
-              )`
-            }}
-          />
-          <div className="flex justify-between mt-1">
-            <span className="text-xs text-slate-400">{bgIntensity}%</span>
-            <button
-              onClick={() => setBgIntensity(100)}
-              className="text-xs text-slate-400 hover:text-slate-600"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
+            <Palette size={14} className="text-slate-400" />
+            <span className="text-sm">Gradient Controls</span>
+            <div
+              className="ml-auto w-4 h-4 rounded border border-slate-200"
+              style={{ background: `linear-gradient(180deg, #FFFFFF 0%, ${greenColor} 100%)` }}
+            />
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="w-72 p-3">
+            {/* Preview */}
+            <div
+              className="h-16 rounded-lg mb-3 border border-slate-200"
+              style={{
+                background: `linear-gradient(180deg, #FFFFFF ${gradientConfig.startPoint}%, ${greenColor} ${gradientConfig.endPoint}%)`
+              }}
+            />
 
-        <DropdownMenuSeparator />
+            {/* Intensity */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Intensity</span>
+                <span className="text-xs text-slate-400">{bgIntensity}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={bgIntensity}
+                onChange={(e) => setBgIntensity(Number(e.target.value))}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200"
+              />
+            </div>
+
+            {/* Start Point */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Start Point</span>
+                <span className="text-xs text-slate-400">{gradientConfig.startPoint}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={gradientConfig.startPoint}
+                onChange={(e) => setGradientConfig({ startPoint: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200"
+              />
+            </div>
+
+            {/* End Point */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">End Point</span>
+                <span className="text-xs text-slate-400">{gradientConfig.endPoint}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={gradientConfig.endPoint}
+                onChange={(e) => setGradientConfig({ endPoint: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-slate-200"
+              />
+            </div>
+
+            <div className="border-t border-slate-100 pt-3 mt-3">
+              <span className="text-xs text-slate-500 font-medium">Green Color</span>
+            </div>
+
+            {/* Hue */}
+            <div className="mb-3 mt-2">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Hue</span>
+                <span className="text-xs text-slate-400">{gradientConfig.greenHue}°</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={gradientConfig.greenHue}
+                onChange={(e) => setGradientConfig({ greenHue: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right,
+                    hsl(0, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%),
+                    hsl(60, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%),
+                    hsl(120, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%),
+                    hsl(180, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%),
+                    hsl(240, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%),
+                    hsl(300, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%),
+                    hsl(360, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%)
+                  )`
+                }}
+              />
+            </div>
+
+            {/* Saturation */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Saturation</span>
+                <span className="text-xs text-slate-400">{gradientConfig.greenSaturation}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={gradientConfig.greenSaturation}
+                onChange={(e) => setGradientConfig({ greenSaturation: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right,
+                    hsl(${gradientConfig.greenHue}, 0%, ${gradientConfig.greenLightness}%),
+                    hsl(${gradientConfig.greenHue}, 50%, ${gradientConfig.greenLightness}%),
+                    hsl(${gradientConfig.greenHue}, 100%, ${gradientConfig.greenLightness}%)
+                  )`
+                }}
+              />
+            </div>
+
+            {/* Lightness */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Lightness</span>
+                <span className="text-xs text-slate-400">{gradientConfig.greenLightness}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={gradientConfig.greenLightness}
+                onChange={(e) => setGradientConfig({ greenLightness: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right,
+                    hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, 0%),
+                    hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, 50%),
+                    hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, 100%)
+                  )`
+                }}
+              />
+            </div>
+
+            {/* Reset Button */}
+            <button
+              onClick={() => setGradientConfig({
+                startPoint: 0,
+                endPoint: 100,
+                greenHue: 100,
+                greenSaturation: 33,
+                greenLightness: 95
+              })}
+              className="w-full mt-2 py-1.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded transition-colors"
+            >
+              Reset to Default
+            </button>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
 
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">

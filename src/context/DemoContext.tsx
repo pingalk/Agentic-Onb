@@ -1,6 +1,14 @@
 // src/context/DemoContext.tsx
 import React, { createContext, useContext, useState } from 'react';
 
+export interface GradientConfig {
+  startPoint: number;    // 0-100, where gradient starts (white ends)
+  endPoint: number;      // 0-100, where gradient ends (green fully applied)
+  greenHue: number;      // 0-360, hue of the green
+  greenSaturation: number; // 0-100, saturation
+  greenLightness: number;  // 0-100, lightness
+}
+
 interface DemoContextType {
   isInChatView: boolean;
   setIsInChatView: (value: boolean) => void;
@@ -10,6 +18,8 @@ interface DemoContextType {
   setBgHue: (value: number) => void;
   bgIntensity: number;
   setBgIntensity: (value: number) => void;
+  gradientConfig: GradientConfig;
+  setGradientConfig: (config: Partial<GradientConfig>) => void;
   resetDemo: () => void;
 }
 
@@ -53,6 +63,41 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Default gradient config matching #F1F7ED (HSL: 100, 33%, 95%)
+  const defaultGradientConfig: GradientConfig = {
+    startPoint: 0,
+    endPoint: 100,
+    greenHue: 100,
+    greenSaturation: 33,
+    greenLightness: 95
+  };
+
+  // Initialize gradientConfig from localStorage
+  const [gradientConfig, setGradientConfigState] = useState<GradientConfig>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('gradientConfig');
+      if (saved) {
+        try {
+          return { ...defaultGradientConfig, ...JSON.parse(saved) };
+        } catch {
+          return defaultGradientConfig;
+        }
+      }
+    }
+    return defaultGradientConfig;
+  });
+
+  // Wrapper to merge and save gradient config
+  const setGradientConfig = (config: Partial<GradientConfig>) => {
+    setGradientConfigState(prev => {
+      const updated = { ...prev, ...config };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('gradientConfig', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
   const resetDemo = () => {
     setIsInChatView(false);
     setIsOnRayLandingPage(true);
@@ -68,6 +113,8 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
       setBgHue,
       bgIntensity,
       setBgIntensity,
+      gradientConfig,
+      setGradientConfig,
       resetDemo
     }}>
       {children}

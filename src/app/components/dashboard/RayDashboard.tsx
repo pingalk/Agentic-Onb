@@ -208,7 +208,10 @@ export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
 };
 
 const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQuery, onLogout, onSceneChange }) => {
-  const { setIsInChatView, setIsOnRayLandingPage, bgHue, bgIntensity } = useDemo();
+  const { setIsInChatView, setIsOnRayLandingPage, bgHue, bgIntensity, gradientConfig } = useDemo();
+
+  // Compute the gradient green color from HSL config
+  const gradientGreenColor = `hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%)`;
 
   const [view, setView] = useState<'landing' | 'chat'>('landing');
 
@@ -575,9 +578,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
             {/* Gradient Overlay - sits above animation, below content - uses soft-light blend to tint animation */}
             {/* Inverted: higher intensity = less white wash = stronger green */}
             <div
-              className="absolute inset-0 pointer-events-none z-[1] mix-blend-soft-light transition-opacity duration-300"
+              className="absolute inset-0 pointer-events-none z-[1] mix-blend-soft-light transition-all duration-300"
               style={{
-                background: 'linear-gradient(180deg, #FFFFFF 0%, #F1F7ED 100%)',
+                background: `linear-gradient(180deg, #FFFFFF ${gradientConfig.startPoint}%, ${gradientGreenColor} ${gradientConfig.endPoint}%)`,
                 opacity: 1 - (bgIntensity / 100)
               }}
             />
