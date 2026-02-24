@@ -50,38 +50,6 @@ export const AvatarMenu = () => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel className="text-xs text-slate-500">Background Hue</DropdownMenuLabel>
-        <div className="px-2 py-2">
-          <input
-            type="range"
-            min="0"
-            max="360"
-            value={bgHue}
-            onChange={(e) => setBgHue(Number(e.target.value))}
-            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right,
-                hsl(0, 70%, 70%),
-                hsl(60, 70%, 70%),
-                hsl(120, 70%, 70%),
-                hsl(180, 70%, 70%),
-                hsl(240, 70%, 70%),
-                hsl(300, 70%, 70%),
-                hsl(360, 70%, 70%)
-              )`
-            }}
-          />
-          <div className="flex justify-between mt-1">
-            <span className="text-xs text-slate-400">{bgHue}°</span>
-            <button
-              onClick={() => setBgHue(0)}
-              className="text-xs text-slate-400 hover:text-slate-600"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2 cursor-pointer">
             <Palette size={14} className="text-slate-400" />
@@ -313,14 +281,44 @@ export const AvatarMenu = () => {
               />
             </div>
 
+            {/* Hue */}
+            <div className="mb-3">
+              <div className="flex justify-between mb-1">
+                <span className="text-xs text-slate-500">Hue Shift</span>
+                <span className="text-xs text-slate-400">{bgHue}°</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={bgHue}
+                onChange={(e) => setBgHue(Number(e.target.value))}
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right,
+                    hsl(0, 70%, 70%),
+                    hsl(60, 70%, 70%),
+                    hsl(120, 70%, 70%),
+                    hsl(180, 70%, 70%),
+                    hsl(240, 70%, 70%),
+                    hsl(300, 70%, 70%),
+                    hsl(360, 70%, 70%)
+                  )`
+                }}
+              />
+            </div>
+
             {/* Reset Button */}
             <button
-              onClick={() => setSparkRipplesConfig({
-                scale: 2,
-                playbackRate: 0.5,
-                opacity: 100,
-                offsetY: -150
-              })}
+              onClick={() => {
+                setSparkRipplesConfig({
+                  scale: 2,
+                  playbackRate: 0.5,
+                  opacity: 100,
+                  offsetY: -150
+                });
+                setBgHue(0);
+              }}
               className="w-full mt-2 py-1.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded transition-colors"
             >
               Reset to Default
