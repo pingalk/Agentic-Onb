@@ -13,7 +13,7 @@ const CATEGORIES: Category[] = [
     id: 'recovery',
     label: 'Recovery',
     prompts: [
-      'Why did the last transaction for [email] fail?',
+      'Show me recent payments from arvind@gmail.com, this customer is claiming he was charged twice',
       'Create a payment link for the last failed order.',
       'Check the live status of Refund #R9921.',
       'Draft a message explaining the refund delay.',
@@ -23,8 +23,8 @@ const CATEGORIES: Category[] = [
     id: 'settlements',
     label: 'Settlements',
     prompts: [
+      'What is my upcoming settlement?',
       'Am I eligible for Instant Settlement today?',
-      'When will yesterday\'s settlement hit my account?',
       'Show me the deductions for the last settlement.',
       'Enable \'Same-Day Settlements\' for my account.',
     ],
