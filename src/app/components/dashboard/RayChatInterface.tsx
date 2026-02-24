@@ -6,7 +6,6 @@ import { PaymentLinkPrefill, parsePaymentLinkIntent } from './chat/PaymentLinkWi
 import { PaymentLinkModal } from './chat/PaymentLinkModal';
 import { SourceRect } from './chat/PaymentLinkMiniCard';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
-import { TransactionPreviewPane, TransactionData } from './chat/TransactionPreviewPane';
 import { FloatingImageUpload } from './FloatingImageUpload';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
 import { RayInputBox } from './RayInputBox';
@@ -14,6 +13,7 @@ import { useDemo } from '@/context/DemoContext';
 import { useDemoScript } from './useDemoScript';
 import { motion, AnimatePresence } from 'motion/react';
 import { useMagicColor } from '@/context/MagicColorContext';
+import { detectFlowType, FlowType } from '@/data/demoConfig';
 
 // EXPERIMENTAL: Roll-up animation for user messages
 // Set to true to enable user messages scrolling to top before Ray responds
@@ -96,12 +96,16 @@ interface RayChatInterfaceProps {
   initialQuery?: string;
   isSplit?: boolean;
   isEntering?: boolean; // True when transitioning from landing → chat
+  onGoHome?: () => void; // Navigate back to landing page
 }
 
-export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatInterfaceProps) => {
-  const { currentPersona, setPersona } = useDemo();
+export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }: RayChatInterfaceProps) => {
+  const demoContext = useDemo();
   const { config: currentMagicColor } = useMagicColor();
   const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, briefingReviewResponses, showcaseCards } = useDemoScript();
+
+  // Track which flow is active (query-based routing)
+  const [activeFlow, setActiveFlow] = useState<FlowType>(null);
   const [messages, setMessages] = useState<RayResponseData[]>([]);
   const [inputValue, setInputValue] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -218,11 +222,6 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     });
   };
 
-  // Reset demo flow and clear messages when persona changes
-  useEffect(() => {
-    demoFlowStartedRef.current = false;
-    setMessages([]);
-  }, [currentPersona.id]);
 
   // Detect when streaming ends and trigger post-streaming glow
   useEffect(() => {
@@ -344,190 +343,192 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isInputFocused, messages]);
 
-  // Transaction Preview State
-  const [selectedTransaction, setSelectedTransaction] = useState<TransactionData | null>(null);
+  // Query-based routing: Detect flow type from initialQuery and trigger appropriate flow
+  useEffect(() => {
+    if (messages.length === 0 && initialQuery && !demoFlowStartedRef.current) {
+      const flowType = detectFlowType(initialQuery);
+      if (flowType) {
+        demoFlowStartedRef.current = true;
+        setActiveFlow(flowType);
 
-  // Handler for table row clicks
-  const handleRowClick = (rowData: any) => {
-    // Transform row data to TransactionData format
-    const transaction: TransactionData = {
-      id: rowData.id || `txn-${Date.now()}`,
-      type: rowData.status?.toLowerCase() === 'refunded' ? 'refund' : 'payment',
-      amount: rowData.amount || '₹0',
-      status: rowData.status || 'Unknown',
-      date: rowData.date || rowData.createdOn || new Date().toLocaleDateString(),
-      email: rowData.email,
-      rrn: rowData.rrn,
-      method: rowData.method || rowData.paymentMethod,
-      paymentId: `pay_${Math.random().toString(36).substr(2, 12)}`,
-      refundId: rowData.status?.toLowerCase() === 'refunded' ? `rfnd_${Math.random().toString(36).substr(2, 12)}` : undefined,
-    };
-    setSelectedTransaction(transaction);
+        // Use setTimeout to ensure state updates have propagated
+        setTimeout(() => {
+          // Route to appropriate flow based on detected type
+          switch (flowType) {
+            case 'settlement':
+              startSettlementFlow(initialQuery);
+              break;
+            case 'double_debit':
+              startDoubleDebitFlow(initialQuery);
+              break;
+            case 'refund':
+              startRefundFlow(initialQuery);
+              break;
+            case 'support':
+              startSupportFlow(initialQuery);
+              break;
+            case 'failed_payment':
+              startFailedPaymentFlow(initialQuery);
+              break;
+            default:
+              // Generic query - show simple response
+              break;
+          }
+        }, 100);
+      }
+    }
+  }, [initialQuery, messages.length]);
+
+  // Settlement flow (formerly Varun)
+  const startSettlementFlow = (query: string) => {
+    const userText = query || "What is my upcoming settlement?";
+    const userMessageId = 'settlement-u1';
+
+    setTimeout(() => {
+      setMessages([{
+        id: userMessageId,
+        sender: 'user',
+        blocks: [{ type: 'text', content: userText }],
+        skipAutoScroll: true
+      }]);
+      setVarunFlowStep(1);
+
+      setTimeout(() => {
+        scrollMessageToTop(userMessageId, () => {
+          setIsStreaming(true);
+          const thinkingMsg: RayResponseData = {
+            id: 'settlement-ai-1',
+            sender: 'ai',
+            isThinking: true,
+            skipAutoScroll: true
+          };
+          setMessages(prev => [...prev, thinkingMsg]);
+
+          setTimeout(() => {
+            setMessages(prev => prev.map(msg =>
+              msg.id === 'settlement-ai-1' ? {
+                ...varunScript.varun_step_1,
+                id: 'settlement-ai-1',
+                sender: 'ai' as const
+              } : msg
+            ));
+            setTimeout(() => setIsStreaming(false), 3000);
+          }, 15000);
+        });
+      }, 100);
+    }, 600);
   };
 
-  // Triggers for demo flow - Arjun
-  useEffect(() => {
-    if (currentPersona.id === 'arjun' && messages.length === 0 && !demoFlowStartedRef.current) {
-        demoFlowStartedRef.current = true;
-        // Step 1: User asks question
+  // Double debit flow (formerly Maya)
+  const startDoubleDebitFlow = (query: string) => {
+    const userText = query || "Show me recent payments from arvind@gmail.com";
+
+    setTimeout(() => {
+      setMessages([{
+        id: 'double-debit-u1',
+        sender: 'user',
+        blocks: [{ type: 'text', content: userText }]
+      }]);
+      setMayaFlowStep(1);
+
+      setTimeout(() => {
+        setIsStreaming(true);
+        const thinkingMsg: RayResponseData = {
+          id: 'double-debit-ai-1',
+          sender: 'ai',
+          isThinking: true
+        };
+        setMessages(prev => [...prev, thinkingMsg]);
+
         setTimeout(() => {
-            setMessages([{
-                id: 'u1',
-                sender: 'user',
-                blocks: [{ type: 'text', content: "Where are my settlements? Why is my account balance negative? We had high value txns this week" }]
-            }]);
+          setMessages(prev => prev.map(msg =>
+            msg.id === 'double-debit-ai-1' ? {
+              ...mayaScript.maya_step_1,
+              id: 'double-debit-ai-1',
+              sender: 'ai' as const
+            } : msg
+          ));
+          setTimeout(() => setIsStreaming(false), 3000);
+        }, 15000);
+      }, 600);
+    }, 600);
+  };
 
-            // Step 2: Show Thinking State
-            setTimeout(() => {
-                setIsStreaming(true);
-                const thinkingMsg: RayResponseData = {
-                    id: 'ai-response-1',
-                    sender: 'ai',
-                    isThinking: true
-                };
-                setMessages(prev => [...prev, thinkingMsg]);
+  // Refund flow (formerly Sarah)
+  const startRefundFlow = (query: string) => {
+    const userText = query || "My customer called and said payment was refunded. I didn't initiate this.";
 
-                // Step 3: Replace with Real Response after delay
-                setTimeout(() => {
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === 'ai-response-1' ? generateArjunData() : msg
-                    ));
-                    setTimeout(() => setIsStreaming(false), 3000);
-                }, 15000); // 15s thinking time
-            }, 600);
-        }, 600);
-    }
-  }, [currentPersona.id, messages.length]);
+    setTimeout(() => {
+      setMessages([{
+        id: 'refund-u1',
+        sender: 'user',
+        blocks: [{ type: 'text', content: userText }]
+      }]);
+      setSarahFlowStep(1);
 
-  // Triggers for demo flow - Sarah
-  useEffect(() => {
-    if (currentPersona.id === 'sarah' && messages.length === 0 && !demoFlowStartedRef.current) {
-        demoFlowStartedRef.current = true;
-        // Step 1: User asks question
+      setTimeout(() => {
+        setIsStreaming(true);
+        const thinkingMsg: RayResponseData = {
+          id: 'refund-ai-1',
+          sender: 'ai',
+          isThinking: true
+        };
+        setMessages(prev => [...prev, thinkingMsg]);
+
         setTimeout(() => {
-            setMessages([{
-                id: 'sarah-u1',
-                sender: 'user',
-                blocks: [{ type: 'text', content: "My customer called and said payment was refunded. I didn't initiate this.. What is going on?" }]
-            }]);
-            setSarahFlowStep(1);
+          setMessages(prev => prev.map(msg =>
+            msg.id === 'refund-ai-1' ? {
+              ...sarahScript.sarah_step_1,
+              id: 'refund-ai-1',
+              sender: 'ai' as const
+            } : msg
+          ));
+          setSarahFlowStep(1);
+        }, 15000);
+      }, 600);
+    }, 600);
+  };
 
-            // Step 2: Show Thinking State
-            setTimeout(() => {
-                setIsStreaming(true);
-                const thinkingMsg: RayResponseData = {
-                    id: 'sarah-ai-1',
-                    sender: 'ai',
-                    isThinking: true
-                };
-                setMessages(prev => [...prev, thinkingMsg]);
+  // Support flow (formerly Sam)
+  const startSupportFlow = (query: string) => {
+    const userText = query || "What's the status of my last ticket";
 
-                // Step 3: Replace with Investigation Report after delay
-                setTimeout(() => {
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === 'sarah-ai-1' ? {
-                            ...sarahScript.sarah_step_1,
-                            id: 'sarah-ai-1',
-                            sender: 'ai' as const
-                        } : msg
-                    ));
-                    setSarahFlowStep(1);
-                    // Capture card will appear via onStreamComplete callback when streaming finishes
-                }, 15000); // 15s thinking time
-            }, 600);
-        }, 600);
-    }
-  }, [currentPersona.id, messages.length, sarahScript]);
+    setTimeout(() => {
+      setMessages([{
+        id: 'support-u1',
+        sender: 'user',
+        blocks: [{ type: 'text', content: userText }]
+      }]);
+      setSamFlowStep(1);
 
-  // Triggers for demo flow - Maya
-  useEffect(() => {
-    if (currentPersona.id === 'maya' && messages.length === 0 && !demoFlowStartedRef.current) {
-        demoFlowStartedRef.current = true;
-        // Step 1: User asks for Arvind's transactions
+      setTimeout(() => {
+        setIsStreaming(true);
+        const thinkingMsg: RayResponseData = {
+          id: 'support-ai-1',
+          sender: 'ai',
+          isThinking: true
+        };
+        setMessages(prev => [...prev, thinkingMsg]);
+
         setTimeout(() => {
-            setMessages([{
-                id: 'maya-u1',
-                sender: 'user',
-                blocks: [{ type: 'text', content: "Show me recent payments from arvind@gmail.com" }]
-            }]);
-            setMayaFlowStep(1);
+          setMessages(prev => prev.map(msg =>
+            msg.id === 'support-ai-1' ? {
+              ...samScript.sam_step_1,
+              id: 'support-ai-1',
+              sender: 'ai' as const
+            } : msg
+          ));
+          setTimeout(() => setIsStreaming(false), 3000);
+        }, 15000);
+      }, 600);
+    }, 600);
+  };
 
-            // Step 2: Show Thinking State
-            setTimeout(() => {
-                setIsStreaming(true);
-                const thinkingMsg: RayResponseData = {
-                    id: 'maya-ai-1',
-                    sender: 'ai',
-                    isThinking: true
-                };
-                setMessages(prev => [...prev, thinkingMsg]);
+  // Failed payment flow (formerly Shyam) - image-based
+  const startFailedPaymentFlow = (query: string) => {
+    setShowFloatingImage(true);
+  };
 
-                // Step 3: Replace with Transactions Report after delay
-                setTimeout(() => {
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === 'maya-ai-1' ? {
-                            ...mayaScript.maya_step_1,
-                            id: 'maya-ai-1',
-                            sender: 'ai' as const
-                        } : msg
-                    ));
-                    setTimeout(() => setIsStreaming(false), 3000);
-                }, 15000); // 15s thinking time
-            }, 600);
-        }, 600);
-    }
-  }, [currentPersona.id, messages.length, mayaScript]);
-
-  // Triggers for demo flow - Sam
-  useEffect(() => {
-    if (currentPersona.id === 'sam' && messages.length === 0 && !demoFlowStartedRef.current) {
-        demoFlowStartedRef.current = true;
-        // Step 1: User asks about ticket status
-        setTimeout(() => {
-            setMessages([{
-                id: 'sam-u1',
-                sender: 'user',
-                blocks: [{ type: 'text', content: "What's the status of my last ticket" }]
-            }]);
-            setSamFlowStep(1);
-
-            // Step 2: Show Thinking State
-            setTimeout(() => {
-                setIsStreaming(true);
-                const thinkingMsg: RayResponseData = {
-                    id: 'sam-ai-1',
-                    sender: 'ai',
-                    isThinking: true
-                };
-                setMessages(prev => [...prev, thinkingMsg]);
-
-                // Step 3: Replace with Support Ticket Status after delay
-                setTimeout(() => {
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === 'sam-ai-1' ? {
-                            ...samScript.sam_step_1,
-                            id: 'sam-ai-1',
-                            sender: 'ai' as const
-                        } : msg
-                    ));
-                    // Keep streaming for a bit while content animates, then stop
-                    setTimeout(() => setIsStreaming(false), 3000);
-                }, 15000); // 15s thinking time
-            }, 600);
-        }, 600);
-    }
-  }, [currentPersona.id, messages.length, samScript]);
-
-  // Triggers for demo flow - Shyam
-  useEffect(() => {
-    if (currentPersona.id === 'shyam' && messages.length === 0 && !demoFlowStartedRef.current) {
-        demoFlowStartedRef.current = true;
-        // Show floating image instead of immediately adding to chat
-        setTimeout(() => {
-            setShowFloatingImage(true);
-        }, 600);
-    }
-  }, [currentPersona.id, messages.length]);
 
   // Handle floating image drop - adds image to chat and starts Shyam flow
   const handleFloatingImageDrop = useCallback(() => {
@@ -574,135 +575,6 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     }, 600);
   }, [initialQuery, shyamScript]);
 
-  // Triggers for demo flow - Kiara
-  useEffect(() => {
-    if (currentPersona.id === 'kiara' && messages.length === 0 && !demoFlowStartedRef.current) {
-        demoFlowStartedRef.current = true;
-        // Step 1: User asks about Rohan's transaction
-        setTimeout(() => {
-            const userText = initialQuery || "Check the status of Rohan's last transaction";
-            setMessages([{
-                id: 'kiara-u1',
-                sender: 'user',
-                blocks: [{ type: 'text', content: userText }]
-            }]);
-            setKiaraFlowStep(1);
-
-            // Step 2: Show Thinking State
-            setTimeout(() => {
-                setIsStreaming(true);
-                const thinkingMsg: RayResponseData = {
-                    id: 'kiara-ai-1',
-                    sender: 'ai',
-                    isThinking: true
-                };
-                setMessages(prev => [...prev, thinkingMsg]);
-
-                // Step 3: Replace with Refund Status Report after delay
-                setTimeout(() => {
-                    setMessages(prev => prev.map(msg =>
-                        msg.id === 'kiara-ai-1' ? {
-                            ...kiaraScript.kiara_step_1,
-                            id: 'kiara-ai-1',
-                            sender: 'ai' as const
-                        } : msg
-                    ));
-                    setTimeout(() => setIsStreaming(false), 3000);
-                }, 15000); // 15s thinking time
-            }, 600);
-        }, 600);
-    }
-  }, [currentPersona.id, messages.length, kiaraScript, initialQuery]);
-
-  // Triggers for demo flow - Varun (Instant Settlements)
-  useEffect(() => {
-    if (currentPersona.id === 'varun' && messages.length === 0 && !demoFlowStartedRef.current) {
-        demoFlowStartedRef.current = true;
-        const userText = initialQuery || "What is my upcoming settlement?";
-        const userMessageId = 'varun-u1';
-
-        if (VARUN_ELEGANT_SCROLL) {
-            // ELEGANT SCROLL PATTERN for initial flow
-            setTimeout(() => {
-                // Step 1: Add user message with skipAutoScroll
-                setMessages([{
-                    id: userMessageId,
-                    sender: 'user',
-                    blocks: [{ type: 'text', content: userText }],
-                    skipAutoScroll: true
-                }]);
-                setVarunFlowStep(1);
-
-                // Step 2: Wait for DOM, then scroll user message to top
-                setTimeout(() => {
-                    scrollMessageToTop(userMessageId, () => {
-                        // Step 3: After scroll completes, show thinking state
-                        setIsStreaming(true);
-                        const thinkingMsg: RayResponseData = {
-                            id: 'varun-ai-1',
-                            sender: 'ai',
-                            isThinking: true,
-                            skipAutoScroll: true
-                        };
-                        setMessages(prev => [...prev, thinkingMsg]);
-
-                        // Step 4: Replace with Settlement Upcoming after delay
-                        setTimeout(() => {
-                            setMessages(prev => prev.map(msg =>
-                                msg.id === 'varun-ai-1' ? {
-                                    ...varunScript.varun_step_1,
-                                    id: 'varun-ai-1',
-                                    sender: 'ai' as const
-                                } : msg
-                            ));
-                            setTimeout(() => setIsStreaming(false), 3000);
-                        }, 15000); // 15s thinking time
-                    });
-                }, 100);
-            }, 600);
-        } else {
-            // DEFAULT SCROLL PATTERN (legacy behavior)
-            setTimeout(() => {
-                setMessages([{
-                    id: userMessageId,
-                    sender: 'user',
-                    blocks: [{ type: 'text', content: userText }]
-                }]);
-                setVarunFlowStep(1);
-
-                setTimeout(() => {
-                    setIsStreaming(true);
-                    const thinkingMsg: RayResponseData = {
-                        id: 'varun-ai-1',
-                        sender: 'ai',
-                        isThinking: true
-                    };
-                    setMessages(prev => [...prev, thinkingMsg]);
-
-                    setTimeout(() => {
-                        setMessages(prev => prev.map(msg =>
-                            msg.id === 'varun-ai-1' ? {
-                                ...varunScript.varun_step_1,
-                                id: 'varun-ai-1',
-                                sender: 'ai' as const
-                            } : msg
-                        ));
-                        setTimeout(() => setIsStreaming(false), 3000);
-                    }, 15000); // 15s thinking time
-                }, 600);
-            }, 600);
-        }
-    }
-  }, [currentPersona.id, messages.length, varunScript, initialQuery]);
-
-  // Triggers for demo flow - Showcase (All Cards)
-  useEffect(() => {
-    if (currentPersona.id === 'showcase' && messages.length === 0 && !demoFlowStartedRef.current) {
-      demoFlowStartedRef.current = true;
-      // Immediately populate with all showcase cards
-      setMessages(showcaseCards);
-    }
-  }, [currentPersona.id, messages.length, showcaseCards]);
 
   // Triggers for briefing review queries (from "Review with Ray" click)
   useEffect(() => {
@@ -726,9 +598,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     if (initialQuery.includes("summary") || initialQuery.includes("so far today")) {
       response = briefingReviewResponses.refunds_summary;
     } else if (initialQuery.includes("refund volume") || initialQuery.includes("refund volumes")) {
-      response = currentPersona.theme === 'positive'
-        ? briefingReviewResponses.refunds_summary
-        : briefingReviewResponses.refunds_high;
+      response = briefingReviewResponses.refunds_summary;
     } else if (initialQuery.includes("payment timeouts")) {
       response = briefingReviewResponses.payment_timeouts;
     } else if (initialQuery.includes("payment methods") || initialQuery.includes("Cards vs UPI")) {
@@ -766,7 +636,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
         }, 15000); // 15s thinking time
       }, 600);
     }, 400);
-  }, [initialQuery, briefingReviewHandled, messages.length, currentPersona.theme, briefingReviewResponses]);
+  }, [initialQuery, briefingReviewHandled, messages.length, briefingReviewResponses]);
 
   // Gemini-style scroll: NO auto-scroll during AI streaming
   // User message is already scrolled to top by the smart scroll effect above
@@ -833,9 +703,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     }
   }, [inputValue]);
 
-  // Handler for when Sarah's investigation report finishes streaming
+  // Handler for when refund flow's investigation report finishes streaming (formerly Sarah)
   const handleSarahStreamComplete = useCallback(() => {
-    if (currentPersona.id !== 'sarah' || sarahCaptureCardShownRef.current) return;
+    if (activeFlow !== 'refund' || sarahCaptureCardShownRef.current) return;
     sarahCaptureCardShownRef.current = true;
 
     // Show capture card after a brief delay for visual breathing room
@@ -857,9 +727,15 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       }]);
       setIsStreaming(false);
     }, 500);
-  }, [currentPersona.id]);
+  }, [activeFlow]);
 
   const handleSuggestionClick = (suggestion: string) => {
+    // Handle "That's all for now" - navigate back to home
+    if (suggestion.toLowerCase().includes("that's all")) {
+      onGoHome?.();
+      return;
+    }
+
     // Handle Arjun's Add Funds suggestion
     if (suggestion.toLowerCase().includes('add funds')) {
       // Extract amount: "Add funds worth ₹46,000"
@@ -871,8 +747,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       return;
     }
 
-    // Handle Sarah's flow transitions
-    if (currentPersona.id === 'sarah') {
+    // Handle refund flow transitions (formerly Sarah)
+    if (activeFlow === 'refund') {
       // Handle "Yes" button click
       if (suggestion === 'Yes') {
         if (sarahFlowStep === 2) {
@@ -921,8 +797,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       }
     }
 
-    // Handle Maya's flow transitions
-    if (currentPersona.id === 'maya') {
+    // Handle double debit flow transitions (formerly Maya)
+    if (activeFlow === 'double_debit') {
       // Step 1 → Step 2: "He claims double debit"
       if (mayaFlowStep === 1 && suggestion.toLowerCase().includes('double debit')) {
         handleMayaFlowAdvance(suggestion, mayaScript.maya_step_2, 2);
@@ -946,8 +822,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       }
     }
 
-    // Handle Sam's flow transitions
-    if (currentPersona.id === 'sam') {
+    // Handle support flow transitions (formerly Sam)
+    if (activeFlow === 'support') {
       // Handle "Escalate" button click
       if (samFlowStep === 1 && suggestion === 'Escalate') {
         handleSamFlowAdvance("Escalate", samScript.sam_step_2, 2);
@@ -961,8 +837,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       }
     }
 
-    // Handle Shyam's flow transitions
-    if (currentPersona.id === 'shyam') {
+    // Handle failed payment flow transitions (formerly Shyam)
+    if (activeFlow === 'failed_payment') {
       // Handle "create payment link" suggestion
       if (shyamFlowStep === 1 && suggestion.toLowerCase().includes('payment link')) {
         // First record the user's message in the chat stream
@@ -1025,8 +901,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       }
     }
 
-    // Handle Varun's flow transitions (Instant Settlements)
-    if (currentPersona.id === 'varun') {
+    // Handle settlement flow transitions (formerly Varun)
+    if (activeFlow === 'settlement') {
       // Step 1 → Step 2: "But I have 3L more in my account"
       if (varunFlowStep === 1 && (
         suggestion.toLowerCase().includes('3l more') ||
@@ -1185,13 +1061,32 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
     const text = inputValue.toLowerCase();
     const userQuestion = inputValue;
 
-    // Query-based routing: Detect settlement queries and trigger Varun flow
-    if ((text.includes('settlement') || text.includes('when is my next') || text.includes('upcoming settlement')) &&
-        currentPersona.id !== 'varun' && varunFlowStep === 0) {
-      // Switch to Varun persona and trigger settlement flow
+    // Query-based routing: Detect flow type from input and trigger appropriate flow
+    const detectedFlow = detectFlowType(text);
+    if (detectedFlow && activeFlow !== detectedFlow && messages.length === 0) {
       setInputValue('');
-      setPersona('varun');
-      return; // The useEffect for varun will handle the flow
+      setActiveFlow(detectedFlow);
+      demoFlowStartedRef.current = false;
+
+      // Trigger the flow
+      switch (detectedFlow) {
+        case 'settlement':
+          startSettlementFlow(userQuestion);
+          break;
+        case 'double_debit':
+          startDoubleDebitFlow(userQuestion);
+          break;
+        case 'refund':
+          startRefundFlow(userQuestion);
+          break;
+        case 'support':
+          startSupportFlow(userQuestion);
+          break;
+        case 'failed_payment':
+          startFailedPaymentFlow(userQuestion);
+          break;
+      }
+      return;
     }
 
     // Handle question while payment link modal is open
@@ -1401,43 +1296,43 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
       return;
     }
 
-    // Maya: Handle "double debit" input
-    if (currentPersona.id === 'maya' && mayaFlowStep === 1 && text.includes('double debit')) {
+    // Double debit flow: Handle "double debit" input
+    if (activeFlow === 'double_debit' && mayaFlowStep === 1 && text.includes('double debit')) {
       setInputValue('');
       handleMayaFlowAdvance(inputValue, mayaScript.maya_step_2, 2);
       return;
     }
 
-    // Maya: Handle "draft" input
-    if (currentPersona.id === 'maya' && mayaFlowStep === 2 && text.includes('draft')) {
+    // Double debit flow: Handle "draft" input
+    if (activeFlow === 'double_debit' && mayaFlowStep === 2 && text.includes('draft')) {
       setInputValue('');
       handleMayaFlowAdvance(inputValue, mayaScript.maya_step_3, 3);
       return;
     }
 
-    // Varun: Handle "3L more" input (But I have 3L more in my account)
-    if (currentPersona.id === 'varun' && varunFlowStep === 1 && (text.includes('3l') || text.includes('more in my account'))) {
+    // Settlement flow: Handle "3L more" input (But I have 3L more in my account)
+    if (activeFlow === 'settlement' && varunFlowStep === 1 && (text.includes('3l') || text.includes('more in my account'))) {
       setInputValue('');
       handleVarunFlowAdvance(inputValue, varunScript.varun_step_2, 2);
       return;
     }
 
-    // Varun: Handle "instantly" input (Instantly settle)
-    if (currentPersona.id === 'varun' && varunFlowStep === 2 && text.includes('instantly')) {
+    // Settlement flow: Handle "instantly" input (Instantly settle)
+    if (activeFlow === 'settlement' && varunFlowStep === 2 && text.includes('instantly')) {
       setInputValue('');
       handleVarunFlowAdvance(inputValue, varunScript.varun_step_3, 3);
       return;
     }
 
-    // Varun: Handle "settle now" input
-    if (currentPersona.id === 'varun' && varunFlowStep === 3 && text.includes('settle now')) {
+    // Settlement flow: Handle "settle now" input
+    if (activeFlow === 'settlement' && varunFlowStep === 3 && text.includes('settle now')) {
       setInputValue('');
       handleVarunFlowAdvance(inputValue, varunScript.varun_step_4, 4);
       return;
     }
 
-    // Varun: Handle "early settlements" input
-    if (currentPersona.id === 'varun' && varunFlowStep === 4 && text.includes('early')) {
+    // Settlement flow: Handle "early settlements" input
+    if (activeFlow === 'settlement' && varunFlowStep === 4 && text.includes('early')) {
       setInputValue('');
       handleVarunFlowAdvance(inputValue, varunScript.varun_step_5, 5);
       return;
@@ -1602,27 +1497,15 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
   return (
     <div className="flex h-full relative font-sans overflow-hidden">
 
-      {/* Main Chat Container - animates width when preview is open */}
-      <motion.div
-        className="flex flex-col h-full relative"
-        initial={false}
-        animate={{
-          width: selectedTransaction ? '60%' : '100%',
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 180,
-          damping: 28,
-          mass: 1,
-        }}
-      >
+      {/* Main Chat Container */}
+      <div className="flex flex-col h-full relative w-full">
         {/* 1. Scrollable Chat Area */}
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
           className={`flex-1 overflow-y-auto px-3 md:px-6 pt-4 md:pt-6 pb-[80vh] scrollbar-hide ${ENABLE_PIN_TO_TOP ? 'flex flex-col' : ''}`}
         >
-           <div className={`flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full ${selectedTransaction ? 'max-w-full md:max-w-[600px]' : 'max-w-full md:max-w-2xl'} ${ENABLE_PIN_TO_TOP ? 'flex-col-reverse mt-auto' : 'flex-col'}`}>
+           <div className={`flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full max-w-full md:max-w-2xl ${ENABLE_PIN_TO_TOP ? 'flex-col-reverse mt-auto' : 'flex-col'}`}>
               {messages.map((msg, index) => {
                  // When pin-to-top is enabled, "isLast" should be the most recent message (highest index)
                  // which will appear at the TOP of the reversed layout
@@ -1648,10 +1531,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                         data={msg}
                         isLast={isLastMessage}
                         onSuggestionClick={handleSuggestionClick}
-                        onRowClick={handleRowClick}
                         highlightedSuggestionIndex={highlightedSuggestionIndex}
                         animatingCardId={isPaymentLinkModalOpen ? activeFormCardId : null}
-                        personaId={currentPersona.id}
+                        personaId={activeFlow || 'default'}
                         onMiniCardClick={(formId, sourceRect) => {
                           // Check which type of card was clicked
                           if (formId.includes('add-funds')) {
@@ -1667,8 +1549,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                           }
                         }}
                         onMiniCardAnimationComplete={(formId) => {
-                          // Auto-open modal when mini card animation completes (for Shyam flow)
-                          if (currentPersona.id === 'shyam' && shyamFlowStep === 1 && formId === activeFormCardId) {
+                          // Auto-open modal when mini card animation completes (for failed payment flow)
+                          if (activeFlow === 'failed_payment' && shyamFlowStep === 1 && formId === activeFormCardId) {
                             const miniCardElement = document.querySelector(`[data-form-id="${formId}"]`);
                             if (miniCardElement) {
                               const rect = miniCardElement.getBoundingClientRect();
@@ -1683,7 +1565,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                             setShyamFlowStep(2);
                           }
                         }}
-                        onStreamComplete={msg.id === 'sarah-ai-1' ? handleSarahStreamComplete : undefined}
+                        onStreamComplete={msg.id === 'refund-ai-1' ? handleSarahStreamComplete : undefined}
                       />
                    </motion.div>
                  );
@@ -1798,8 +1680,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                ));
              }
 
-             // For Shyam flow, show a simple follow-up message
-             if (currentPersona.id === 'shyam') {
+             // For failed payment flow, show a simple follow-up message
+             if (activeFlow === 'failed_payment') {
                setTimeout(() => {
                  setMessages(prev => [...prev, {
                    id: `ai-${Date.now()}`,
@@ -1862,8 +1744,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                ));
              }
 
-             // For Sarah flow, show the success message
-             if (currentPersona.id === 'sarah' && setting === 'auto') {
+             // For refund flow, show the success message
+             if (activeFlow === 'refund' && setting === 'auto') {
                setTimeout(() => {
                  setMessages(prev => [...prev, {
                    ...sarahScript.sarah_step_2,
@@ -1902,15 +1784,16 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
                   value={inputValue}
                   onChange={setInputValue}
                   onSend={handleInputSubmit}
-                  variant="compact"
+                  variant="hero"
                   placeholder="Ask anything..."
                   isStreaming={isStreaming}
                   onStopStreaming={() => setIsStreaming(false)}
+                  showShadow
                />
             </div>
          </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Modal Overlay Input - Only shows when a modal is open, rendered via portal at z-70 */}
       {(isPaymentLinkModalOpen || isCaptureSettingsModalOpen) && createPortal(
@@ -1924,52 +1807,17 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering }: RayChatI
               value={inputValue}
               onChange={setInputValue}
               onSend={handleInputSubmit}
-              variant="compact"
+              variant="hero"
               placeholder="Ask anything..."
               isStreaming={isStreaming}
               onStopStreaming={() => setIsStreaming(false)}
+              showShadow
             />
           </motion.div>
         </div>,
         document.body
       )}
 
-      {/* Transaction Preview Pane - slides in from the right */}
-      <AnimatePresence mode="popLayout">
-        {selectedTransaction && (
-          <motion.div
-            className="h-full p-4 shrink-0 overflow-hidden"
-            initial={{ width: 0 }}
-            animate={{ width: '40%' }}
-            exit={{ width: 0 }}
-            transition={{
-              type: "spring",
-              stiffness: 180,
-              damping: 28,
-              mass: 1,
-            }}
-          >
-            <motion.div
-              className="h-full"
-              initial={{ opacity: 0, scale: 0.96, x: 20, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, scale: 1, x: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 0.96, x: 20, filter: 'blur(8px)' }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 32,
-                mass: 0.8,
-                delay: 0.05,
-              }}
-            >
-              <TransactionPreviewPane
-                transaction={selectedTransaction}
-                onClose={() => setSelectedTransaction(null)}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

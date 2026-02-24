@@ -7,17 +7,10 @@ import { ArtifactRenderer } from './ArtifactRenderer';
 import { ActionAccordion } from './ActionAccordion';
 import { ActionWidgetVariant2 } from './ActionWidgetVariant2';
 import { ViewModeToggle } from './ViewModeToggle';
-import { useDemo } from '@/context/DemoContext';
 
-const RayLayoutContent = ({ initialQuery, isEntering }: { initialQuery?: string; isEntering?: boolean }) => {
+const RayLayoutContent = ({ initialQuery, isEntering, onGoHome }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void }) => {
   const flow = useFormStore();
   const { viewMode, isOpen, intent } = flow;
-  const { currentPersona } = useDemo();
-
-  // Showcase persona gets storybook-style page instead of chat
-  if (currentPersona.id === 'showcase') {
-    return <CardShowcase />;
-  }
 
   // If the flow is open and mode is 'split', we show split view.
   // Otherwise we show full width chat.
@@ -46,7 +39,7 @@ const RayLayoutContent = ({ initialQuery, isEntering }: { initialQuery?: string;
           ease: [0.2, 0, 0, 1] // Rauno Bezier
         }}
       >
-         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} isEntering={isEntering} />
+         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} isEntering={isEntering} onGoHome={onGoHome} />
       </motion.div>
 
       {/* RIGHT PANEL: ARTIFACT CONTAINER (Split Mode) */}
@@ -115,10 +108,10 @@ const RayLayoutContent = ({ initialQuery, isEntering }: { initialQuery?: string;
   );
 };
 
-export const RayLayout = ({ initialQuery, isEntering }: { initialQuery?: string; isEntering?: boolean }) => {
+export const RayLayout = ({ initialQuery, isEntering, onGoHome }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void }) => {
   return (
     <FormProvider>
-      <RayLayoutContent initialQuery={initialQuery} isEntering={isEntering} />
+      <RayLayoutContent initialQuery={initialQuery} isEntering={isEntering} onGoHome={onGoHome} />
     </FormProvider>
   );
 };

@@ -11,6 +11,7 @@ import imgHeroCardBg from "figma:asset/f9e01682c64370f508a272cdc70ec2928a2e3147.
 import Variant2Landing from '../Variant2Landing';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useDemo } from '../../../context/DemoContext';
+import { LANDING_CONFIG } from '../../../data/demoConfig';
 import { useMagicColor } from '../../../context/MagicColorContext';
 import svgPathsChips from "../../../imports/svg-xvon3romwc";
 import svgPathsInput from "../../../imports/svg-h0tl9nb0vi";
@@ -207,7 +208,7 @@ export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
 };
 
 const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQuery, onLogout, onSceneChange }) => {
-  const { currentPersona, setIsInChatView, setIsOnRayLandingPage, bgHue } = useDemo(); // <--- LISTENING TO CONTEXT
+  const { setIsInChatView, setIsOnRayLandingPage, bgHue } = useDemo();
 
   const [view, setView] = useState<'landing' | 'chat'>('landing');
 
@@ -222,12 +223,6 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
     };
   }, [view, setIsInChatView, setIsOnRayLandingPage]);
 
-  // Auto-switch to chat view for showcase persona (shows CardShowcase)
-  React.useEffect(() => {
-    if (currentPersona.id === 'showcase') {
-      setView('chat');
-    }
-  }, [currentPersona.id]);
   const [prompt, setPrompt] = useState(initialQuery || '');
   const [waveTrigger, setWaveTrigger] = useState(0);
   const [lastQuery, setLastQuery] = useState("");
@@ -321,11 +316,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
   // EXPERIMENTAL: Track which briefing item is hovered (null = none)
   const [hoveredBriefingItem, setHoveredBriefingItem] = useState<number | null>(null);
 
-  // EXPERIMENTAL: Briefing review prompts based on item index and persona
+  // EXPERIMENTAL: Briefing review prompts based on item index
   const getBriefingReviewPrompt = (index: number): string => {
     if (index === 1) {
-      if (isNegative) return "Why was my refund volume high in the last 3 days?";
-      if (isNeutral) return "Why are my refund volumes unusually high?";
       return "Give me a summary of today's refunds and disputes";
     }
     if (index === 2) {
@@ -347,12 +340,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
   // EXPERIMENTAL: Prompts for other cards
   const getCardReviewPrompt = (cardType: string): string => {
     if (cardType === 'stats') {
-      if (isNegative) return "Why is my account balance negative and how do I fix it?";
-      if (isNeutral) return "Why are my payment volumes low today?";
       return "Show me a breakdown of today's payment volume";
     }
     if (cardType === 'settlement') {
-      if (isNegative) return "How do I resume my paused settlements?";
       return "When is my next settlement and what's included?";
     }
     if (cardType === 'success') {
@@ -371,46 +361,12 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
   // EXPERIMENTAL: Track which card is hovered
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
-  // State for Shyam's image attachment
+  // State for image attachment (kept for future use)
   const [shyamAttachment, setShyamAttachment] = useState<{ filename: string; fileType: string; thumbnailUrl?: string } | null>(null);
   const [showFloatingImage, setShowFloatingImage] = useState(false);
 
-  // Track if user has manually selected a story (to distinguish from initial load)
-  const hasUserSelectedStory = useRef(false);
-  const prevPersonaId = useRef(currentPersona.id);
-
-  // Sync prompt with persona when on landing page
-  useEffect(() => {
-    if (view !== 'landing' || initialQuery) return;
-
-    // Check if persona just changed (user selected a story)
-    const personaChanged = prevPersonaId.current !== currentPersona.id;
-    prevPersonaId.current = currentPersona.id;
-
-    // On initial load, keep input empty (base state)
-    // When user selects a story, fill the input with that story's prompt
-    if (personaChanged || hasUserSelectedStory.current) {
-      hasUserSelectedStory.current = true;
-      // Special handling for Shyam - show floating image instead of attachment in input
-      if (currentPersona.id === 'shyam') {
-        setPrompt(''); // Clear text
-        setShyamAttachment(null); // Don't show in input yet
-        setShowFloatingImage(true); // Show floating image
-      } else {
-        setPrompt(currentPersona.landing.initialPrompt);
-        setShyamAttachment(null);
-        setShowFloatingImage(false);
-      }
-    } else {
-      // Initial load - empty input
-      setPrompt('');
-      setShyamAttachment(null);
-      setShowFloatingImage(false);
-    }
-  }, [currentPersona, view, initialQuery]);
-
   const handleSend = () => {
-    // Allow sending if there's text OR an attachment (for Shyam's flow)
+    // Allow sending if there's text OR an attachment
     if (!prompt.trim() && !shyamAttachment) return;
 
     // Presentation mode: scene3 triggered when question submitted
@@ -483,30 +439,15 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
 
   const handleHomeClick = () => {
     setView('landing');
-    setPrompt(currentPersona.landing.initialPrompt);
-    onNavigate('home'); 
+    setPrompt('');
+    onNavigate('home');
   };
 
-  // --- Dynamic Data Extraction ---
-  const briefingCard = currentPersona.landing.cards.find(c => c.type === 'briefing');
-  const statsCard = currentPersona.landing.cards.find(c => c.type === 'stats');
-  const settlementCard = currentPersona.landing.cards.find(c => c.type === 'settlement');
-  
-  // Theme Logic
-  const isNegative = currentPersona.theme === 'negative';
-  const isNeutral = currentPersona.theme === 'neutral'; // Sarah
-  const isPositive = currentPersona.theme === 'positive'; // Maya
-  const isVarun = currentPersona.id === 'varun'; // Varun has special positive-like display despite neutral theme
-
-  // Dynamic Styles
-  const greetingColor = isNegative ? 'text-[#0e1c2a]' : 'text-[#094c85]';
-  
-  const statsBg = isNegative 
-    ? 'bg-gradient-to-br from-red-50 via-white to-white border-red-100' 
-    : 'bg-gradient-to-br from-green-50 via-white to-white border-green-100';
-    
-  const statsTitleColor = isNegative ? 'text-red-600' : 'text-slate-600';
-  const mainValueColor = isNegative ? 'text-slate-900' : 'text-slate-900';
+  // Dynamic Styles - using neutral/positive theme by default (no persona-specific theming)
+  const isNegative = false;
+  const isNeutral = false;
+  const isVarun = false;
+  const greetingColor = 'text-[#094c85]';
 
   return (
     <div
@@ -697,7 +638,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                         <p className={`font-sans font-normal text-[16px] md:text-[18px] leading-[24px] tracking-[-0.2px] transition-colors duration-300 ${greetingColor}`}>
                             {landingVariant === 'default' ? (
                                 // Staggered character animation for default mode - starts after Ray appears
-                                currentPersona.landing.greeting.split('').map((char, i) => (
+                                LANDING_CONFIG.greeting.split('').map((char: string, i: number) => (
                                     <motion.span
                                         key={i}
                                         className="inline-block"
@@ -723,7 +664,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                                     }}
                                     transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
                                 >
-                                    {currentPersona.landing.greeting}
+                                    {LANDING_CONFIG.greeting}
                                 </motion.span>
                             )}
                         </p>
@@ -821,25 +762,11 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                                 attachmentChip={shyamAttachment}
                                 onRemoveAttachment={() => setShyamAttachment(null)}
                             />
-                            {/* Contextual Prompts - shown instead of cards when hideCards is true */}
-                            {currentPersona.landing.hideCards && currentPersona.landing.contextPrompts && animPhase >= 7 && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.2 }}
-                                >
-                                    <ContextualPromptsPanel
-                                        prompts={currentPersona.landing.contextPrompts}
-                                        onPromptClick={(text) => setPrompt(`Tell me about ${text}`)}
-                                    />
-                                </motion.div>
-                            )}
                         </motion.div>
                      </motion.div>
 
                      {/* Suggestion Chips Panel - appears after animation completes, fades out on transition */}
-                     {/* Hidden when persona has hideCards=true (contextual prompts variant) */}
-                     {animPhase >= 7 && !currentPersona.landing.hideCards && (
+                     {animPhase >= 7 && (
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{
@@ -945,8 +872,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                      </div>
 
                      {/* Dynamic Cards Grid - fades out during transition */}
-                     {/* Hidden when persona has hideCards=true (contextual prompts variant) */}
-                     {!currentPersona.landing.hideCards && (
+                     {(
                      <motion.div
                         className="w-full max-w-full md:max-w-[850px] mt-[80px]"
                         animate={{
@@ -1399,7 +1325,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                 </div>
                 )
             ) : (
-                <RayLayout initialQuery={lastQuery} isEntering={viewTransition === 'entering'} />
+                <RayLayout initialQuery={lastQuery} isEntering={viewTransition === 'entering'} onGoHome={handleHomeClick} />
             )}
 
         </div>
