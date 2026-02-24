@@ -111,8 +111,8 @@ export const RaySidebar: React.FC<RaySidebarProps> = ({
       </AnimatePresence>
 
       {/* Sidebar Container */}
-      <motion.div 
-        initial="expanded"
+      <motion.div
+        initial={false}
         animate={isCollapsed ? "collapsed" : "expanded"}
         variants={sidebarVariants}
         transition={{
