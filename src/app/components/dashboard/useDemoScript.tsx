@@ -582,6 +582,11 @@ Maya`,
                     buttons: [
                         { label: "Settle now", variant: "primary" },
                         { label: "Cancel", variant: "secondary" }
+                    ],
+                    suggestions: [
+                        "Show me fee comparison",
+                        "What if I wait till Friday?",
+                        "That's all for now"
                     ]
                 }
             }

@@ -3618,16 +3618,18 @@ const InstantSettlementOfferArtifact = ({ data, onSuggestionClick, isLast, highl
 };
 
 // --- Instant Settlement Charges Artifact (Varun Step 4) ---
-const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonClick }: any) => {
+const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonClick, isLast, highlightedSuggestionIndex = null }: any) => {
   const [subtextStarted, setSubtextStarted] = useState(false);
   const narrativeCompleteCalledRef = React.useRef(false);
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
-    hasDataAsset: false,
-    hasInsight: true,
-    hasSuggestions: false,
+    hasDataAsset: true,
+    hasInsight: false,
+    hasSuggestions: data.suggestions?.length > 0,
     thinkingDuration: 3000
   });
+
+  const chainOfThoughtMode = phase >= 5 ? 'complete' : 'streaming';
 
   const handleHeadlineComplete = React.useCallback(() => {
     setTimeout(() => setSubtextStarted(true), 800);
@@ -3735,6 +3737,16 @@ const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonCli
                 )}
               </div>
             </motion.div>
+          )}
+
+          {/* ChainOfThought */}
+          {isLast && (
+            <ChainOfThought
+              mode={chainOfThoughtMode}
+              suggestions={chainOfThoughtMode === 'complete' ? data.suggestions : undefined}
+              onSuggestionClick={onSuggestionClick}
+              highlightedSuggestionIndex={highlightedSuggestionIndex}
+            />
           )}
         </motion.div>
       )}
@@ -4762,8 +4774,10 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
       <div className="w-full animate-fade-in-up">
         <InstantSettlementChargesArtifact
           data={data.artifact.data}
+          isLast={isLast}
           onSuggestionClick={onSuggestionClick}
           onButtonClick={onSuggestionClick}
+          highlightedSuggestionIndex={highlightedSuggestionIndex}
         />
       </div>
     );
