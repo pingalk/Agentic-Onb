@@ -3692,13 +3692,15 @@ const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonCli
               transition={{ duration: 0.4 }}
             >
               <div className="max-w-[480px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
-                {/* Header - Overline style */}
-                <div className="px-4 pt-4 pb-2">
-                  <p className="text-[13px] font-medium text-[#768EA7]">Fee Breakdown</p>
+                {/* Header - Overline + Anchor */}
+                <div className="px-4 pt-4 pb-3">
+                  <p className="text-[13px] font-medium text-[#768EA7] mb-1">Fee Breakdown</p>
+                  <p className="text-[28px] font-semibold text-[#1E7C45] leading-tight tracking-[-0.02em]">₹2,99,100</p>
+                  <p className="text-[13px] text-[#768EA7] mt-1">You'll receive today</p>
                 </div>
 
                 {/* Key-Value Pairs (no dividers) */}
-                <div className="px-4 pb-3">
+                <div className="px-4 pb-3 border-t border-[#E4E9F1]">
                   <div className="flex items-center justify-between py-1.5">
                     <span className="text-[13px] text-[#768EA7]">Settlement amount</span>
                     <span className="text-[13px] font-semibold text-[#192839]">{data.fee.settlementAmount}</span>
@@ -3706,10 +3708,6 @@ const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonCli
                   <div className="flex items-center justify-between py-1.5">
                     <span className="text-[13px] text-[#768EA7]">Instant fee ({data.fee.percentage})</span>
                     <span className="text-[13px] font-semibold text-[#C72C41]">-{data.fee.amount}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-1.5 mt-2 pt-2 border-t border-[#E4E9F1]">
-                    <span className="text-[13px] font-medium text-[#1E7C45]">You'll receive</span>
-                    <span className="text-[16px] font-semibold text-[#1E7C45]">₹2,99,100</span>
                   </div>
                 </div>
 
@@ -3949,14 +3947,16 @@ const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast, o
         >
           <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={200} borderRadius="8px">
             <div className="max-w-[480px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
-              {/* Header - Overline style */}
-              <div className="px-4 pt-4 pb-2">
-                <p className="text-[13px] font-medium text-[#768EA7]">Settlement Status</p>
+              {/* Header - Overline + Anchor */}
+              <div className="px-4 pt-4 pb-3">
+                <p className="text-[13px] font-medium text-[#768EA7] mb-1">Settlement Status</p>
+                <p className="text-[28px] font-semibold text-[#192839] leading-tight tracking-[-0.02em]">₹6,10,000</p>
+                <p className="text-[13px] text-[#768EA7] mt-1">Total pending settlement</p>
               </div>
 
               {/* Key-Value Pairs - Settlement breakdown (no dividers) */}
               {data.table && (
-                <div className="px-4 pb-3">
+                <div className="px-4 pb-3 border-t border-[#E4E9F1]">
                   {data.table.rows.map((row: { status: string; amount: string }, idx: number) => (
                     <div
                       key={idx}
