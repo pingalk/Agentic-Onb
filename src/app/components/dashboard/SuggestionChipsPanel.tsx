@@ -8,15 +8,13 @@ interface Category {
   prompts: string[];
 }
 
+// Only include categories/prompts that have working flows
 const CATEGORIES: Category[] = [
   {
     id: 'recovery',
     label: 'Recovery',
     prompts: [
       'Customer claims double charge — check their payments',
-      'Create a payment link for the last failed order',
-      'Check the status of Refund #R9921',
-      'Draft a message explaining the refund delay',
     ],
   },
   {
@@ -24,39 +22,6 @@ const CATEGORIES: Category[] = [
     label: 'Settlements',
     prompts: [
       'When is my next settlement?',
-      'Am I eligible for Instant Settlement?',
-      'Show deductions from my last settlement',
-      'Enable same-day settlements',
-    ],
-  },
-  {
-    id: 'manage',
-    label: 'Manage',
-    prompts: [
-      'Enable AMEX cards on checkout',
-      'Update my billing label name',
-      'Add a new Finance user',
-      'Disable COD for orders above ₹5,000',
-    ],
-  },
-  {
-    id: 'insights',
-    label: 'Insights',
-    prompts: [
-      'Why are my success rates down?',
-      'Is UPI experiencing downtime?',
-      'Top failure reasons today',
-      'Compare this week vs last week',
-    ],
-  },
-  {
-    id: 'support',
-    label: 'Support',
-    prompts: [
-      'Why is my account on hold?',
-      'Analyze transaction for fraud',
-      'Check my KYC verification status',
-      'Escalate my support ticket',
     ],
   },
 ];
