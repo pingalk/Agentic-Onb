@@ -37,6 +37,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     }
   };
 
+  const handleSkipVideo = () => {
+    setStep('pan');
+    setAnimPhase(3); // Show card immediately
+  };
+
   // Entry animation sequence for form steps
   useEffect(() => {
     if (step !== 'video') {
@@ -115,6 +120,14 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 onTimeUpdate={handleVideoTimeUpdate}
                 src="/kyc-intro.mp4"
               />
+
+              {/* Skip Button */}
+              <button
+                onClick={handleSkipVideo}
+                className="absolute top-6 right-6 z-20 px-4 py-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white font-sans text-[14px] rounded-lg transition-all"
+              >
+                Skip
+              </button>
             </motion.div>
           ) : step === 'pan' ? (
             <motion.div
