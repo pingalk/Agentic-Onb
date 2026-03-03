@@ -97,9 +97,10 @@ interface RayChatInterfaceProps {
   isSplit?: boolean;
   isEntering?: boolean; // True when transitioning from landing → chat
   onGoHome?: () => void; // Navigate back to landing page
+  skipInitialUserMessage?: boolean; // Skip showing user query, go directly to Ray's response
 }
 
-export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }: RayChatInterfaceProps) => {
+export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, skipInitialUserMessage }: RayChatInterfaceProps) => {
   const demoContext = useDemo();
   const { config: currentMagicColor } = useMagicColor();
   const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, kycScript, briefingReviewResponses, showcaseCards } = useDemoScript();
@@ -466,11 +467,14 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
     const userText = query || "Start KYC onboarding";
 
     setTimeout(() => {
-      setMessages([{
-        id: 'kyc-u1',
-        sender: 'user',
-        blocks: [{ type: 'text', content: userText }]
-      }]);
+      // If skipInitialUserMessage is true, don't show user query
+      if (!skipInitialUserMessage) {
+        setMessages([{
+          id: 'kyc-u1',
+          sender: 'user',
+          blocks: [{ type: 'text', content: userText }]
+        }]);
+      }
 
       // If phone verification was already done on landing page, skip to documents step
       if (skipPhone) {
@@ -478,25 +482,33 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
         setActiveFlow('kyc_onboarding');
 
         setTimeout(() => {
-          setMessages(prev => [...prev, {
+          setMessages(prev => skipInitialUserMessage ? [{
+            ...kycScript.kyc_step_3,
+            id: 'kyc-ai-3',
+            sender: 'ai' as const
+          }] : [...prev, {
             ...kycScript.kyc_step_3,
             id: 'kyc-ai-3',
             sender: 'ai' as const
           }]);
-        }, 800);
+        }, skipInitialUserMessage ? 300 : 800);
       } else {
         setKycFlowStep(1);
         setActiveFlow('kyc_onboarding');
 
         setTimeout(() => {
-          setMessages(prev => [...prev, {
+          setMessages(prev => skipInitialUserMessage ? [{
+            ...kycScript.kyc_step_1,
+            id: 'kyc-ai-1',
+            sender: 'ai' as const
+          }] : [...prev, {
             ...kycScript.kyc_step_1,
             id: 'kyc-ai-1',
             sender: 'ai' as const
           }]);
-        }, 800);
+        }, skipInitialUserMessage ? 300 : 800);
       }
-    }, 600);
+    }, skipInitialUserMessage ? 100 : 600);
   };
 
   // Refund flow (formerly Sarah)

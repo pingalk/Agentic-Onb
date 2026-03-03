@@ -208,7 +208,7 @@ export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
   );
 };
 
-const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQuery, onLogout, onSceneChange }) => {
+const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQuery, onLogout, onSceneChange, kycPhoneData }) => {
   const { setIsInChatView, setIsOnRayLandingPage, bgHue, bgIntensity, gradientConfig, sparkRipplesConfig } = useDemo();
 
   // Compute the gradient green color from HSL config
@@ -1333,7 +1333,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                 </div>
                 )
             ) : (
-                <RayLayout initialQuery={lastQuery} isEntering={viewTransition === 'entering'} onGoHome={handleHomeClick} />
+                <RayLayout initialQuery={lastQuery} isEntering={viewTransition === 'entering'} onGoHome={handleHomeClick} skipInitialUserMessage={!!kycPhoneData} />
             )}
 
         </div>

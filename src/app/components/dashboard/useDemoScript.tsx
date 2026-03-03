@@ -844,7 +844,7 @@ Maya`,
         },
         kyc_step_1: {
             headline: "Hello! Starting KYC now",
-            subtext: "I'm here to handle your onboarding so you can get back to building. I'll ask a few quick questions to get you set up.",
+            subtext: "I'll take care of the onboarding for you. We'll move through a few quick steps together and get everything set up smoothly.",
             suggestions: []
         },
         kyc_step_2: {

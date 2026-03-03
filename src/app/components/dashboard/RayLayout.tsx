@@ -8,7 +8,7 @@ import { ActionAccordion } from './ActionAccordion';
 import { ActionWidgetVariant2 } from './ActionWidgetVariant2';
 import { ViewModeToggle } from './ViewModeToggle';
 
-const RayLayoutContent = ({ initialQuery, isEntering, onGoHome }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void }) => {
+const RayLayoutContent = ({ initialQuery, isEntering, onGoHome, skipInitialUserMessage }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void; skipInitialUserMessage?: boolean }) => {
   const flow = useFormStore();
   const { viewMode, isOpen, intent } = flow;
 
@@ -39,7 +39,7 @@ const RayLayoutContent = ({ initialQuery, isEntering, onGoHome }: { initialQuery
           ease: [0.2, 0, 0, 1] // Rauno Bezier
         }}
       >
-         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} isEntering={isEntering} onGoHome={onGoHome} />
+         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} isEntering={isEntering} onGoHome={onGoHome} skipInitialUserMessage={skipInitialUserMessage} />
       </motion.div>
 
       {/* RIGHT PANEL: ARTIFACT CONTAINER (Split Mode) */}
@@ -108,10 +108,10 @@ const RayLayoutContent = ({ initialQuery, isEntering, onGoHome }: { initialQuery
   );
 };
 
-export const RayLayout = ({ initialQuery, isEntering, onGoHome }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void }) => {
+export const RayLayout = ({ initialQuery, isEntering, onGoHome, skipInitialUserMessage }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void; skipInitialUserMessage?: boolean }) => {
   return (
     <FormProvider>
-      <RayLayoutContent initialQuery={initialQuery} isEntering={isEntering} onGoHome={onGoHome} />
+      <RayLayoutContent initialQuery={initialQuery} isEntering={isEntering} onGoHome={onGoHome} skipInitialUserMessage={skipInitialUserMessage} />
     </FormProvider>
   );
 };
