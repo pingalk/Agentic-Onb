@@ -130,7 +130,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                       maxLength={10}
                       value={panNumber}
                       onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                      className="w-full h-[60px] px-5 text-center font-sans text-[40px] leading-[46px] font-medium text-[rgba(0,0,0,0.32)] border-0 bg-transparent focus:outline-none focus:text-[#020202] transition-colors uppercase tracking-wide placeholder:text-[rgba(0,0,0,0.32)]"
+                      className="w-full h-[60px] px-5 text-center font-sans text-[40px] leading-[46px] font-medium text-[rgba(0,0,0,0.32)] border-0 bg-transparent focus:outline-none focus:text-[#020202] transition-colors uppercase tracking-wide placeholder:text-[rgba(0,0,0,0.32)] placeholder:normal-case"
                       placeholder="Enter PAN"
                       disabled={isSubmitting}
                       autoFocus
