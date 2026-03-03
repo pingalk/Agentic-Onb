@@ -11,7 +11,7 @@ interface KYCLandingPageProps {
 }
 
 export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit }) => {
-  const [step, setStep] = useState<'video' | 'pan' | 'panConfirm' | 'phone' | 'otp'>('video');
+  const [step, setStep] = useState<'video' | 'pan' | 'panConfirm' | 'loading' | 'phone' | 'otp'>('video');
   const [panNumber, setPanNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
@@ -19,6 +19,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const [animPhase, setAnimPhase] = useState(0);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const panTransitionVideoRef = React.useRef<HTMLVideoElement>(null);
+  const loadingVideoRef = React.useRef<HTMLVideoElement>(null);
 
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
@@ -68,9 +69,13 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      setStep('phone');
-      setAnimPhase(3); // Reset to show card
+      setStep('loading');
     }, 800);
+  };
+
+  const handleLoadingVideoEnd = () => {
+    setStep('phone');
+    setAnimPhase(3); // Reset to show card
   };
 
   const handleSendOTP = () => {
@@ -100,7 +105,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
       {/* Top Navigation - only for form steps */}
-      {step !== 'video' && (
+      {step !== 'video' && step !== 'loading' && (
         <div className="relative z-20 bg-black h-14 flex items-center justify-between px-4">
           {/* Logo */}
           <div className="flex items-center">
@@ -122,7 +127,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       )}
 
       {/* SparkRipples Background - only for form steps */}
-      {step !== 'video' && (
+      {step !== 'video' && step !== 'loading' && (
         <SparkRipplesBackground
           className="absolute inset-0"
           opacity={0.3}
@@ -133,8 +138,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       )}
 
       {/* Main Content Area */}
-      <div className={`relative flex-1 flex items-center justify-center ${step === 'video' ? '' : 'py-8'}`}>
-        <div className={`relative z-10 w-full ${step === 'video' ? '' : 'max-w-2xl px-6'}`}>
+      <div className={`relative flex-1 flex items-center justify-center ${step === 'video' || step === 'loading' ? '' : 'py-8'}`}>
+        <div className={`relative z-10 w-full ${step === 'video' || step === 'loading' ? '' : 'max-w-2xl px-6'}`}>
           <AnimatePresence mode="wait">
           {step === 'video' ? (
             <motion.div
@@ -361,6 +366,27 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                   </div>
                 </div>
               </motion.div>
+            </motion.div>
+          ) : step === 'loading' ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="fixed inset-0 flex items-center justify-center"
+              style={{ backgroundColor: '#f8f8f8' }}
+            >
+              {/* Loading Video - centered and scaled up */}
+              <video
+                ref={loadingVideoRef}
+                className="w-auto h-auto max-w-[150%] max-h-[150%] object-contain"
+                autoPlay
+                muted
+                playsInline
+                onEnded={handleLoadingVideoEnd}
+                src="/ray-loading.mp4"
+              />
             </motion.div>
           ) : step === 'phone' ? (
             <motion.div
