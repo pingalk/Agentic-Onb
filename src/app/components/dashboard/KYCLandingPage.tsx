@@ -125,7 +125,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 </motion.div>
               </motion.div>
 
-              {/* Phone Entry Card - matching RayInputBox rounded-[20px] */}
+              {/* Phone Entry Card - Figma glass morphism style */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{
@@ -133,9 +133,12 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                   scale: animPhase >= 3 ? 1 : 0.96
                 }}
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/50 overflow-hidden"
+                className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
               >
-                <div className="p-8 space-y-6">
+                {/* Inner shadow for depth */}
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
+
+                <div className="relative p-8 space-y-6">
                   <div className="space-y-3">
                     <h2 className="font-sans text-[18px] font-medium text-[#020202] leading-[24px] tracking-[-0.2px]">
                       Share your phone number linked to your PAN or Aadhaar
@@ -173,8 +176,13 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                     <button
                       onClick={handleSendOTP}
                       disabled={phoneNumber.length < 10 || isSubmitting}
-                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
+                      className="relative w-full h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden"
+                      style={{
+                        backgroundImage: isSubmitting ? 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)' : 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+                      }}
                     >
+                      {/* Glass effect inset shadows */}
+                      <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
                       {isSubmitting ? (
                         <motion.div
                           className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
@@ -188,6 +196,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         </>
                       )}
                     </button>
+
+                    {/* Tip text */}
+                    <p className="text-center font-sans text-[10px] leading-[13px] tracking-[-0.13px] text-[rgba(0,0,0,0.72)] pt-2">
+                      Tip: Use the phone number registered with your PAN or Aadhaar
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -222,14 +235,17 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 </div>
               </div>
 
-              {/* OTP Entry Card */}
+              {/* OTP Entry Card - Figma glass morphism style */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/50 overflow-hidden"
+                className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
               >
-                <div className="p-8 space-y-6">
+                {/* Inner shadow for depth */}
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
+
+                <div className="relative p-8 space-y-6">
                   <div className="space-y-3">
                     <h2 className="font-sans text-[18px] font-medium text-[#020202] leading-[24px] tracking-[-0.2px]">
                       Enter the 6-digit code
@@ -264,8 +280,13 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                     <button
                       onClick={handleVerifyOTP}
                       disabled={otp.length !== 6 || isSubmitting}
-                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
+                      className="relative w-full h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden"
+                      style={{
+                        backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+                      }}
                     >
+                      {/* Glass effect inset shadows */}
+                      <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
                       {isSubmitting ? (
                         <motion.div
                           className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
