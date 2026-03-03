@@ -99,16 +99,16 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     }
   }, [step]);
 
-  // Auto-transition from welcome to phone after 3 seconds
+  // Auto-transition from welcome to Ray chat interface after 3 seconds
   useEffect(() => {
     if (step === 'welcome') {
       const timer = setTimeout(() => {
-        setStep('phone');
-        setAnimPhase(3);
+        // Transition to Ray chat interface
+        onPhoneSubmit(panNumber, '');
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [step]);
+  }, [step, panNumber, onPhoneSubmit]);
 
   const handleSendOTP = () => {
     if (phoneNumber.length >= 10) {
