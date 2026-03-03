@@ -1,11 +1,16 @@
 // src/data/demoConfig.ts
 
 // Flow types for query-based routing
-export type FlowType = 'settlement' | 'double_debit' | 'refund' | 'support' | 'payment_link' | 'failed_payment' | null;
+export type FlowType = 'settlement' | 'double_debit' | 'refund' | 'support' | 'payment_link' | 'failed_payment' | 'kyc_onboarding' | null;
 
 // Helper to detect flow type from user query
 export const detectFlowType = (query: string): FlowType => {
   const text = query.toLowerCase();
+
+  // KYC Onboarding flow
+  if (text.includes('kyc') || text.includes('onboarding') || text.includes('start kyc') || text.includes('activate account')) {
+    return 'kyc_onboarding';
+  }
 
   // Settlement flow
   if (text.includes('settlement') || text.includes('when is my next') || text.includes('upcoming settlement') || text.includes('instant settlement')) {

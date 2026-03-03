@@ -835,6 +835,89 @@ Maya`,
         return false;
     };
 
+    // KYC Onboarding Journey
+    const kycScript = {
+        kyc_step_0: {
+            input: "Start KYC onboarding",
+            response: null,
+            suggestions: []
+        },
+        kyc_step_1: {
+            headline: "Hello! Starting KYC now",
+            subtext: "I'm here to handle your onboarding so you can get back to building. I'll ask a few quick questions to get you set up.",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_phone_verification'
+                }
+            },
+            suggestions: []
+        },
+        kyc_step_2: {
+            headline: "Great! Your details have been verified",
+            subtext: "I've retrieved your **PAN** and **Aadhaar** details from the Central KYC registry. Everything looks good!",
+            artifact: {
+                type: 'kyc_documents_verified',
+                data: {
+                    documents: [
+                        { name: 'PAN Card', number: 'XXXPK1234X', verified: true },
+                        { name: 'Aadhaar Card', number: 'xxxx xxxx 1234', verified: true },
+                        { name: 'Business Address', details: 'Fetched from CKYC', verified: true }
+                    ]
+                }
+            },
+            suggestions: ["Continue"]
+        },
+        kyc_step_3: {
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_website'
+                }
+            },
+            suggestions: []
+        },
+        kyc_step_4: {
+            headline: "Awesome! I've analyzed your website",
+            subtext: "Based on what I found, it looks like you're running an **E-commerce platform for Fashion Accessories**. Let me know if that's accurate.",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_business_model'
+                }
+            },
+            suggestions: []
+        },
+        kyc_step_5: {
+            headline: "Perfect! Now let's set up your bank account",
+            subtext: "This is where we'll transfer your payments. Linking via UPI is the **fastest method**.",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_bank_verification'
+                }
+            },
+            suggestions: []
+        },
+        kyc_step_6: {
+            headline: "You're officially in! 🎉",
+            subtext: "Your application has been submitted successfully. While the banks do their verification (usually 24-48 hours), **keep an eye out for a little something sweet from us** — we're sending you a box of sweets to celebrate this beginning!",
+            artifact: {
+                type: 'kyc_success',
+                data: {
+                    status: 'submitted',
+                    deliveryAddress: '123 Business Street, Mumbai, MH 400001',
+                    nextSteps: [
+                        'Bank verification (24-48 hours)',
+                        'Sweets delivery (3-5 days)',
+                        'Account activation notification'
+                    ]
+                }
+            },
+            suggestions: ["Go to Dashboard", "Set up payment methods", "View my account"]
+        }
+    };
+
     return {
         step,
         setStep,
@@ -847,6 +930,7 @@ Maya`,
         shyamScript,
         kiaraScript,
         varunScript,
+        kycScript,
         briefingReviewResponses,
         showcaseCards,
         getFutureDate

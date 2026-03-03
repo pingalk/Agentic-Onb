@@ -102,7 +102,7 @@ interface RayChatInterfaceProps {
 export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }: RayChatInterfaceProps) => {
   const demoContext = useDemo();
   const { config: currentMagicColor } = useMagicColor();
-  const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, briefingReviewResponses, showcaseCards } = useDemoScript();
+  const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, kycScript, briefingReviewResponses, showcaseCards } = useDemoScript();
 
   // Track which flow is active (query-based routing)
   const [activeFlow, setActiveFlow] = useState<FlowType>(null);
@@ -148,6 +148,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
 
   // Varun Flow State
   const [varunFlowStep, setVarunFlowStep] = useState(0);
+
+  // KYC Onboarding Flow State
+  const [kycFlowStep, setKycFlowStep] = useState(0);
 
   // Briefing Review Flow State
   const [briefingReviewHandled, setBriefingReviewHandled] = useState(false);
@@ -355,6 +358,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
         setTimeout(() => {
           // Route to appropriate flow based on detected type
           switch (flowType) {
+            case 'kyc_onboarding':
+              startKYCFlow(initialQuery);
+              break;
             case 'settlement':
               startSettlementFlow(initialQuery);
               break;
@@ -451,6 +457,29 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
           setTimeout(() => setIsStreaming(false), 3000);
         }, 15000);
       }, 600);
+    }, 600);
+  };
+
+  // KYC Onboarding flow
+  const startKYCFlow = (query: string) => {
+    const userText = query || "Start KYC onboarding";
+
+    setTimeout(() => {
+      setMessages([{
+        id: 'kyc-u1',
+        sender: 'user',
+        blocks: [{ type: 'text', content: userText }]
+      }]);
+      setKycFlowStep(1);
+      setActiveFlow('kyc_onboarding');
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          ...kycScript.kyc_step_1,
+          id: 'kyc-ai-1',
+          sender: 'ai' as const
+        }]);
+      }, 800);
     }, 600);
   };
 
