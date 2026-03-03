@@ -288,7 +288,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                   </motion.div>
 
                   {/* Video Area */}
-                  <div className="flex items-center justify-center py-8">
+                  <div className="flex items-center justify-center py-6">
                     <div className="w-full max-w-[356px] h-[188px] rounded-[9.3px] overflow-hidden p-[1px]">
                       <video
                         ref={panTransitionVideoRef}
