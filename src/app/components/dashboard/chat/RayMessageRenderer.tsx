@@ -4905,20 +4905,53 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
   // 24.5. KYC OTP Verification Card
   if (data.artifact?.type === 'kyc_otp_card') {
     const { heading, tag, phoneNumber, buttonText } = data.artifact.data;
+    const [isStreaming, setIsStreaming] = React.useState(true);
+    const [subtextStarted, setSubtextStarted] = React.useState(false);
+
     return (
       <div className="w-full animate-fade-in-up">
-        {/* Headline and Subtext with streaming */}
-        <div className="max-w-[398px] mb-4">
-          {data.headline && (
-            <h3 className="text-[18px] font-semibold text-[#020202] leading-snug mb-2">
-              <PerplexityStreamText text={data.headline} onStreamComplete={onStreamComplete} />
-            </h3>
-          )}
-          {data.subtext && (
-            <p className="text-[16px] text-[#40566d] leading-relaxed">
-              <PerplexityStreamText text={data.subtext} delay={data.headline ? data.headline.length * 15 : 0} />
-            </p>
-          )}
+        {/* Ray Logo + Headline and Subtext with streaming */}
+        <div className="flex items-start gap-3 max-w-[398px] mb-4">
+          {/* Ray Logo - rotates while streaming */}
+          <motion.div
+            className="w-6 h-6 shrink-0 mt-0.5"
+            animate={isStreaming ? {
+              rotate: [0, 90, 90, 180, 180, 270, 270, 360]
+            } : { rotate: 0 }}
+            transition={isStreaming ? {
+              duration: 2,
+              repeat: Infinity,
+              ease: [0.4, 0, 0.2, 1],
+              times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1]
+            } : { duration: 0.3 }}
+          >
+            <Ray static />
+          </motion.div>
+
+          {/* Text Content */}
+          <div className="flex-1">
+            {data.headline && (
+              <h3 className="text-[18px] font-semibold text-[#020202] leading-snug mb-2">
+                <PerplexityStreamText
+                  text={data.headline}
+                  onStreamComplete={() => {
+                    setTimeout(() => setSubtextStarted(true), 1300);
+                  }}
+                />
+              </h3>
+            )}
+            {subtextStarted && data.subtext && (
+              <p className="text-[16px] text-[#40566d] leading-relaxed">
+                <PerplexityStreamText
+                  text={data.subtext}
+                  onStreamComplete={() => {
+                    setIsStreaming(false);
+                    if (onStreamComplete) onStreamComplete();
+                  }}
+                />
+              </p>
+            )}
+          </div>
         </div>
 
         {/* OTP Card */}
@@ -4931,7 +4964,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           {/* Inner shadow for depth */}
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
 
-          <div className="relative space-y-4">
+          <div className="relative space-y-2">
             {/* Heading with tag */}
             <div className="flex items-center gap-2">
               <h4 className="font-sans font-semibold text-[16px] text-[#020202]">{heading}</h4>
@@ -4955,7 +4988,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
                   onSuggestionClick('verify_otp');
                 }
               }}
-              className="relative w-full h-12 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
+              className="relative w-full h-12 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden hover:opacity-90 mt-4"
               style={{
                 backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
               }}
