@@ -845,6 +845,11 @@ Maya`,
         kyc_step_1: {
             headline: "Hello! Starting KYC now",
             subtext: "I'm here to handle your onboarding so you can get back to building. I'll ask a few quick questions to get you set up.",
+            suggestions: []
+        },
+        kyc_step_2: {
+            headline: "Share your phone number linked to your PAN or Aadhaar",
+            subtext: "I'll fetch your business details directly from the Central KYC registry (CERSAI). I'll handle the heavy lifting so you don't have to upload a single extra document.",
             artifact: {
                 type: 'intent',
                 data: {
@@ -853,9 +858,9 @@ Maya`,
             },
             suggestions: []
         },
-        kyc_step_2: {
-            headline: "Great! Your details have been verified",
-            subtext: "I've retrieved your **PAN** and **Aadhaar** details from the Central KYC registry. Everything looks good!",
+        kyc_step_3: {
+            headline: "Here is the information we were able to fetch",
+            subtext: "Great news! We've retrieved the official documents for your business linked to PAN XXXXXXXX. Take a quick look to confirm everything is current.",
             artifact: {
                 type: 'kyc_documents_verified',
                 data: {
@@ -866,9 +871,11 @@ Maya`,
                     ]
                 }
             },
-            suggestions: ["Continue"]
+            suggestions: ["Confirm"]
         },
-        kyc_step_3: {
+        kyc_step_4: {
+            headline: "Do you have a live existing website?",
+            subtext: "Website live? Drop the links here. No pressure if they aren't handy—you can add them later. I only suggest doing it now to fast-track your activation.",
             artifact: {
                 type: 'intent',
                 data: {
@@ -877,20 +884,20 @@ Maya`,
             },
             suggestions: []
         },
-        kyc_step_4: {
-            headline: "Awesome! I've analyzed your website",
-            subtext: "Based on what I found, it looks like you're running an **E-commerce platform for Fashion Accessories**. Let me know if that's accurate.",
+        kyc_step_5: {
+            headline: "Please confirm your business model",
+            subtext: "I've had a quick look at your website and it looks like you're building an awesome **E-commerce platform for Fashion Accessories**. Does that sound about right? We just want to make sure we have your business category spot on so we can tailor everything to your needs.",
             artifact: {
                 type: 'intent',
                 data: {
                     intent: 'kyc_business_model'
                 }
             },
-            suggestions: []
+            suggestions: ["Yes, this is correct", "No, change"]
         },
-        kyc_step_5: {
-            headline: "Perfect! Now let's set up your bank account",
-            subtext: "This is where we'll transfer your payments. Linking via UPI is the **fastest method**.",
+        kyc_step_6: {
+            headline: "Which bank account would you like to collect payments in?",
+            subtext: "Linking your bank via UPI is the fastest way to get you paid.",
             artifact: {
                 type: 'intent',
                 data: {
@@ -899,22 +906,76 @@ Maya`,
             },
             suggestions: []
         },
-        kyc_step_6: {
-            headline: "You're officially in! 🎉",
-            subtext: "Your application has been submitted successfully. While the banks do their verification (usually 24-48 hours), **keep an eye out for a little something sweet from us** — we're sending you a box of sweets to celebrate this beginning!",
+        kyc_step_7: {
+            headline: "Thanks! We have received all your details",
+            subtext: "You're all done with your application, review all your details before you submit to ensure that we have captured all details correctly. Are you ready to review before final submit?",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_review_submit'
+                }
+            },
+            suggestions: ["Submit Application"]
+        },
+        kyc_step_8: {
+            headline: "You're officially in!",
+            subtext: "Your application has been submitted! Now sit back and relax while we send you a box of sweets to your address to celebrate this beginning.",
             artifact: {
                 type: 'kyc_success',
                 data: {
                     status: 'submitted',
-                    deliveryAddress: '123 Business Street, Mumbai, MH 400001',
-                    nextSteps: [
-                        'Bank verification (24-48 hours)',
-                        'Sweets delivery (3-5 days)',
-                        'Account activation notification'
-                    ]
+                    message: "While the banks do their thing, keep an eye out for a little something sweet from us.",
+                    deliveryAddress: '123 Business Street, Mumbai, MH 400001'
                 }
             },
-            suggestions: ["Go to Dashboard", "Set up payment methods", "View my account"]
+            suggestions: ["Go to Dashboard", "View application status"]
+        },
+        // Alternative path: No website
+        kyc_step_4_no_website: {
+            headline: "Where would you like to accept payments?",
+            subtext: "Select the options that are relevant to you, you can always add more once you are fully onboarded.",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_payment_channels'
+                }
+            },
+            suggestions: []
+        },
+        // Alternative path: Non-CKYC document upload
+        kyc_step_3_non_ckyc: {
+            headline: "Let's get the paperwork out of the way, we need a copy of your Aadhaar card",
+            subtext: "To keep things moving, please upload a PDF or a quick photo of your Aadhaar card, we need the front and back of the card.",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_document_upload'
+                }
+            },
+            suggestions: []
+        },
+        kyc_step_3_address: {
+            headline: "Tell us where you're based",
+            subtext: "To keep your records accurate, please share your registered address (don't forget the State, City, and Pincode!). Just a quick type-in and RAY takes care of the rest.",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_address_entry'
+                }
+            },
+            suggestions: []
+        },
+        // Bank verification fallback
+        kyc_step_6_manual: {
+            headline: "Let's try another way to get you set up",
+            subtext: "UPI didn't go through, but no worries—RAY can still get your bank verified. Just enter your Account Number and IFSC code below. Type out the details clearly.",
+            artifact: {
+                type: 'intent',
+                data: {
+                    intent: 'kyc_bank_manual'
+                }
+            },
+            suggestions: []
         }
     };
 

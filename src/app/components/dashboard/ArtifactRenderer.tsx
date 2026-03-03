@@ -7,7 +7,11 @@ import {
   KYCWebsiteForm,
   KYCPaymentChannelsForm,
   KYCBusinessModelForm,
-  KYCBankVerificationForm
+  KYCBankVerificationForm,
+  KYCDocumentUploadForm,
+  KYCAddressEntryForm,
+  KYCReviewSubmitForm,
+  KYCBankManualForm
 } from './KYCForms';
 
 interface ArtifactRendererProps {
@@ -48,6 +52,22 @@ export const ArtifactRenderer: React.FC<ArtifactRendererProps> = () => {
 
   if (intent === 'kyc_bank_verification') {
     return <KYCBankVerificationForm />;
+  }
+
+  if (intent === 'kyc_document_upload') {
+    return <KYCDocumentUploadForm />;
+  }
+
+  if (intent === 'kyc_address_entry') {
+    return <KYCAddressEntryForm />;
+  }
+
+  if (intent === 'kyc_review_submit') {
+    return <KYCReviewSubmitForm />;
+  }
+
+  if (intent === 'kyc_bank_manual') {
+    return <KYCBankManualForm />;
   }
 
   // Default fallback
