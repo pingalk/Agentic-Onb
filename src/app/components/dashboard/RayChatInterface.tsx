@@ -360,8 +360,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
           // Route to appropriate flow based on detected type
           switch (flowType) {
             case 'kyc_onboarding':
-              // Skip phone verification if coming from KYC landing page
-              startKYCFlow(initialQuery, true);
+              // Show OTP verification step (step 1)
+              startKYCFlow(initialQuery, false);
               break;
             case 'settlement':
               startSettlementFlow(initialQuery);
