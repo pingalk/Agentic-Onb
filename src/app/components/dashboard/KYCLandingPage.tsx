@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { SparkRipplesBackground } from './SparkRipplesBackground';
+import { useDemo } from '../../../context/DemoContext';
+import { useMagicColor } from '../../../context/MagicColorContext';
+import Ray from '../../../imports/Ray';
 
 interface KYCLandingPageProps {
   onPhoneSubmit: (phoneNumber: string, otp: string) => void;
@@ -11,8 +15,20 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [animPhase, setAnimPhase] = useState(0);
+
+  const { gradientConfig, sparkRipplesConfig } = useDemo();
+  const { config: currentMagicColor } = useMagicColor();
 
   const panNumber = 'XXXXXXXX';
+
+  // Entry animation sequence (matching RayDashboard timing)
+  useEffect(() => {
+    const t1 = setTimeout(() => setAnimPhase(1), 200);  // Ray appears
+    const t2 = setTimeout(() => setAnimPhase(2), 600);  // Title
+    const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
 
   const handleSendOTP = () => {
     if (phoneNumber.length >= 10) {
@@ -38,44 +54,93 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-lg">
+    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden bg-[#f8f8f8]">
+      {/* SparkRipples Background - muted mode for subtle effect */}
+      <SparkRipplesBackground
+        className="absolute inset-0"
+        opacity={0.6}
+        muted={true}
+        loop={false}
+        playbackRate={0.8}
+      />
+      <div className="relative z-10 w-full max-w-2xl">
         <AnimatePresence mode="wait">
           {!otpSent ? (
             <motion.div
               key="phone"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
               className="space-y-8"
             >
-              {/* Ray Branding */}
-              <div className="text-center space-y-4">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-                  <Sparkles className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Hello! Starting KYC now</h1>
-                  <p className="text-lg text-gray-600 mt-2">
+              {/* Ray Icon + Branding */}
+              <motion.div className="text-center space-y-6">
+                {/* Ray Icon with spring animation matching RayDashboard */}
+                <motion.div
+                  className="inline-block w-[64px] h-[64px]"
+                  style={{ '--fill-0': currentMagicColor.primary } as React.CSSProperties}
+                  initial={{ opacity: 0, rotate: -90, scale: 0.3 }}
+                  animate={{
+                    opacity: animPhase >= 1 ? 1 : 0,
+                    rotate: animPhase >= 1 ? 0 : -90,
+                    scale: animPhase >= 1 ? 1 : 0.3
+                  }}
+                  transition={{
+                    opacity: { duration: 0.5 },
+                    rotate: {
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 10,
+                      duration: 1.5
+                    },
+                    scale: {
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 12,
+                      duration: 1.2
+                    }
+                  }}
+                >
+                  <Ray static />
+                </motion.div>
+
+                {/* Title with character animation */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                  animate={{
+                    opacity: animPhase >= 2 ? 1 : 0,
+                    y: animPhase >= 2 ? 0 : 8,
+                    filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
+                  }}
+                  transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                  className="space-y-3"
+                >
+                  <h1 className="font-sans font-normal text-[28px] md:text-[40px] leading-[36px] md:leading-[48px] tracking-[-0.5px] text-[#020202]">
+                    Hello! Starting KYC now
+                  </h1>
+                  <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[24px] tracking-[-0.2px] text-[#40566d]">
                     I'm here to handle your onboarding so you can get back to building.
                   </p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
-              {/* Phone Entry Card */}
+              {/* Phone Entry Card - matching RayInputBox rounded-[20px] */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{
+                  opacity: animPhase >= 3 ? 1 : 0,
+                  scale: animPhase >= 3 ? 1 : 0.96
+                }}
+                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/50 overflow-hidden"
               >
                 <div className="p-8 space-y-6">
-                  <div className="space-y-2">
-                    <h2 className="text-xl font-semibold text-gray-900">
+                  <div className="space-y-3">
+                    <h2 className="font-sans text-[18px] font-medium text-[#020202] leading-[24px] tracking-[-0.2px]">
                       Share your phone number linked to your PAN or Aadhaar
                     </h2>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-sans text-[14px] text-[#40566d] leading-[20px]">
                       I'll fetch your business details directly from the Central KYC registry (CERSAI).
                       I'll handle the heavy lifting so you don't have to upload a single extra document.
                     </p>
@@ -83,19 +148,20 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="font-sans text-[13px] font-medium text-[#192839]">
                         Phone Number
                       </label>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-sans text-[12px] text-[#40566d]">
                         Enter the phone number linked to PAN {panNumber}
                       </p>
                       <input
                         type="tel"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full h-12 px-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full h-14 px-5 font-sans text-[16px] border-2 border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
                         placeholder="+91"
                         disabled={isSubmitting}
+                        autoFocus
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && phoneNumber.length >= 10) {
                             handleSendOTP();
@@ -107,7 +173,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                     <button
                       onClick={handleSendOTP}
                       disabled={phoneNumber.length < 10 || isSubmitting}
-                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
                       {isSubmitting ? (
                         <motion.div
@@ -129,20 +195,28 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
           ) : (
             <motion.div
               key="otp"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
               className="space-y-8"
             >
-              {/* Ray Branding */}
-              <div className="text-center space-y-4">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-                  <Sparkles className="w-8 h-8 text-white" />
+              {/* Ray Icon + Branding */}
+              <div className="text-center space-y-6">
+                {/* Ray Icon */}
+                <div
+                  className="inline-block w-[64px] h-[64px]"
+                  style={{ '--fill-0': currentMagicColor.primary } as React.CSSProperties}
+                >
+                  <Ray static />
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Verify your number</h1>
-                  <p className="text-lg text-gray-600 mt-2">
+
+                {/* Title */}
+                <div className="space-y-3">
+                  <h1 className="font-sans font-normal text-[28px] md:text-[40px] leading-[36px] md:leading-[48px] tracking-[-0.5px] text-[#020202]">
+                    Verify your number
+                  </h1>
+                  <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[24px] tracking-[-0.2px] text-[#40566d]">
                     We've sent a code to {maskedPhone}
                   </p>
                 </div>
@@ -150,24 +224,24 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
 
               {/* OTP Entry Card */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/50 overflow-hidden"
               >
                 <div className="p-8 space-y-6">
-                  <div className="space-y-2">
-                    <h2 className="text-xl font-semibold text-gray-900">
+                  <div className="space-y-3">
+                    <h2 className="font-sans text-[18px] font-medium text-[#020202] leading-[24px] tracking-[-0.2px]">
                       Enter the 6-digit code
                     </h2>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-sans text-[14px] text-[#40566d] leading-[20px]">
                       A 6-digit OTP has been sent to your number {maskedPhone}
                     </p>
                   </div>
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="font-sans text-[13px] font-medium text-[#192839]">
                         OTP Code
                       </label>
                       <input
@@ -175,7 +249,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         maxLength={6}
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                        className="w-full h-16 px-4 text-center text-3xl tracking-[0.5em] font-medium border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full h-16 px-4 text-center font-sans text-3xl tracking-[0.5em] font-medium border-2 border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
                         placeholder="000000"
                         autoFocus
                         disabled={isSubmitting}
@@ -190,7 +264,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                     <button
                       onClick={handleVerifyOTP}
                       disabled={otp.length !== 6 || isSubmitting}
-                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
                       {isSubmitting ? (
                         <motion.div
@@ -208,7 +282,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
 
                     <button
                       onClick={() => setOtpSent(false)}
-                      className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="w-full font-sans text-[14px] text-blue-600 hover:text-blue-700 font-medium transition-colors"
                       disabled={isSubmitting}
                     >
                       Change phone number
@@ -223,9 +297,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
         {/* Footer */}
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-center text-sm text-gray-500 mt-8"
+          animate={{ opacity: animPhase >= 3 ? 1 : 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="text-center font-sans text-[13px] text-[#40566d] mt-8"
         >
           Powered by Ray AI • Secure & Encrypted
         </motion.p>
