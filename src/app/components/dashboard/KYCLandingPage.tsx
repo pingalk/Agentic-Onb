@@ -11,12 +11,13 @@ interface KYCLandingPageProps {
 }
 
 export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit }) => {
-  const [step, setStep] = useState<'pan' | 'phone' | 'otp'>('pan');
+  const [step, setStep] = useState<'video' | 'pan' | 'phone' | 'otp'>('video');
   const [panNumber, setPanNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
@@ -28,6 +29,17 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
+
+  // Handle video end
+  const handleVideoEnd = () => {
+    setStep('pan');
+    setAnimPhase(3); // Reset to show card
+  };
+
+  const handleSkipVideo = () => {
+    setStep('pan');
+    setAnimPhase(3); // Reset to show card
+  };
 
   const handlePanSubmit = () => {
     if (panNumber.length === 10) {
@@ -74,9 +86,43 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
         loop={false}
         playbackRate={0.8}
       />
-      <div className="relative z-10 w-full max-w-2xl">
+      <div className="relative z-10 w-full max-w-4xl">
         <AnimatePresence mode="wait">
-          {step === 'pan' ? (
+          {step === 'video' ? (
+            <motion.div
+              key="video"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="relative w-full"
+            >
+              {/* Video Container */}
+              <div className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden">
+                {/* Inner shadow for depth */}
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white] z-10" />
+
+                {/* Video */}
+                <video
+                  ref={videoRef}
+                  className="w-full h-auto rounded-[16px]"
+                  autoPlay
+                  muted
+                  playsInline
+                  onEnded={handleVideoEnd}
+                  src="/kyc-intro.mp4"
+                />
+
+                {/* Skip Button */}
+                <button
+                  onClick={handleSkipVideo}
+                  className="absolute top-6 right-6 z-20 px-4 py-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white font-sans text-[14px] rounded-lg transition-all"
+                >
+                  Skip
+                </button>
+              </div>
+            </motion.div>
+          ) : step === 'pan' ? (
             <motion.div
               key="pan"
               initial={{ opacity: 0 }}
