@@ -11,12 +11,13 @@ interface KYCLandingPageProps {
 }
 
 export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit }) => {
-  const [step, setStep] = useState<'video' | 'pan' | 'panConfirm' | 'loading' | 'phone' | 'otp'>('video');
+  const [step, setStep] = useState<'video' | 'pan' | 'panConfirm' | 'loading' | 'welcome' | 'phone' | 'otp'>('video');
   const [panNumber, setPanNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
+  const [loadingOpacity, setLoadingOpacity] = useState(1);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const panTransitionVideoRef = React.useRef<HTMLVideoElement>(null);
   const loadingVideoRef = React.useRef<HTMLVideoElement>(null);
@@ -74,17 +75,37 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   };
 
   const handleSkipLoading = () => {
-    setStep('phone');
-    setAnimPhase(3); // Reset to show card
+    setStep('welcome');
   };
 
-  // Auto-transition after 10 seconds of loading video
+  // Auto-transition for loading video (fade out at 9s, transition at 10s)
   useEffect(() => {
     if (step === 'loading') {
+      // Start fade out at 9 seconds
+      const fadeTimer = setTimeout(() => {
+        setLoadingOpacity(0);
+      }, 9000);
+
+      // Transition to welcome at 10 seconds
+      const transitionTimer = setTimeout(() => {
+        setStep('welcome');
+        setLoadingOpacity(1); // Reset for next time
+      }, 10000);
+
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(transitionTimer);
+      };
+    }
+  }, [step]);
+
+  // Auto-transition from welcome to phone after 3 seconds
+  useEffect(() => {
+    if (step === 'welcome') {
       const timer = setTimeout(() => {
         setStep('phone');
         setAnimPhase(3);
-      }, 10000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -116,7 +137,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
       {/* Top Navigation - only for form steps */}
-      {step !== 'video' && step !== 'loading' && (
+      {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
         <div className="relative z-20 bg-black h-14 flex items-center justify-between px-4">
           {/* Logo */}
           <div className="flex items-center">
@@ -138,7 +159,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       )}
 
       {/* SparkRipples Background - only for form steps */}
-      {step !== 'video' && step !== 'loading' && (
+      {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
         <SparkRipplesBackground
           className="absolute inset-0"
           opacity={0.3}
@@ -149,8 +170,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       )}
 
       {/* Main Content Area */}
-      <div className={`relative flex-1 flex items-center justify-center ${step === 'video' || step === 'loading' ? '' : 'py-8'}`}>
-        <div className={`relative z-10 w-full ${step === 'video' || step === 'loading' ? '' : 'max-w-2xl px-6'}`}>
+      <div className={`relative flex-1 flex items-center justify-center ${step === 'video' || step === 'loading' || step === 'welcome' ? '' : 'py-8'}`}>
+        <div className={`relative z-10 w-full ${step === 'video' || step === 'loading' || step === 'welcome' ? '' : 'max-w-2xl px-6'}`}>
           <AnimatePresence mode="wait">
           {step === 'video' ? (
             <motion.div
@@ -382,9 +403,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             <motion.div
               key="loading"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: loadingOpacity }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 1 }}
               className="fixed inset-0 flex items-center justify-center"
               style={{ backgroundColor: '#f8f8f8' }}
             >
@@ -414,6 +435,53 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               >
                 Skip
               </button>
+            </motion.div>
+          ) : step === 'welcome' ? (
+            <motion.div
+              key="welcome"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              className="fixed inset-0 flex flex-col items-center justify-center gap-8"
+              style={{ backgroundColor: '#f8f8f8' }}
+            >
+              {/* Ray Icon with rotation animation */}
+              <motion.div
+                className="w-[60px] h-[60px]"
+                style={{ '--fill-0': currentMagicColor.primary } as React.CSSProperties}
+                initial={{ rotate: 0 }}
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1,
+                  ease: "easeInOut"
+                }}
+              >
+                <Ray static />
+              </motion.div>
+
+              {/* Title with gradient */}
+              <motion.h1
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="font-sans font-normal text-[48px] leading-[56px] tracking-[-0.624px] text-transparent bg-clip-text text-center"
+                style={{
+                  backgroundImage: 'linear-gradient(90deg, rgb(5, 5, 5) 0%, rgb(46, 66, 165) 37.048%, rgb(46, 66, 165) 73.478%, rgb(5, 5, 5) 100%)'
+                }}
+              >
+                Hello! Starting KYC now
+              </motion.h1>
+
+              {/* Subtitle text */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+                className="max-w-[447px] font-sans font-normal text-[14px] leading-[20px] tracking-[-0.182px] text-[rgba(0,0,0,0.56)] text-center"
+              >
+                I'll take care of the onboarding for you. We'll move through a few quick steps together and get everything set up smoothly.
+              </motion.p>
             </motion.div>
           ) : step === 'phone' ? (
             <motion.div
