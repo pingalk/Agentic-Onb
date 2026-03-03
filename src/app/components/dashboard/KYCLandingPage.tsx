@@ -289,10 +289,16 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
 
                   {/* Video Area */}
                   <div className="flex items-center justify-center py-4">
-                    <div className="w-full max-w-[356px] h-[188px] rounded-[9.3px] overflow-hidden px-[4px] py-[1px]">
+                    <div className="w-full max-w-[356px] h-[188px] rounded-[9.3px] overflow-hidden relative">
                       <video
                         ref={panTransitionVideoRef}
-                        className="w-full h-full object-cover rounded-[8.3px]"
+                        className="absolute object-cover"
+                        style={{
+                          width: 'calc(100% + 8px)',
+                          height: 'calc(100% + 2px)',
+                          left: '-4px',
+                          top: '-1px'
+                        }}
                         autoPlay
                         muted
                         loop
