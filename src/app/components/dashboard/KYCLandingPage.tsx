@@ -289,10 +289,10 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
 
                   {/* Video Area */}
                   <div className="flex items-center justify-center py-8">
-                    <div className="w-full max-w-[356px] h-[188px] rounded-[9.3px] overflow-hidden bg-black">
+                    <div className="w-full max-w-[356px] h-[188px] rounded-[9.3px] overflow-hidden bg-black p-[1px]">
                       <video
                         ref={panTransitionVideoRef}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-[8.3px]"
                         autoPlay
                         muted
                         loop
@@ -303,11 +303,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                   </div>
 
                   {/* Confirm Button */}
-                  <div className="space-y-4">
+                  <div className="flex justify-center">
                     <button
                       onClick={handlePanConfirm}
                       disabled={isSubmitting}
-                      className="relative w-full h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden"
+                      className="relative w-[362px] h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden"
                       style={{
                         backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
                       }}
@@ -327,14 +327,6 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         </>
                       )}
                     </button>
-
-                    {/* Terms and Conditions */}
-                    <p className="text-center font-sans text-[10px] leading-[13px] tracking-[-0.13px]">
-                      <span className="text-[rgba(0,0,0,0.72)]">By proceeding you agree with the </span>
-                      <button className="text-[#0e54cc] font-medium hover:underline">
-                        terms and conditions
-                      </button>
-                    </p>
                   </div>
                 </div>
               </motion.div>
