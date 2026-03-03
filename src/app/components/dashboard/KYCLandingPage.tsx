@@ -65,7 +65,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden bg-[#f8f8f8]">
+    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden" style={{ backgroundColor: '#F8F8F8' }}>
       {/* SparkRipples Background - muted mode for subtle effect */}
       <SparkRipplesBackground
         className="absolute inset-0"
@@ -85,30 +85,6 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               transition={{ duration: 0.4 }}
               className="space-y-8"
             >
-              {/* Title with gradient */}
-              <motion.div
-                initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                animate={{
-                  opacity: animPhase >= 2 ? 1 : 0,
-                  y: animPhase >= 2 ? 0 : 8,
-                  filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
-                }}
-                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-                className="text-center space-y-3"
-              >
-                <h1
-                  className="font-sans font-normal text-[32px] leading-[38px] text-transparent bg-clip-text text-center"
-                  style={{
-                    backgroundImage: 'linear-gradient(90deg, rgb(5, 5, 5) 0%, rgb(46, 66, 165) 37.048%, rgb(46, 66, 165) 73.478%, rgb(5, 5, 5) 100%)'
-                  }}
-                >
-                  Tell us your Business PAN
-                </h1>
-                <p className="font-sans font-normal text-[14px] leading-[20px] tracking-[-0.182px] text-[rgba(0,0,0,0.56)] text-center">
-                  If you are not registered, enter your personal PAN
-                </p>
-              </motion.div>
-
               {/* PAN Entry Card - Figma glass morphism style */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
@@ -123,6 +99,30 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
 
                 <div className="relative p-8 space-y-6">
+                  {/* Title with gradient inside card */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                    animate={{
+                      opacity: animPhase >= 2 ? 1 : 0,
+                      y: animPhase >= 2 ? 0 : 8,
+                      filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
+                    }}
+                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="text-center space-y-3"
+                  >
+                    <h1
+                      className="font-sans font-normal text-[32px] leading-[38px] text-transparent bg-clip-text text-center"
+                      style={{
+                        backgroundImage: 'linear-gradient(90deg, rgb(5, 5, 5) 0%, rgb(46, 66, 165) 37.048%, rgb(46, 66, 165) 73.478%, rgb(5, 5, 5) 100%)'
+                      }}
+                    >
+                      Tell us your Business PAN
+                    </h1>
+                    <p className="font-sans font-normal text-[14px] leading-[20px] tracking-[-0.182px] text-[rgba(0,0,0,0.56)] text-center">
+                      If you are not registered, enter your personal PAN
+                    </p>
+                  </motion.div>
+
                   <div className="space-y-4">
                     {/* Large PAN input field */}
                     <input
@@ -164,11 +164,6 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         </>
                       )}
                     </button>
-
-                    {/* Tip text */}
-                    <p className="text-center font-sans text-[10px] leading-[13px] tracking-[-0.13px] text-[rgba(0,0,0,0.72)] pt-2">
-                      Tip: Your business PAN card is the card without any photo
-                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -301,11 +296,6 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         </>
                       )}
                     </button>
-
-                    {/* Tip text */}
-                    <p className="text-center font-sans text-[10px] leading-[13px] tracking-[-0.13px] text-[rgba(0,0,0,0.72)] pt-2">
-                      Tip: Use the phone number registered with your PAN or Aadhaar
-                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -419,16 +409,6 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             </motion.div>
           ) : null}
         </AnimatePresence>
-
-        {/* Footer */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: animPhase >= 3 ? 1 : 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="text-center font-sans text-[13px] text-[#40566d] mt-8"
-        >
-          Powered by Ray AI • Secure & Encrypted
-        </motion.p>
       </div>
     </div>
   );
