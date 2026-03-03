@@ -11,13 +11,14 @@ interface KYCLandingPageProps {
 }
 
 export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit }) => {
-  const [step, setStep] = useState<'video' | 'pan' | 'phone' | 'otp'>('video');
+  const [step, setStep] = useState<'video' | 'pan' | 'panConfirm' | 'phone' | 'otp'>('video');
   const [panNumber, setPanNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
   const videoRef = React.useRef<HTMLVideoElement>(null);
+  const panTransitionVideoRef = React.useRef<HTMLVideoElement>(null);
 
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
@@ -57,10 +58,19 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       setIsSubmitting(true);
       setTimeout(() => {
         setIsSubmitting(false);
-        setStep('phone');
+        setStep('panConfirm');
         setAnimPhase(3); // Reset to show card
       }, 800);
     }
+  };
+
+  const handlePanConfirm = () => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setStep('phone');
+      setAnimPhase(3); // Reset to show card
+    }, 800);
   };
 
   const handleSendOTP = () => {
@@ -217,6 +227,114 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         </>
                       )}
                     </button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          ) : step === 'panConfirm' ? (
+            <motion.div
+              key="panConfirm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-8"
+            >
+              {/* PAN Confirmation Card - Figma glass morphism style */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{
+                  opacity: animPhase >= 3 ? 1 : 0,
+                  scale: animPhase >= 3 ? 1 : 0.96
+                }}
+                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
+              >
+                {/* Inner shadow for depth */}
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
+
+                <div className="relative p-8 space-y-6">
+                  {/* Back Link */}
+                  <button
+                    onClick={() => setStep('pan')}
+                    className="font-sans font-medium text-[14px] leading-[20px] tracking-[-0.182px] text-[rgba(0,0,0,0.72)] hover:text-[#0e54cc] transition-colors flex items-center gap-1"
+                  >
+                    <ArrowRight className="w-4 h-4 rotate-180" />
+                    Back
+                  </button>
+
+                  {/* Title with gradient */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                    animate={{
+                      opacity: animPhase >= 2 ? 1 : 0,
+                      y: animPhase >= 2 ? 0 : 8,
+                      filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
+                    }}
+                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="text-center space-y-3"
+                  >
+                    <h1
+                      className="font-sans font-normal text-[32px] leading-[38px] text-transparent bg-clip-text text-center"
+                      style={{
+                        backgroundImage: 'linear-gradient(90deg, rgb(5, 5, 5) 0%, rgb(46, 66, 165) 37.048%, rgb(46, 66, 165) 73.478%, rgb(5, 5, 5) 100%)'
+                      }}
+                    >
+                      Confirm your PAN details
+                    </h1>
+                    <p className="font-sans font-normal text-[14px] leading-[20px] tracking-[-0.182px] text-[rgba(0,0,0,0.56)] text-center">
+                      Make sure all the details are correct
+                    </p>
+                  </motion.div>
+
+                  {/* Video Area */}
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-full max-w-[356px] h-[188px] rounded-[9.3px] overflow-hidden bg-black">
+                      <video
+                        ref={panTransitionVideoRef}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        src="/pan-transition.mov"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Confirm Button */}
+                  <div className="space-y-4">
+                    <button
+                      onClick={handlePanConfirm}
+                      disabled={isSubmitting}
+                      className="relative w-full h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden"
+                      style={{
+                        backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+                      }}
+                    >
+                      {/* Glass effect inset shadows */}
+                      <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
+                      {isSubmitting ? (
+                        <motion.div
+                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        />
+                      ) : (
+                        <>
+                          Confirm and proceed
+                          <ArrowRight className="w-5 h-5" />
+                        </>
+                      )}
+                    </button>
+
+                    {/* Terms and Conditions */}
+                    <p className="text-center font-sans text-[10px] leading-[13px] tracking-[-0.13px]">
+                      <span className="text-[rgba(0,0,0,0.72)]">By proceeding you agree with the </span>
+                      <button className="text-[#0e54cc] font-medium hover:underline">
+                        terms and conditions
+                      </button>
+                    </p>
                   </div>
                 </div>
               </motion.div>
