@@ -98,9 +98,31 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
+    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
+      {/* Top Navigation - only for form steps */}
+      {step !== 'video' && (
+        <div className="relative z-20 bg-black h-14 flex items-center justify-between px-4">
+          {/* Logo */}
+          <div className="flex items-center">
+            <svg width="116" height="24" viewBox="0 0 116 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.464 6.545h5.454v1.455H10v2.182h3.636V11.636H10v2.91h3.918v1.454H8.464V6.545zm13.091 0h1.454v7.636c0 1.091-.273 1.91-.818 2.455-.546.545-1.364.818-2.455.818h-.727v-1.454h.636c.636 0 1.091-.137 1.364-.41.273-.272.409-.727.409-1.363V6.545h.136zm-5.454 0h1.454v9.455h-1.454V6.545zm-8.91 0h1.637l3.091 6.545L14.91 6.545h1.636l-4 8.455h-1.273l-4-8.455zm33.091 0h1.455v9.455h-1.455V6.545zm-5.454 0h1.454v7.636c0 1.091-.273 1.91-.818 2.455-.546.545-1.364.818-2.455.818h-.727v-1.454h.636c.636 0 1.091-.137 1.364-.41.273-.272.409-.727.409-1.363V6.545h.136zm22.909 0h1.455v9.455h-1.455V6.545zm-5.454 0h1.454v7.636c0 1.091-.273 1.91-.818 2.455-.546.545-1.364.818-2.455.818h-.727v-1.454h.636c.636 0 1.091-.137 1.364-.41.273-.272.409-.727.409-1.363V6.545h.136z" fill="white"/>
+            </svg>
+          </div>
+
+          {/* Right side - Need help button and avatar */}
+          <div className="flex items-center gap-4">
+            <button className="text-white text-sm font-medium px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+              Need help?
+            </button>
+            <div className="w-8 h-8 rounded-full bg-[#212121] border-[1.5px] border-white flex items-center justify-center">
+              <span className="text-[#dadada] text-sm font-medium">A</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SparkRipples Background - only for form steps */}
-      {step !== 'intro' && (
+      {step !== 'video' && (
         <SparkRipplesBackground
           className="absolute inset-0"
           opacity={0.3}
@@ -109,8 +131,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
           playbackRate={0.8}
         />
       )}
-      <div className={`relative z-10 w-full ${step === 'video' ? '' : 'max-w-2xl p-6'}`}>
-        <AnimatePresence mode="wait">
+
+      {/* Main Content Area */}
+      <div className={`relative flex-1 flex items-center justify-center ${step === 'video' ? '' : 'py-8'}`}>
+        <div className={`relative z-10 w-full ${step === 'video' ? '' : 'max-w-2xl px-6'}`}>
+          <AnimatePresence mode="wait">
           {step === 'video' ? (
             <motion.div
               key="video"
@@ -577,7 +602,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               </motion.div>
             </motion.div>
           ) : null}
-        </AnimatePresence>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
