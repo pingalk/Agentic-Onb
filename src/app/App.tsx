@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { Presentation } from './components/presentation/Presentation';
+import { KYCOnboardingFlow } from './components/dashboard/KYCOnboardingFlow';
 import { DemoProvider } from '../context/DemoContext';
 import { TimingSettingsProvider } from '../context/TimingSettingsContext';
 import { MagicColorProvider } from '../context/MagicColorContext';
@@ -25,6 +26,11 @@ function AppContent() {
   // Presentation mode
   if (hash === '#presentation') {
     return <Presentation />;
+  }
+
+  // KYC Onboarding mode
+  if (hash === '#kyc' || hash === '#onboarding') {
+    return <KYCOnboardingFlow />;
   }
 
   return (
