@@ -11,31 +11,35 @@ interface KYCLandingPageProps {
 }
 
 export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit }) => {
-  const [step, setStep] = useState<'intro' | 'pan' | 'phone' | 'otp'>('intro');
+  const [step, setStep] = useState<'video' | 'pan' | 'phone' | 'otp'>('video');
   const [panNumber, setPanNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
 
-  // Intro animation sequence - auto-advance after completion
-  useEffect(() => {
-    if (step === 'intro') {
-      // Total intro duration: 4 seconds
-      const timer = setTimeout(() => {
+  // Handle video timeupdate to stop 2 seconds before end
+  const handleVideoTimeUpdate = () => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const timeRemaining = video.duration - video.currentTime;
+
+      // Stop video 2 seconds before the end and transition
+      if (timeRemaining <= 2 && timeRemaining > 0) {
+        video.pause();
         setStep('pan');
         setAnimPhase(3); // Show card immediately
-      }, 4000);
-      return () => clearTimeout(timer);
+      }
     }
-  }, [step]);
+  };
 
   // Entry animation sequence for form steps
   useEffect(() => {
-    if (step !== 'intro') {
+    if (step !== 'video') {
       const t1 = setTimeout(() => setAnimPhase(1), 200);  // Ray appears
       const t2 = setTimeout(() => setAnimPhase(2), 600);  // Title
       const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
@@ -79,7 +83,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ backgroundColor: step === 'intro' ? '#ffffff' : '#f8f8f8' }}>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
       {/* SparkRipples Background - only for form steps */}
       {step !== 'intro' && (
         <SparkRipplesBackground
@@ -90,77 +94,27 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
           playbackRate={0.8}
         />
       )}
-      <div className={`relative z-10 w-full ${step === 'intro' ? '' : 'max-w-2xl p-6'}`}>
+      <div className={`relative z-10 w-full ${step === 'video' ? '' : 'max-w-2xl p-6'}`}>
         <AnimatePresence mode="wait">
-          {step === 'intro' ? (
+          {step === 'video' ? (
             <motion.div
-              key="intro"
+              key="video"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6 }}
-              className="fixed inset-0 flex items-center justify-center bg-white"
+              transition={{ duration: 0.4 }}
+              className="fixed inset-0 bg-black"
             >
-              <div className="text-center space-y-8">
-                {/* Ray Icon Animation */}
-                <motion.div
-                  className="inline-block w-[120px] h-[120px]"
-                  style={{ '--fill-0': currentMagicColor.primary } as React.CSSProperties}
-                  initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    rotate: 0
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    ease: [0.34, 1.56, 0.64, 1]
-                  }}
-                >
-                  <Ray static />
-                </motion.div>
-
-                {/* Welcome Text */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.8 }}
-                  className="space-y-4"
-                >
-                  <h1 className="font-sans font-medium text-[40px] leading-[48px] tracking-[-0.5px] text-[#020202]">
-                    Welcome to Razorpay
-                  </h1>
-                  <p className="font-sans font-normal text-[18px] leading-[24px] tracking-[-0.2px] text-[#40566d]">
-                    Let's get your account set up
-                  </p>
-                </motion.div>
-
-                {/* Progress Dots */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.8, duration: 0.6 }}
-                  className="flex items-center justify-center gap-2"
-                >
-                  {[0, 1, 2].map((i) => (
-                    <motion.div
-                      key={i}
-                      className="w-2 h-2 rounded-full bg-blue-600"
-                      initial={{ scale: 0.5, opacity: 0.3 }}
-                      animate={{
-                        scale: [0.5, 1, 0.5],
-                        opacity: [0.3, 1, 0.3]
-                      }}
-                      transition={{
-                        delay: i * 0.2,
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    />
-                  ))}
-                </motion.div>
-              </div>
+              {/* Full-screen Video */}
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                playsInline
+                onTimeUpdate={handleVideoTimeUpdate}
+                src="/kyc-intro.mp4"
+              />
             </motion.div>
           ) : step === 'pan' ? (
             <motion.div
