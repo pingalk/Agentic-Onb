@@ -4902,12 +4902,87 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     );
   }
 
+  // 24.5. KYC OTP Verification Card
+  if (data.artifact?.type === 'kyc_otp_card') {
+    const { heading, tag, phoneNumber, buttonText } = data.artifact.data;
+    return (
+      <div className="w-full animate-fade-in-up">
+        {/* Headline and Subtext with streaming */}
+        <div className="max-w-[398px] mb-4">
+          {data.headline && (
+            <h3 className="text-[18px] font-semibold text-[#020202] leading-snug mb-2">
+              <PerplexityStreamText text={data.headline} onStreamComplete={onStreamComplete} />
+            </h3>
+          )}
+          {data.subtext && (
+            <p className="text-[16px] text-[#40566d] leading-relaxed">
+              <PerplexityStreamText text={data.subtext} delay={data.headline ? data.headline.length * 15 : 0} />
+            </p>
+          )}
+        </div>
+
+        {/* OTP Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.3, duration: 0.4 }}
+          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden p-6 max-w-[480px]"
+        >
+          {/* Inner shadow for depth */}
+          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
+
+          <div className="relative space-y-4">
+            {/* Heading with tag */}
+            <div className="flex items-center gap-2">
+              <h4 className="font-sans font-semibold text-[16px] text-[#020202]">{heading}</h4>
+              {tag && (
+                <span className="px-2 py-0.5 bg-gradient-to-r from-[#1566f1] to-[#4793fd] text-white text-[10px] font-medium rounded-full uppercase tracking-wide">
+                  {tag}
+                </span>
+              )}
+            </div>
+
+            {/* Subtext */}
+            <p className="font-sans text-[14px] leading-[20px] text-[rgba(0,0,0,0.56)]">
+              We've sent a 6-digit OTP to mobile number ending {phoneNumber}.
+            </p>
+
+            {/* Button */}
+            <button
+              onClick={() => {
+                // Trigger KYC OTP flow
+                if (onSuggestionClick) {
+                  onSuggestionClick('verify_otp');
+                }
+              }}
+              className="relative w-full h-12 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
+              style={{
+                backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+              }}
+            >
+              {/* Glass effect inset shadows */}
+              <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
+              {buttonText}
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Stacked Suggestions - Only visible for last message */}
+        {isLast && data.suggestions && data.suggestions.length > 0 && (
+          <div className="mt-4">
+            <SuggestionStack items={data.suggestions} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // 25. Ray AI Message (Standard Blocks, Max Width 398px)
   return (
     <div className="flex gap-4 items-start w-full max-w-[398px] animate-fade-in-up">
         {/* Content Container - No Avatar */}
         <div className="flex flex-col gap-2 flex-1 min-w-0">
-            
+
             {/* Headline */}
             {data.headline && (
                 <h3 className="text-[17px] font-bold text-slate-900 leading-snug tracking-tight mb-1">

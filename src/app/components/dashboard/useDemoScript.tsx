@@ -843,8 +843,17 @@ Maya`,
             suggestions: []
         },
         kyc_step_1: {
-            headline: "Hello! Starting KYC now",
-            subtext: "I'll take care of the onboarding for you. We'll move through a few quick steps together and get everything set up smoothly.",
+            headline: "Let's get you started with the details.",
+            subtext: "I've identified the mobile number linked to your PAN and sent an OTP. Enter it to verify. I'll automatically fetch your CKYC details so you don't have to fill them manually.",
+            artifact: {
+                type: 'kyc_otp_card',
+                data: {
+                    heading: 'Auto-fill KYC details',
+                    tag: 'instant',
+                    phoneNumber: '1120',
+                    buttonText: 'Verify with an OTP'
+                }
+            },
             suggestions: []
         },
         kyc_step_2: {
