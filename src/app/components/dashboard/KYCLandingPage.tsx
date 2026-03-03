@@ -11,16 +11,15 @@ interface KYCLandingPageProps {
 }
 
 export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit }) => {
+  const [step, setStep] = useState<'pan' | 'phone' | 'otp'>('pan');
+  const [panNumber, setPanNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
 
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
-
-  const panNumber = 'XXXXXXXX';
 
   // Entry animation sequence (matching RayDashboard timing)
   useEffect(() => {
@@ -30,12 +29,24 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
+  const handlePanSubmit = () => {
+    if (panNumber.length === 10) {
+      setIsSubmitting(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setStep('phone');
+        setAnimPhase(3); // Reset to show card
+      }, 800);
+    }
+  };
+
   const handleSendOTP = () => {
     if (phoneNumber.length >= 10) {
       setIsSubmitting(true);
       setTimeout(() => {
         setIsSubmitting(false);
-        setOtpSent(true);
+        setStep('otp');
+        setAnimPhase(3); // Reset to show card
       }, 800);
     }
   };
@@ -65,7 +76,104 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       />
       <div className="relative z-10 w-full max-w-2xl">
         <AnimatePresence mode="wait">
-          {!otpSent ? (
+          {step === 'pan' ? (
+            <motion.div
+              key="pan"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-8"
+            >
+              {/* Title with gradient */}
+              <motion.div
+                initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                animate={{
+                  opacity: animPhase >= 2 ? 1 : 0,
+                  y: animPhase >= 2 ? 0 : 8,
+                  filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
+                }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                className="text-center space-y-3"
+              >
+                <h1
+                  className="font-sans font-normal text-[32px] leading-[38px] text-transparent bg-clip-text text-center"
+                  style={{
+                    backgroundImage: 'linear-gradient(90deg, rgb(5, 5, 5) 0%, rgb(46, 66, 165) 37.048%, rgb(46, 66, 165) 73.478%, rgb(5, 5, 5) 100%)'
+                  }}
+                >
+                  Tell us your Business PAN
+                </h1>
+                <p className="font-sans font-normal text-[14px] leading-[20px] tracking-[-0.182px] text-[rgba(0,0,0,0.56)] text-center">
+                  If you are not registered, enter your personal PAN
+                </p>
+              </motion.div>
+
+              {/* PAN Entry Card - Figma glass morphism style */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{
+                  opacity: animPhase >= 3 ? 1 : 0,
+                  scale: animPhase >= 3 ? 1 : 0.96
+                }}
+                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
+              >
+                {/* Inner shadow for depth */}
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
+
+                <div className="relative p-8 space-y-6">
+                  <div className="space-y-4">
+                    {/* Large PAN input field */}
+                    <input
+                      type="text"
+                      maxLength={10}
+                      value={panNumber}
+                      onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                      className="w-full h-[60px] px-5 text-center font-sans text-[40px] leading-[46px] font-medium text-[rgba(0,0,0,0.32)] border-0 bg-transparent focus:outline-none focus:text-[#020202] transition-colors uppercase tracking-wide placeholder:text-[rgba(0,0,0,0.32)]"
+                      placeholder="Enter PAN"
+                      disabled={isSubmitting}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && panNumber.length === 10) {
+                          handlePanSubmit();
+                        }
+                      }}
+                    />
+
+                    <button
+                      onClick={handlePanSubmit}
+                      disabled={panNumber.length !== 10 || isSubmitting}
+                      className="relative w-full h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden"
+                      style={{
+                        backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+                      }}
+                    >
+                      {/* Glass effect inset shadows */}
+                      <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
+                      {isSubmitting ? (
+                        <motion.div
+                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        />
+                      ) : (
+                        <>
+                          Continue
+                          <ArrowRight className="w-5 h-5" />
+                        </>
+                      )}
+                    </button>
+
+                    {/* Tip text */}
+                    <p className="text-center font-sans text-[10px] leading-[13px] tracking-[-0.13px] text-[rgba(0,0,0,0.72)] pt-2">
+                      Tip: Your business PAN card is the card without any photo
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          ) : step === 'phone' ? (
             <motion.div
               key="phone"
               initial={{ opacity: 0 }}
@@ -117,10 +225,10 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                   className="space-y-3"
                 >
                   <h1 className="font-sans font-normal text-[28px] md:text-[40px] leading-[36px] md:leading-[48px] tracking-[-0.5px] text-[#020202]">
-                    Hello! Starting KYC now
+                    Share your phone number
                   </h1>
                   <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[24px] tracking-[-0.2px] text-[#40566d]">
-                    I'm here to handle your onboarding so you can get back to building.
+                    Enter the phone number linked to PAN {panNumber}
                   </p>
                 </motion.div>
               </motion.div>
@@ -154,9 +262,6 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                       <label className="font-sans text-[13px] font-medium text-[#192839]">
                         Phone Number
                       </label>
-                      <p className="font-sans text-[12px] text-[#40566d]">
-                        Enter the phone number linked to PAN {panNumber}
-                      </p>
                       <input
                         type="tel"
                         value={phoneNumber}
@@ -178,7 +283,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                       disabled={phoneNumber.length < 10 || isSubmitting}
                       className="relative w-full h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden"
                       style={{
-                        backgroundImage: isSubmitting ? 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)' : 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+                        backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
                       }}
                     >
                       {/* Glass effect inset shadows */}
@@ -205,7 +310,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 </div>
               </motion.div>
             </motion.div>
-          ) : (
+          ) : step === 'otp' ? (
             <motion.div
               key="otp"
               initial={{ opacity: 0 }}
@@ -302,7 +407,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                     </button>
 
                     <button
-                      onClick={() => setOtpSent(false)}
+                      onClick={() => setStep('phone')}
                       className="w-full font-sans text-[14px] text-blue-600 hover:text-blue-700 font-medium transition-colors"
                       disabled={isSubmitting}
                     >
@@ -312,7 +417,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 </div>
               </motion.div>
             </motion.div>
-          )}
+          ) : null}
         </AnimatePresence>
 
         {/* Footer */}
