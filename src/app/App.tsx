@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { Presentation } from './components/presentation/Presentation';
+import { KYCLandingPage } from './components/dashboard/KYCLandingPage';
 import { DemoProvider } from '../context/DemoContext';
 import { TimingSettingsProvider } from '../context/TimingSettingsContext';
 import { MagicColorProvider } from '../context/MagicColorContext';
@@ -15,25 +16,59 @@ function AppContent() {
     variants: { home: 'B', transactions: 'A' }
   });
 
+  // KYC state
+  const [showKYCLanding, setShowKYCLanding] = useState(false);
+  const [kycPhoneData, setKycPhoneData] = useState<{ phone: string; otp: string } | null>(null);
+
   // Listen for hash changes
   useEffect(() => {
-    const handleHashChange = () => setHash(window.location.hash);
+    const handleHashChange = () => {
+      const newHash = window.location.hash;
+      setHash(newHash);
+
+      // Show KYC landing page when #kyc is accessed
+      if (newHash === '#kyc' || newHash === '#onboarding') {
+        setShowKYCLanding(true);
+        setKycPhoneData(null);
+      }
+    };
+
     window.addEventListener('hashchange', handleHashChange);
+
+    // Check initial hash
+    if (hash === '#kyc' || hash === '#onboarding') {
+      setShowKYCLanding(true);
+    }
+
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [hash]);
+
+  // Handle phone verification completion
+  const handleKYCPhoneSubmit = (phoneNumber: string, otp: string) => {
+    setKycPhoneData({ phone: phoneNumber, otp });
+    setShowKYCLanding(false);
+  };
 
   // Presentation mode
   if (hash === '#presentation') {
     return <Presentation />;
   }
 
-  // KYC Onboarding mode - use Ray chat with KYC initial query
-  const kycInitialQuery = (hash === '#kyc' || hash === '#onboarding')
-    ? "Start KYC onboarding"
-    : undefined;
+  // KYC Landing Page (phone entry before Ray chat)
+  if (showKYCLanding) {
+    return <KYCLandingPage onPhoneSubmit={handleKYCPhoneSubmit} />;
+  }
+
+  // KYC Chat Mode (after phone verification)
+  const kycInitialQuery = kycPhoneData ? "Start KYC onboarding" : undefined;
 
   return (
-    <Dashboard initialConfig={initialViewConfig} kycMode={!!kycInitialQuery} initialQuery={kycInitialQuery} />
+    <Dashboard
+      initialConfig={initialViewConfig}
+      kycMode={!!kycPhoneData}
+      initialQuery={kycInitialQuery}
+      kycPhoneData={kycPhoneData}
+    />
   );
 }
 

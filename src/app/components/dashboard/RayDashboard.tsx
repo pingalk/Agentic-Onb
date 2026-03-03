@@ -195,12 +195,13 @@ interface RayDashboardProps {
   autoSubmit?: boolean;
   onLogout?: () => void;
   onSceneChange?: (sceneId: string) => void;
+  kycPhoneData?: { phone: string; otp: string } | null;
 }
 
 export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
   return (
     <StoreProvider>
-      <FormProvider>
+      <FormProvider initialKycData={props.kycPhoneData}>
         <RayDashboardContent {...props} />
       </FormProvider>
     </StoreProvider>

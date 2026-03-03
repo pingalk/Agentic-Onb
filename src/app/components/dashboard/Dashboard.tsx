@@ -20,9 +20,10 @@ export interface DashboardProps {
     onSceneChange?: (sceneId: string) => void;
     kycMode?: boolean;
     initialQuery?: string;
+    kycPhoneData?: { phone: string; otp: string } | null;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, onSceneChange, kycMode, initialQuery }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, onSceneChange, kycMode, initialQuery, kycPhoneData }) => {
   const [currentView, setCurrentView] = useState(initialConfig?.view || 'home');
   const [variants, setVariants] = useState<{home: string; transactions: string}>(initialConfig?.variants || {
     home: 'B',
@@ -85,7 +86,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, o
           autoSubmit = false;
         }
 
-        return <RayDashboard onNavigate={setCurrentView} initialQuery={initialQuery || kycMode ? 'Start KYC onboarding' : undefined} autoSubmit={autoSubmit} onLogout={onLogout} onSceneChange={onSceneChange} />;
+        return <RayDashboard onNavigate={setCurrentView} initialQuery={initialQuery || kycMode ? 'Start KYC onboarding' : undefined} autoSubmit={autoSubmit} onLogout={onLogout} onSceneChange={onSceneChange} kycPhoneData={kycPhoneData} />;
       }
       case 'transactions':
         if (variants.transactions === 'B') {

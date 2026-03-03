@@ -359,7 +359,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
           // Route to appropriate flow based on detected type
           switch (flowType) {
             case 'kyc_onboarding':
-              startKYCFlow(initialQuery);
+              // Skip phone verification if coming from KYC landing page
+              startKYCFlow(initialQuery, true);
               break;
             case 'settlement':
               startSettlementFlow(initialQuery);
@@ -461,7 +462,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
   };
 
   // KYC Onboarding flow
-  const startKYCFlow = (query: string) => {
+  const startKYCFlow = (query: string, skipPhone: boolean = false) => {
     const userText = query || "Start KYC onboarding";
 
     setTimeout(() => {
@@ -470,16 +471,31 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome }
         sender: 'user',
         blocks: [{ type: 'text', content: userText }]
       }]);
-      setKycFlowStep(1);
-      setActiveFlow('kyc_onboarding');
 
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          ...kycScript.kyc_step_1,
-          id: 'kyc-ai-1',
-          sender: 'ai' as const
-        }]);
-      }, 800);
+      // If phone verification was already done on landing page, skip to documents step
+      if (skipPhone) {
+        setKycFlowStep(3);
+        setActiveFlow('kyc_onboarding');
+
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            ...kycScript.kyc_step_3,
+            id: 'kyc-ai-3',
+            sender: 'ai' as const
+          }]);
+        }, 800);
+      } else {
+        setKycFlowStep(1);
+        setActiveFlow('kyc_onboarding');
+
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            ...kycScript.kyc_step_1,
+            id: 'kyc-ai-1',
+            sender: 'ai' as const
+          }]);
+        }, 800);
+      }
     }, 600);
   };
 

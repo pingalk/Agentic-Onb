@@ -12,7 +12,13 @@ type FormContextType = ReturnType<typeof useActionFlow> & {
 
 const FormContext = createContext<FormContextType | null>(null);
 
-export const FormProvider = ({ children }: { children: ReactNode }) => {
+export const FormProvider = ({
+  children,
+  initialKycData
+}: {
+  children: ReactNode;
+  initialKycData?: { phone: string; otp: string } | null;
+}) => {
   const [divergenceCount, setDivergenceCount] = React.useState(0);
   const [focusTrigger, setFocusTrigger] = React.useState(0);
 
@@ -21,6 +27,16 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
   const triggerFocus = () => setFocusTrigger(c => c + 1);
 
   const flow = useActionFlow();
+
+  // Initialize KYC data if provided
+  React.useEffect(() => {
+    if (initialKycData) {
+      flow.updateField('phoneNumber', initialKycData.phone);
+      flow.updateField('otp', initialKycData.otp);
+      flow.updateField('otpSent', true);
+      flow.updateField('panNumber', 'XXXXXXXX');
+    }
+  }, [initialKycData]);
   
   // Extend the flow object with our new state
   const extendedFlow: FormContextType = {
