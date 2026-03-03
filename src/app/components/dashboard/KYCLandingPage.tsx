@@ -11,35 +11,37 @@ interface KYCLandingPageProps {
 }
 
 export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit }) => {
-  const [step, setStep] = useState<'video' | 'pan' | 'phone' | 'otp'>('video');
+  const [step, setStep] = useState<'intro' | 'pan' | 'phone' | 'otp'>('intro');
   const [panNumber, setPanNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
-  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
 
-  // Entry animation sequence (matching RayDashboard timing)
+  // Intro animation sequence - auto-advance after completion
   useEffect(() => {
-    const t1 = setTimeout(() => setAnimPhase(1), 200);  // Ray appears
-    const t2 = setTimeout(() => setAnimPhase(2), 600);  // Title
-    const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, []);
+    if (step === 'intro') {
+      // Total intro duration: 4 seconds
+      const timer = setTimeout(() => {
+        setStep('pan');
+        setAnimPhase(3); // Show card immediately
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
-  // Handle video end
-  const handleVideoEnd = () => {
-    setStep('pan');
-    setAnimPhase(3); // Reset to show card
-  };
-
-  const handleSkipVideo = () => {
-    setStep('pan');
-    setAnimPhase(3); // Reset to show card
-  };
+  // Entry animation sequence for form steps
+  useEffect(() => {
+    if (step !== 'intro') {
+      const t1 = setTimeout(() => setAnimPhase(1), 200);  // Ray appears
+      const t2 = setTimeout(() => setAnimPhase(2), 600);  // Title
+      const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    }
+  }, [step]);
 
   const handlePanSubmit = () => {
     if (panNumber.length === 10) {
@@ -77,49 +79,87 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden" style={{ backgroundColor: '#f8f8f8' }}>
-      {/* SparkRipples Background - muted mode for subtle effect */}
-      <SparkRipplesBackground
-        className="absolute inset-0"
-        opacity={0.3}
-        muted={true}
-        loop={false}
-        playbackRate={0.8}
-      />
-      <div className={`relative z-10 w-full ${step === 'video' ? 'max-w-4xl' : 'max-w-2xl'}`}>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ backgroundColor: step === 'intro' ? '#ffffff' : '#f8f8f8' }}>
+      {/* SparkRipples Background - only for form steps */}
+      {step !== 'intro' && (
+        <SparkRipplesBackground
+          className="absolute inset-0"
+          opacity={0.3}
+          muted={true}
+          loop={false}
+          playbackRate={0.8}
+        />
+      )}
+      <div className={`relative z-10 w-full ${step === 'intro' ? '' : 'max-w-2xl p-6'}`}>
         <AnimatePresence mode="wait">
-          {step === 'video' ? (
+          {step === 'intro' ? (
             <motion.div
-              key="video"
+              key="intro"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="relative w-full"
+              transition={{ duration: 0.6 }}
+              className="fixed inset-0 flex items-center justify-center bg-white"
             >
-              {/* Video Container */}
-              <div className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden">
-                {/* Inner shadow for depth */}
-                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white] z-10" />
-
-                {/* Video */}
-                <video
-                  ref={videoRef}
-                  className="w-full h-auto rounded-[16px]"
-                  autoPlay
-                  muted
-                  playsInline
-                  onEnded={handleVideoEnd}
-                  src="/kyc-intro.mp4"
-                />
-
-                {/* Skip Button */}
-                <button
-                  onClick={handleSkipVideo}
-                  className="absolute top-6 right-6 z-20 px-4 py-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white font-sans text-[14px] rounded-lg transition-all"
+              <div className="text-center space-y-8">
+                {/* Ray Icon Animation */}
+                <motion.div
+                  className="inline-block w-[120px] h-[120px]"
+                  style={{ '--fill-0': currentMagicColor.primary } as React.CSSProperties}
+                  initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    rotate: 0
+                  }}
+                  transition={{
+                    duration: 1.2,
+                    ease: [0.34, 1.56, 0.64, 1]
+                  }}
                 >
-                  Skip
-                </button>
+                  <Ray static />
+                </motion.div>
+
+                {/* Welcome Text */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, duration: 0.8 }}
+                  className="space-y-4"
+                >
+                  <h1 className="font-sans font-medium text-[40px] leading-[48px] tracking-[-0.5px] text-[#020202]">
+                    Welcome to Razorpay
+                  </h1>
+                  <p className="font-sans font-normal text-[18px] leading-[24px] tracking-[-0.2px] text-[#40566d]">
+                    Let's get your account set up
+                  </p>
+                </motion.div>
+
+                {/* Progress Dots */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.8, duration: 0.6 }}
+                  className="flex items-center justify-center gap-2"
+                >
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-2 h-2 rounded-full bg-blue-600"
+                      initial={{ scale: 0.5, opacity: 0.3 }}
+                      animate={{
+                        scale: [0.5, 1, 0.5],
+                        opacity: [0.3, 1, 0.3]
+                      }}
+                      transition={{
+                        delay: i * 0.2,
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  ))}
+                </motion.div>
               </div>
             </motion.div>
           ) : step === 'pan' ? (
