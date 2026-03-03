@@ -388,11 +388,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               className="fixed inset-0 flex items-center justify-center"
               style={{ backgroundColor: '#f8f8f8' }}
             >
-              {/* Loading Video Container - cropped by 40px on all sides */}
-              <div className="relative w-[80%] h-[80%] max-w-[800px] max-h-[800px] overflow-hidden flex items-center justify-center">
+              {/* Loading Video Container - cropped by 40px on all sides, 2x size */}
+              <div className="relative w-[160%] h-[160%] max-w-[1600px] max-h-[1600px] overflow-hidden flex items-center justify-center">
                 <video
                   ref={loadingVideoRef}
-                  className="absolute object-contain"
+                  className="absolute object-cover"
                   style={{
                     width: 'calc(100% + 80px)',
                     height: 'calc(100% + 80px)',
