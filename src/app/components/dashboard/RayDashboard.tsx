@@ -214,7 +214,15 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
   // Compute the gradient green color from HSL config
   const gradientGreenColor = `hsl(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%)`;
 
-  const [view, setView] = useState<'landing' | 'chat'>('landing');
+  const [view, setView] = useState<'landing' | 'chat'>(kycPhoneData ? 'chat' : 'landing');
+
+  // If coming from KYC landing page, go directly to chat view
+  React.useEffect(() => {
+    if (kycPhoneData) {
+      setView('chat');
+      setLastQuery('Start KYC onboarding');
+    }
+  }, [kycPhoneData]);
 
   // Sync view state with context for DemoControls visibility
   React.useEffect(() => {
