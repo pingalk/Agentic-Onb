@@ -86,7 +86,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
         loop={false}
         playbackRate={0.8}
       />
-      <div className="relative z-10 w-full max-w-4xl">
+      <div className={`relative z-10 w-full ${step === 'video' ? 'max-w-4xl' : 'max-w-2xl'}`}>
         <AnimatePresence mode="wait">
           {step === 'video' ? (
             <motion.div
