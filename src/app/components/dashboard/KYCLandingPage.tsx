@@ -73,10 +73,21 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     }, 800);
   };
 
-  const handleLoadingVideoEnd = () => {
+  const handleSkipLoading = () => {
     setStep('phone');
     setAnimPhase(3); // Reset to show card
   };
+
+  // Auto-transition after 10 seconds of loading video
+  useEffect(() => {
+    if (step === 'loading') {
+      const timer = setTimeout(() => {
+        setStep('phone');
+        setAnimPhase(3);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
   const handleSendOTP = () => {
     if (phoneNumber.length >= 10) {
@@ -377,16 +388,32 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               className="fixed inset-0 flex items-center justify-center"
               style={{ backgroundColor: '#f8f8f8' }}
             >
-              {/* Loading Video - centered and scaled up */}
-              <video
-                ref={loadingVideoRef}
-                className="w-auto h-auto max-w-[150%] max-h-[150%] object-contain"
-                autoPlay
-                muted
-                playsInline
-                onEnded={handleLoadingVideoEnd}
-                src="/ray-loading.mp4"
-              />
+              {/* Loading Video Container - cropped by 40px on all sides */}
+              <div className="relative w-[80%] h-[80%] max-w-[800px] max-h-[800px] overflow-hidden flex items-center justify-center">
+                <video
+                  ref={loadingVideoRef}
+                  className="absolute object-contain"
+                  style={{
+                    width: 'calc(100% + 80px)',
+                    height: 'calc(100% + 80px)',
+                    left: '-40px',
+                    top: '-40px'
+                  }}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  src="/ray-loading.mp4"
+                />
+              </div>
+
+              {/* Skip Button */}
+              <button
+                onClick={handleSkipLoading}
+                className="absolute top-6 right-6 z-20 px-4 py-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white font-sans text-[14px] rounded-lg transition-all"
+              >
+                Skip
+              </button>
             </motion.div>
           ) : step === 'phone' ? (
             <motion.div
