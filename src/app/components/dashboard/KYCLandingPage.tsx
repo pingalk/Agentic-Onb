@@ -65,11 +65,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden" style={{ backgroundColor: '#F8F8F8' }}>
+    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden" style={{ backgroundColor: '#f8f8f8' }}>
       {/* SparkRipples Background - muted mode for subtle effect */}
       <SparkRipplesBackground
         className="absolute inset-0"
-        opacity={0.6}
+        opacity={0.3}
         muted={true}
         loop={false}
         playbackRate={0.8}
