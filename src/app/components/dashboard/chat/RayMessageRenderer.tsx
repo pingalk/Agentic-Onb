@@ -4487,7 +4487,7 @@ const ChatAttachmentPill = ({ filename, fileType, onClick }: { filename: string;
   );
 };
 
-export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, onKYCPanelSettled }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; onKYCPanelSettled?: () => void }) => {
+export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, onKYCPanelSettled, onKYCPanelClosed }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; onKYCPanelSettled?: () => void; onKYCPanelClosed?: () => void }) => {
   // State for WhatsApp preview modal
   const [isWhatsAppPreviewOpen, setIsWhatsAppPreviewOpen] = useState(false);
 
@@ -5150,7 +5150,11 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
         {/* KYC Details Modal */}
         <KYCDetailsModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => {
+            setIsModalOpen(false);
+            // Reset panel settled state when closing
+            onKYCPanelClosed?.();
+          }}
           businessName={businessName}
           onSettled={onKYCPanelSettled}
         />

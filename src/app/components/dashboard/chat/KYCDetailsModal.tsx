@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 export interface KYCDetailsModalProps {
   isOpen: boolean;
@@ -34,7 +34,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
     return () => window.removeEventListener('resize', calculateDistance);
   }, []);
 
-  // Reset slide state when modal closes
+  // Reset slide state when modal closes and notify parent
   React.useEffect(() => {
     if (isOpen) {
       // Trigger slide to right after initial center animation
@@ -138,6 +138,19 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             <div className="absolute bottom-0 left-0 right-0 h-[24px] pointer-events-none z-20">
               <div className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent" />
             </div>
+
+            {/* Close Button - only shows when settled */}
+            {hasSlid && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                onClick={onClose}
+                className="absolute top-6 right-6 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white border border-gray-200 text-gray-600 hover:text-gray-900 transition-colors shadow-sm"
+              >
+                <X size={16} />
+              </motion.button>
+            )}
 
             {/* Scrollable Content */}
             <div className="relative overflow-y-auto h-full p-6">

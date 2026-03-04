@@ -1616,6 +1616,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                         animatingCardId={isPaymentLinkModalOpen ? activeFormCardId : null}
                         personaId={activeFlow || 'default'}
                         onKYCPanelSettled={() => setIsKYCPanelSettled(true)}
+                        onKYCPanelClosed={() => setIsKYCPanelSettled(false)}
                         onMiniCardClick={(formId, sourceRect) => {
                           // Check which type of card was clicked
                           if (formId.includes('add-funds')) {
