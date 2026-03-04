@@ -884,7 +884,16 @@ Maya`,
         },
         kyc_step_4: {
             headline: "Share the link to your website",
-            subtext: "Share the link to live website to help fast-track your setup. And if not yet setup and live, that's okay too. You can skip this step and add it later.",
+            subtext: "If yes, share the link to help fast-track your setup. And if not, that's okay too. You can skip this step and add it later.",
+            artifact: {
+                type: 'kyc_website_input',
+                data: {
+                    heading: 'Website URL',
+                    placeholder: 'https://yourwebsite.com',
+                    buttonText: 'Continue',
+                    skipText: 'Skip for now'
+                }
+            },
             suggestions: []
         },
         kyc_step_5: {

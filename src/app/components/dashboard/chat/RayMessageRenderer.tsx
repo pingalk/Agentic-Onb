@@ -442,6 +442,14 @@ export interface RayResponseData {
       category: string;
       subCategory: string;
     };
+  } | {
+    type: 'kyc_website_input';
+    data: {
+      heading: string;
+      placeholder: string;
+      buttonText: string;
+      skipText: string;
+    };
   };
 }
 
