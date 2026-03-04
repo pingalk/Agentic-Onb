@@ -846,16 +846,67 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             isBusinessCategoryLoading: true
           }]);
 
-          // After loading completes (8 seconds = 4 steps * 2 seconds), show next step
+          // After loading completes (8 seconds = 4 steps * 2 seconds), show business category card
           setTimeout(() => {
             setMessages(prev => prev.filter(m => m.id !== loadingId));
             setMessages(prev => [...prev, {
-              id: `kyc-ai-5`,
+              id: `kyc-business-category`,
               sender: 'ai' as const,
-              ...kycScript.kyc_step_5
+              artifact: {
+                type: 'business_category_card' as const,
+                data: {
+                  category: 'E Commerce',
+                  subCategory: 'Fashion Retailer'
+                }
+              }
             }]);
-            setKycFlowStep(5);
+            setKycFlowStep(4.5); // Intermediate step for category confirmation
           }, 8500); // 8 seconds for steps + 500ms buffer
+        }, 600);
+        return;
+      }
+
+      // Handle category confirmation
+      if (suggestion === 'confirm_category') {
+        setMessages(prev => [...prev, {
+          id: `kyc-u-confirm`,
+          sender: 'user' as const,
+          blocks: [{ type: 'text', content: 'Confirm' }]
+        }]);
+
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            id: `kyc-ai-5`,
+            sender: 'ai' as const,
+            ...kycScript.kyc_step_5
+          }]);
+          setKycFlowStep(5);
+        }, 800);
+        return;
+      }
+
+      // Handle category change
+      if (suggestion === 'change_category') {
+        setMessages(prev => [...prev, {
+          id: `kyc-u-change`,
+          sender: 'user' as const,
+          blocks: [{ type: 'text', content: 'Change' }]
+        }]);
+
+        // TODO: Show category selection UI
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            id: `kyc-ai-change-response`,
+            sender: 'ai' as const,
+            artifact: {
+              type: 'simple_text',
+              data: {
+                headline: "Let's update your business category",
+                body: "What type of business do you run?",
+                suggestions: []
+              }
+            }
+          }]);
         }, 600);
         return;
       }

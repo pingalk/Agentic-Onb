@@ -5,6 +5,7 @@ import Copy from '@/imports/Copy';
 import { PaymentLinkMiniCard, SourceRect } from './PaymentLinkMiniCard';
 import { AddFundsMiniCard } from './AddFundsMiniCard';
 import { CaptureSettingsMiniCard } from './CaptureSettingsMiniCard';
+import { BusinessCategoryCard } from './BusinessCategoryCard';
 import { FundsAddedCard } from './artifacts/FundsAddedCard';
 import { FundsAddedHeader, FundsAddedBody, SettlementCard, RayInsightCard } from './artifacts/FundsAddedComponents';
 import { ConfigurableSettlementCard, SettlementStatusTable, FeeCalculatorCard } from './artifacts/SettlementComponents';
@@ -434,6 +435,12 @@ export interface RayResponseData {
       verificationBadge: string;
       documents: Array<{ name: string; type: string }>;
       suggestions?: string[];
+    };
+  } | {
+    type: 'business_category_card';
+    data: {
+      category: string;
+      subCategory: string;
     };
   };
 }
@@ -5450,6 +5457,30 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
   }
 
   // 25. Ray AI Message (Standard Blocks, Max Width 398px)
+  // 24.8. Business Category Card
+  if (data.artifact?.type === 'business_category_card') {
+    const { category, subCategory } = data.artifact.data;
+
+    const handleConfirm = () => {
+      onSuggestionClick?.('confirm_category');
+    };
+
+    const handleChange = () => {
+      onSuggestionClick?.('change_category');
+    };
+
+    return (
+      <div className="w-full max-w-[680px] animate-fade-in-up">
+        <BusinessCategoryCard
+          category={category}
+          subCategory={subCategory}
+          onConfirm={handleConfirm}
+          onChange={handleChange}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex gap-4 items-start w-full max-w-[398px] animate-fade-in-up">
         {/* Content Container - No Avatar */}
