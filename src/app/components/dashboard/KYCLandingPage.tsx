@@ -367,7 +367,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         muted
                         loop
                         playsInline
-                        src="/pan-transition.mov"
+                        src="/card-scanning.mp4"
                       />
                     </div>
                   </div>
