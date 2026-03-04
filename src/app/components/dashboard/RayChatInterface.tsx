@@ -9,6 +9,7 @@ import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
 import { KYCOTPModal } from './chat/KYCOTPModal';
 import { UPIVerificationModal } from './chat/UPIVerificationModal';
 import { KYCReviewModal } from './chat/KYCReviewModal';
+import { SuccessAnimation } from './SuccessAnimation';
 import { FloatingImageUpload } from './FloatingImageUpload';
 import { BusinessCategoryLoadingState } from './BusinessCategoryLoadingState';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
@@ -141,6 +142,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
   // KYC Review Modal States
   const [isKYCReviewModalOpen, setIsKYCReviewModalOpen] = useState(false);
+
+  // Success Animation State
+  const [isSuccessAnimationOpen, setIsSuccessAnimationOpen] = useState(false);
 
   // Input Box States
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -2146,20 +2150,17 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
            onSubmit={() => {
              setIsKYCReviewModalOpen(false);
 
-             // Show submission success message
-             setMessages(prev => [...prev, {
-               id: `kyc-submitted-${Date.now()}`,
-               sender: 'ai',
-               artifact: {
-                 type: 'simple_text',
-                 data: {
-                   headline: "Application submitted successfully!",
-                   body: "Your application is now under review. We'll notify you once it's approved.",
-                   suggestions: []
-                 }
-               }
-             }]);
+             // Trigger success animation
+             setIsSuccessAnimationOpen(true);
              setKycFlowStep(7);
+           }}
+         />
+
+         {/* Success Animation */}
+         <SuccessAnimation
+           isOpen={isSuccessAnimationOpen}
+           onComplete={() => {
+             // Animation stays open, no auto-close
            }}
          />
 
