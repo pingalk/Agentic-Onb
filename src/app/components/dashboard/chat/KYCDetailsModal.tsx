@@ -73,7 +73,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
                     className="absolute inset-0 bg-cover bg-center"
                     style={{
                       backgroundImage: 'url(https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop)',
-                      filter: 'blur(8px)',
+                      filter: 'blur(3px)',
                       transform: 'scale(1.1)'
                     }}
                   />
