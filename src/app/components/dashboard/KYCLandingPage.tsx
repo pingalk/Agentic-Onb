@@ -358,11 +358,10 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         ref={panTransitionVideoRef}
                         className="absolute object-cover border-0 outline-none"
                         style={{
-                          width: 'calc(100% + 4px)',
+                          width: 'calc(100% + 10px)',
                           height: 'calc(100% + 2px)',
                           left: '-4px',
-                          top: '-1px',
-                          right: '-1px'
+                          top: '-1px'
                         }}
                         autoPlay
                         muted
