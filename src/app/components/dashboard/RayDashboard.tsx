@@ -497,53 +497,78 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
         "flex-1 relative flex flex-col h-full transition-all duration-300",
         isSidebarCollapsed ? "md:ml-[72px]" : "md:ml-64"
       )}>
-        {/* Top Nav */}
-        <div className="h-14 border-b border-slate-100/50 flex items-center px-4 md:px-6 justify-between z-20">
-            <div className="flex items-center gap-3 md:gap-6">
-                <button 
-                    className="md:hidden p-1 text-slate-500 hover:bg-slate-100 rounded"
-                    onClick={() => setIsSidebarOpen(true)}
-                >
-                    <Menu size={20} />
-                </button>
+        {/* Top Nav - Dark theme for KYC mode */}
+        <div className={`h-14 flex items-center px-4 md:px-6 justify-between z-20 ${
+          kycPhoneData ? 'bg-black border-b-0' : 'border-b border-slate-100/50'
+        }`}>
+            {kycPhoneData ? (
+              /* KYC Mode Header - Dark theme */
+              <>
+                <div className="flex items-center">
+                  <svg width="116" height="24" viewBox="0 0 116 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.464 6.545h5.454v1.455H10v2.182h3.636V11.636H10v2.91h3.918v1.454H8.464V6.545zm13.091 0h1.454v7.636c0 1.091-.273 1.91-.818 2.455-.546.545-1.364.818-2.455.818h-.727v-1.454h.636c.636 0 1.091-.137 1.364-.41.273-.272.409-.727.409-1.363V6.545h.136zm-5.454 0h1.454v9.455h-1.454V6.545zm-8.91 0h1.637l3.091 6.545L14.91 6.545h1.636l-4 8.455h-1.273l-4-8.455zm33.091 0h1.455v9.455h-1.455V6.545zm-5.454 0h1.454v7.636c0 1.091-.273 1.91-.818 2.455-.546.545-1.364.818-2.455.818h-.727v-1.454h.636c.636 0 1.091-.137 1.364-.41.273-.272.409-.727.409-1.363V6.545h.136zm22.909 0h1.455v9.455h-1.455V6.545zm-5.454 0h1.454v7.636c0 1.091-.273 1.91-.818 2.455-.546.545-1.364.818-2.455.818h-.727v-1.454h.636c.636 0 1.091-.137 1.364-.41.273-.272.409-.727.409-1.363V6.545h.136z" fill="white"/>
+                  </svg>
+                </div>
 
-                <div 
-                  className="bg-[#EFF6FF] flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer shadow-[inset_0px_-1px_0px_0px_white]"
-                  onClick={handleHomeClick}
-                >
-                    <div className="w-[18px] h-[18px]"><Ray /></div>
-                    <span className="text-sm font-medium text-slate-900">Ray AI</span>
+                <div className="flex items-center gap-4">
+                  <button className="text-white text-sm font-medium px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">
+                    Need help?
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-[#212121] border-[1.5px] border-white flex items-center justify-center">
+                    <span className="text-[#dadada] text-sm font-medium">A</span>
+                  </div>
                 </div>
-                
-                <div className="hidden md:flex gap-6 text-sm text-slate-500 font-medium items-center">
-                    <span className="hover:text-slate-900 cursor-pointer">Neobanking</span>
-                    <span className="hover:text-slate-900 cursor-pointer">Payroll</span>
-                    <DropdownMenu.Root>
-                        <DropdownMenu.Trigger asChild>
-                            <span className="hover:text-slate-900 cursor-pointer flex items-center gap-1 select-none">
-                              More <ChevronDown size={14} />
-                            </span>
-                        </DropdownMenu.Trigger>
-                        <DropdownMenu.Portal>
-                            <DropdownMenu.Content className="min-w-[160px] bg-white rounded-lg p-1 shadow-lg border border-slate-100 z-[100]" sideOffset={5} align="end">
-                                <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('default')}>
-                                     {landingVariant === 'default' && <Check size={14} className="mr-2 text-blue-600" />} Default (No Animation)
-                                </DropdownMenu.Item>
-                                <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('v1')}>
-                                     {landingVariant === 'v1' && <Check size={14} className="mr-2 text-blue-600" />} Story Mode
-                                </DropdownMenu.Item>
-                                <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('v2')}>
-                                     {landingVariant === 'v2' && <Check size={14} className="mr-2 text-blue-600" />} Variant 2
-                                </DropdownMenu.Item>
-                            </DropdownMenu.Content>
-                        </DropdownMenu.Portal>
-                    </DropdownMenu.Root>
+              </>
+            ) : (
+              /* Normal Mode Header - Light theme */
+              <>
+                <div className="flex items-center gap-3 md:gap-6">
+                  <button
+                      className="md:hidden p-1 text-slate-500 hover:bg-slate-100 rounded"
+                      onClick={() => setIsSidebarOpen(true)}
+                  >
+                      <Menu size={20} />
+                  </button>
+
+                  <div
+                    className="bg-[#EFF6FF] flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer shadow-[inset_0px_-1px_0px_0px_white]"
+                    onClick={handleHomeClick}
+                  >
+                      <div className="w-[18px] h-[18px]"><Ray /></div>
+                      <span className="text-sm font-medium text-slate-900">Ray AI</span>
+                  </div>
+
+                  <div className="hidden md:flex gap-6 text-sm text-slate-500 font-medium items-center">
+                      <span className="hover:text-slate-900 cursor-pointer">Neobanking</span>
+                      <span className="hover:text-slate-900 cursor-pointer">Payroll</span>
+                      <DropdownMenu.Root>
+                          <DropdownMenu.Trigger asChild>
+                              <span className="hover:text-slate-900 cursor-pointer flex items-center gap-1 select-none">
+                                More <ChevronDown size={14} />
+                              </span>
+                          </DropdownMenu.Trigger>
+                          <DropdownMenu.Portal>
+                              <DropdownMenu.Content className="min-w-[160px] bg-white rounded-lg p-1 shadow-lg border border-slate-100 z-[100]" sideOffset={5} align="end">
+                                  <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('default')}>
+                                       {landingVariant === 'default' && <Check size={14} className="mr-2 text-blue-600" />} Default (No Animation)
+                                  </DropdownMenu.Item>
+                                  <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('v1')}>
+                                       {landingVariant === 'v1' && <Check size={14} className="mr-2 text-blue-600" />} Story Mode
+                                  </DropdownMenu.Item>
+                                  <DropdownMenu.Item className="text-sm text-slate-700 rounded flex items-center px-2 py-1.5 hover:bg-slate-50 cursor-pointer" onSelect={() => setLandingVariant('v2')}>
+                                       {landingVariant === 'v2' && <Check size={14} className="mr-2 text-blue-600" />} Variant 2
+                                  </DropdownMenu.Item>
+                              </DropdownMenu.Content>
+                          </DropdownMenu.Portal>
+                      </DropdownMenu.Root>
+                  </div>
                 </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-                <AvatarMenu />
-            </div>
+
+                <div className="flex items-center gap-4">
+                    <AvatarMenu />
+                </div>
+              </>
+            )}
         </div>
 
         {/* Content Body */}
