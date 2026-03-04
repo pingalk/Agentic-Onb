@@ -16,6 +16,26 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   onSettled
 }) => {
   const [hasSlid, setHasSlid] = React.useState(false);
+  const [centerOffsetX, setCenterOffsetX] = React.useState(0);
+
+  // Calculate offset needed to center modal from right-anchored position
+  React.useEffect(() => {
+    const calculateOffset = () => {
+      const viewportWidth = window.innerWidth;
+      const modalWidth = 393;
+      const rightPadding = 8;
+      // Modal is anchored at right: 8px
+      // To center it, we need to move it left by: (viewportWidth/2) - (modalWidth/2) - rightPadding
+      const centerPosition = (viewportWidth - modalWidth) / 2;
+      const rightPosition = viewportWidth - modalWidth - rightPadding;
+      const offset = -(rightPosition - centerPosition);
+      setCenterOffsetX(offset);
+    };
+
+    calculateOffset();
+    window.addEventListener('resize', calculateOffset);
+    return () => window.removeEventListener('resize', calculateOffset);
+  }, []);
 
   // Reset slide state when modal closes and notify parent
   React.useEffect(() => {
@@ -69,36 +89,35 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
           <motion.div
             initial={{
               opacity: 0,
-              scale: 0.95,
-              y: 20
+              scale: 0.95
             }}
             animate={{
               opacity: 1,
               scale: 1,
-              x: hasSlid ? 0 : centerOffsetX,
-              y: hasSlid ? 0 : `calc(50vh - 64px - 200px)`,
               height: hasSlid ? 'calc(100vh - 64px - 8px)' : 'auto'
             }}
             exit={{
               opacity: 0,
-              scale: 0.95,
-              y: 20
+              scale: 0.95
             }}
             transition={{
               opacity: { duration: 0.2 },
               scale: { type: 'spring', stiffness: 300, damping: 30 },
-              y: { type: 'spring', stiffness: 300, damping: 30 },
-              x: { type: 'spring', stiffness: 200, damping: 25 },
-              height: { type: 'spring', stiffness: 200, damping: 25 }
+              height: { type: 'spring', stiffness: 200, damping: 25, duration: 0.5 }
             }}
             onClick={(e) => e.stopPropagation()}
-            className={`bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] ${
+            className={`bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] transition-all duration-500 ${
               hasSlid ? 'shadow-sm' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]'
             }`}
-            style={{
+            style={hasSlid ? {
               position: 'fixed',
               right: '8px',
               top: '64px'
+            } : {
+              position: 'fixed',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)'
             }}
           >
             {/* Top gradient overlay for depth */}
