@@ -17,17 +17,17 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
 }) => {
   const [hasSlid, setHasSlid] = React.useState(false);
 
-  // Slide to right panel after 3 seconds, then notify parent
+  // Slide to right panel after 1 second, then notify parent
   React.useEffect(() => {
     if (isOpen) {
-      // Wait 3 seconds as modal, then trigger slide to right
+      // Wait 1 second as modal, then trigger slide to right
       const timer = setTimeout(() => {
         setHasSlid(true);
         // Notify parent that panel has settled
         setTimeout(() => {
           onSettled?.();
         }, 500); // Wait for slide animation to complete
-      }, 3000); // Wait 3 seconds before sliding
+      }, 1000); // Wait 1 second before sliding
       return () => clearTimeout(timer);
     } else {
       setHasSlid(false);
