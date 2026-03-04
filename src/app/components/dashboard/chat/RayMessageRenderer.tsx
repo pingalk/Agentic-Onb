@@ -5212,8 +5212,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             {headline && (
               <h3 className="text-[18px] font-medium text-[#050505] leading-[26px] tracking-[-0.594px] mb-2">
                 <PerplexityStreamText
-                  text={headline}
-                  onStreamComplete={() => {
+                  content={headline}
+                  onComplete={() => {
                     setTimeout(() => setSubtextStarted(true), 1300);
                   }}
                 />
@@ -5222,8 +5222,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             {subtextStarted && subtext && (
               <p className="text-[14px] text-[#40566d] leading-[20px] tracking-[-0.182px]">
                 <PerplexityStreamText
-                  text={subtext}
-                  onStreamComplete={() => {
+                  content={subtext}
+                  onComplete={() => {
                     setIsStreaming(false);
                     if (onStreamComplete) onStreamComplete();
                   }}
