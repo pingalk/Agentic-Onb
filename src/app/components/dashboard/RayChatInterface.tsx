@@ -158,6 +158,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // KYC Onboarding Flow State
   const [kycFlowStep, setKycFlowStep] = useState(0);
 
+  // KYC Details Panel State
+  const [isKYCPanelSettled, setIsKYCPanelSettled] = useState(false);
+
   // Briefing Review Flow State
   const [briefingReviewHandled, setBriefingReviewHandled] = useState(false);
 
@@ -1565,8 +1568,18 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   return (
     <div className="flex h-full relative font-sans overflow-hidden">
 
-      {/* Main Chat Container */}
-      <div className="flex flex-col h-full relative w-full">
+      {/* Main Chat Container - shifts left when KYC panel is settled */}
+      <motion.div
+        className="flex flex-col h-full relative w-full"
+        animate={{
+          x: isKYCPanelSettled ? -212.5 : 0
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 200,
+          damping: 25
+        }}
+      >
         {/* 1. Scrollable Chat Area */}
         <div
           ref={scrollContainerRef}
@@ -1602,6 +1615,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                         highlightedSuggestionIndex={highlightedSuggestionIndex}
                         animatingCardId={isPaymentLinkModalOpen ? activeFormCardId : null}
                         personaId={activeFlow || 'default'}
+                        onKYCPanelSettled={() => setIsKYCPanelSettled(true)}
                         onMiniCardClick={(formId, sourceRect) => {
                           // Check which type of card was clicked
                           if (formId.includes('add-funds')) {
@@ -1934,7 +1948,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             </div>
          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Modal Overlay Input - Only shows when a modal is open, rendered via portal at z-70 */}
       {(isPaymentLinkModalOpen || isCaptureSettingsModalOpen) && createPortal(

@@ -7,11 +7,13 @@ export interface KYCDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   businessName: string;
+  onSettled?: () => void;
 }
 
 export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   isOpen,
-  onClose
+  onClose,
+  onSettled
 }) => {
   const [hasSlid, setHasSlid] = React.useState(false);
   const [slideDistance, setSlideDistance] = React.useState(0);
@@ -38,12 +40,16 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
       // Trigger slide to right after initial center animation
       const timer = setTimeout(() => {
         setHasSlid(true);
+        // Notify parent that panel has settled
+        setTimeout(() => {
+          onSettled?.();
+        }, 500); // Wait for slide animation to complete
       }, 400); // Delay to allow center animation to complete
       return () => clearTimeout(timer);
     } else {
       setHasSlid(false);
     }
-  }, [isOpen]);
+  }, [isOpen, onSettled]);
 
   if (!isOpen) return null;
 
@@ -66,27 +72,36 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: hasSlid ? 0 : 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.3 }}
           className="fixed inset-0 z-[9999]"
-          onClick={onClose}
+          onClick={hasSlid ? undefined : onClose}
+          style={{ pointerEvents: hasSlid ? 'none' : 'auto' }}
         >
-          {/* Backdrop */}
+          {/* Backdrop - fades out when panel settles */}
           <div className="absolute inset-0 bg-[rgba(0,0,0,0.8)]" />
 
-          {/* Modal Card - positioned at center, then slides right */}
+          {/* Panel - transitions from centered modal to right-anchored panel */}
           <motion.div
             initial={{
               opacity: 0,
               scale: 0.95,
-              y: 20
+              y: 20,
+              x: '-50%'
             }}
-            animate={{
+            animate={hasSlid ? {
               opacity: 1,
               scale: 1,
               y: 0,
-              x: hasSlid ? slideDistance : 0
+              x: 0,
+              height: 'calc(100vh - 64px)'
+            } : {
+              opacity: 1,
+              scale: 1,
+              y: '-50%',
+              x: '-50%',
+              height: 'auto'
             }}
             exit={{
               opacity: 0,
@@ -97,14 +112,22 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               opacity: { duration: 0.2 },
               scale: { type: 'spring', stiffness: 300, damping: 30 },
               y: { type: 'spring', stiffness: 300, damping: 30 },
-              x: {
-                type: 'spring',
-                stiffness: 200,
-                damping: 25
-              }
+              x: { type: 'spring', stiffness: 200, damping: 25 },
+              height: { type: 'spring', stiffness: 200, damping: 25 }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[393px] max-h-[90vh] overflow-hidden"
+            className="backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[393px] overflow-hidden z-[9999]"
+            style={{
+              position: 'fixed',
+              ...(hasSlid ? {
+                right: '32px',
+                top: '32px',
+                left: 'auto'
+              } : {
+                left: '50%',
+                top: '50%'
+              })
+            }}
           >
             {/* Top gradient overlay for depth */}
             <div className="absolute top-0 left-0 right-0 h-[24px] pointer-events-none z-20">
@@ -117,7 +140,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             </div>
 
             {/* Scrollable Content */}
-            <div className="relative overflow-y-auto max-h-[90vh] p-6">
+            <div className="relative overflow-y-auto h-full p-6">
               {/* CKYC Card */}
               <div className="border border-[rgba(108,132,157,0.18)] rounded-[12px] overflow-hidden bg-white shadow-sm">
                 {/* Header Image Section */}
