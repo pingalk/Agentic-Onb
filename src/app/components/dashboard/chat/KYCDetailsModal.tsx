@@ -23,7 +23,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
     const calculateDistance = () => {
       const viewportWidth = window.innerWidth;
       const modalWidth = 393;
-      const rightPadding = 32;
+      const rightPadding = 8;
       // Distance from center to right edge position
       const distance = (viewportWidth / 2) - rightPadding - (modalWidth / 2);
       setSlideDistance(distance);
@@ -87,21 +87,14 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             initial={{
               opacity: 0,
               scale: 0.95,
-              y: 20,
-              x: '-50%'
+              y: 20
             }}
-            animate={hasSlid ? {
+            animate={{
               opacity: 1,
               scale: 1,
-              y: 0,
-              x: 0,
-              height: 'calc(100vh - 64px - 8px)'
-            } : {
-              opacity: 1,
-              scale: 1,
-              y: '-50%',
-              x: '-50%',
-              height: 'auto'
+              x: hasSlid ? slideDistance : 0,
+              y: hasSlid ? 0 : 0,
+              height: hasSlid ? 'calc(100vh - 64px - 8px)' : 'auto'
             }}
             exit={{
               opacity: 0,
@@ -112,7 +105,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               opacity: { duration: 0.2 },
               scale: { type: 'spring', stiffness: 300, damping: 30 },
               y: { type: 'spring', stiffness: 300, damping: 30 },
-              x: { type: 'spring', stiffness: 200, damping: 25 },
+              x: { type: 'spring', stiffness: 200, damping: 25, duration: 0.6 },
               height: { type: 'spring', stiffness: 200, damping: 25 }
             }}
             onClick={(e) => e.stopPropagation()}
@@ -121,14 +114,10 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             }`}
             style={{
               position: 'fixed',
-              ...(hasSlid ? {
-                right: '8px',
-                top: '64px',
-                left: 'auto'
-              } : {
-                left: '50%',
-                top: '50%'
-              })
+              left: '50%',
+              top: hasSlid ? '64px' : '50%',
+              translateX: '-50%',
+              translateY: hasSlid ? '0%' : '-50%'
             }}
           >
             {/* Top gradient overlay for depth */}
