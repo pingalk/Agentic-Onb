@@ -809,19 +809,6 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
     // Handle KYC flow progression
     if (activeFlow === 'kyc_onboarding') {
-      if (suggestion.toLowerCase().includes('looks good') || suggestion.toLowerCase().includes('continue')) {
-        if (kycFlowStep === 3) {
-          // Progress from business details to website URL step
-          setMessages(prev => [...prev, {
-            id: `kyc-ai-4`,
-            sender: 'ai' as const,
-            ...kycScript.kyc_step_4
-          }]);
-          setKycFlowStep(4);
-          return;
-        }
-      }
-
       // Handle website URL submission
       if (suggestion.startsWith('website:')) {
         const websiteUrl = suggestion.replace('website:', '');
@@ -1958,11 +1945,21 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                            { name: "Aadhar back", type: "document" },
                            { name: "Registered address", type: "document" }
                          ],
-                         suggestions: ["Looks good, continue"]
+                         suggestions: []
                        }
                      }
                    }]);
                    setKycFlowStep(3);
+
+                   // Automatically progress to website step after 3 seconds
+                   setTimeout(() => {
+                     setMessages(prev => [...prev, {
+                       id: `kyc-ai-4`,
+                       sender: 'ai' as const,
+                       ...kycScript.kyc_step_4
+                     }]);
+                     setKycFlowStep(4);
+                   }, 3000);
                  }, 10000);
                }, 600);
              }, 600);

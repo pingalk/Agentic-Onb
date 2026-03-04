@@ -37,14 +37,14 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   // Reset slide state when modal closes and notify parent
   React.useEffect(() => {
     if (isOpen) {
-      // Trigger slide to right after initial center animation
+      // Wait 3 seconds as modal, then trigger slide to right
       const timer = setTimeout(() => {
         setHasSlid(true);
         // Notify parent that panel has settled
         setTimeout(() => {
           onSettled?.();
         }, 500); // Wait for slide animation to complete
-      }, 400); // Delay to allow center animation to complete
+      }, 3000); // Wait 3 seconds before sliding
       return () => clearTimeout(timer);
     } else {
       setHasSlid(false);
