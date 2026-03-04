@@ -473,29 +473,32 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
         '--magic-bubble': currentMagicColor.bubbleColor,
       } as React.CSSProperties}
     >
-      <RaySidebar 
-        currentView={view === 'landing' ? 'new-chat' : 'chat'}
-        onChangeView={(v) => {
-            if (v === 'new-chat') {
-                handleHomeClick();
-                setIsSidebarCollapsed(false);
-            } else if (v.startsWith('thread-')) {
-                setView('chat');
-                setIsSidebarCollapsed(true);
-            }
-            setIsSidebarOpen(false);
-        }}
-        isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        isCollapsed={isSidebarCollapsed}
-        onCollapseChange={setIsSidebarCollapsed}
-        onLogout={onLogout}
-      />
+      {/* Hide sidebar in KYC mode */}
+      {!kycPhoneData && (
+        <RaySidebar
+          currentView={view === 'landing' ? 'new-chat' : 'chat'}
+          onChangeView={(v) => {
+              if (v === 'new-chat') {
+                  handleHomeClick();
+                  setIsSidebarCollapsed(false);
+              } else if (v.startsWith('thread-')) {
+                  setView('chat');
+                  setIsSidebarCollapsed(true);
+              }
+              setIsSidebarOpen(false);
+          }}
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+          isCollapsed={isSidebarCollapsed}
+          onCollapseChange={setIsSidebarCollapsed}
+          onLogout={onLogout}
+        />
+      )}
 
       {/* Main Content Area */}
       <div className={clsx(
         "flex-1 relative flex flex-col h-full transition-all duration-300",
-        isSidebarCollapsed ? "md:ml-[72px]" : "md:ml-64"
+        kycPhoneData ? "" : (isSidebarCollapsed ? "md:ml-[72px]" : "md:ml-64")
       )}>
         {/* Top Nav - Dark theme for KYC mode */}
         <div className={`h-14 flex items-center px-4 md:px-6 justify-between z-20 ${
