@@ -33,27 +33,9 @@ export const KYCLoadingState: React.FC = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex items-start gap-3 pl-0"
+      className="flex flex-col gap-1 pl-0"
     >
-      {/* Ray Logo */}
-      <motion.div
-        className="w-4 h-4 shrink-0 mt-0.5"
-        style={{ '--fill-0': '#2563EB' } as React.CSSProperties}
-        animate={{
-          rotate: 360
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'linear'
-        }}
-      >
-        <Ray static />
-      </motion.div>
-
-      {/* Loading Steps */}
-      <div className="flex flex-col gap-0">
-        {KYC_STEPS.map((step, index) => {
+      {KYC_STEPS.map((step, index) => {
           const isCompleted = index < currentStep;
           const isActive = index === currentStep;
           const isPending = index > currentStep;
@@ -72,10 +54,10 @@ export const KYCLoadingState: React.FC = () => {
                 ease: [0.4, 0, 0.2, 1],
                 opacity: { duration: 0.3 }
               }}
-              className="flex items-center gap-2 py-0.5"
+              className="flex items-center gap-3 py-1"
             >
               {/* Icon */}
-              <div className="w-4 h-4 shrink-0 flex items-center justify-center">
+              <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                 <AnimatePresence mode="wait">
                   {isCompleted && (
                     <motion.div
@@ -85,13 +67,13 @@ export const KYCLoadingState: React.FC = () => {
                       exit={{ scale: 0, opacity: 0 }}
                       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
                     >
-                      <Check size={12} className="text-[#04c982]" strokeWidth={2.5} />
+                      <Check size={16} className="text-[#04c982]" strokeWidth={2.5} />
                     </motion.div>
                   )}
                   {isActive && (
                     <motion.div
                       key="active"
-                      className="w-3 h-3"
+                      className="w-6 h-6"
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{
                         scale: 1,
@@ -114,7 +96,7 @@ export const KYCLoadingState: React.FC = () => {
 
               {/* Step Text */}
               <motion.span
-                className="text-[14px] leading-[20px] tracking-[0px] font-['Inter',sans-serif] font-medium"
+                className="text-[16px] leading-[24px] tracking-[0px] font-['Inter',sans-serif] font-medium"
                 animate={{
                   opacity: isPending ? 0.5 : 1
                 }}
@@ -134,7 +116,6 @@ export const KYCLoadingState: React.FC = () => {
             </motion.div>
           );
         })}
-      </div>
     </motion.div>
   );
 };
