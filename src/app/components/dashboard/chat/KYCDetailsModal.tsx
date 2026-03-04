@@ -70,17 +70,17 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: hasSlid ? 0 : 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[9999]"
-          onClick={hasSlid ? undefined : onClose}
-          style={{ pointerEvents: hasSlid ? 'none' : 'auto' }}
-        >
+        <>
           {/* Backdrop - fades out when panel settles */}
-          <div className="absolute inset-0 bg-[rgba(0,0,0,0.8)]" />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: hasSlid ? 0 : 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9998] bg-[rgba(0,0,0,0.8)]"
+            onClick={hasSlid ? undefined : onClose}
+            style={{ pointerEvents: hasSlid ? 'none' : 'auto' }}
+          />
 
           {/* Panel - transitions from centered modal to right-anchored panel */}
           <motion.div
@@ -216,7 +216,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             {/* Inset shadow for depth */}
             <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>,
     document.body
