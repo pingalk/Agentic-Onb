@@ -5162,6 +5162,136 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     );
   }
 
+  // 24.7. KYC Website Input Card
+  if (data.artifact?.type === 'kyc_website_input') {
+    const { heading, placeholder, buttonText, skipText } = data.artifact.data;
+    const [isStreaming, setIsStreaming] = React.useState(true);
+    const [subtextStarted, setSubtextStarted] = React.useState(false);
+    const [websiteUrl, setWebsiteUrl] = React.useState('');
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    const handleSubmit = () => {
+      if (websiteUrl.trim()) {
+        setIsSubmitting(true);
+        // Handle website URL submission
+        setTimeout(() => {
+          onSuggestionClick?.(`website:${websiteUrl}`);
+        }, 500);
+      }
+    };
+
+    const handleSkip = () => {
+      onSuggestionClick?.('skip_website');
+    };
+
+    return (
+      <div className="w-full animate-fade-in-up">
+        {/* Ray Logo + Headline and Subtext with streaming */}
+        <div className="flex items-start gap-3 max-w-[680px] mb-6">
+          {/* Ray Logo - rotates while streaming */}
+          <motion.div
+            className="w-6 h-6 shrink-0 mt-0.5"
+            animate={isStreaming ? {
+              rotate: [0, 90, 90, 180, 180, 270, 270, 360]
+            } : { rotate: 0 }}
+            transition={isStreaming ? {
+              duration: 2,
+              repeat: Infinity,
+              ease: [0.4, 0, 0.2, 1],
+              times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1]
+            } : { duration: 0.3 }}
+          >
+            <Ray static />
+          </motion.div>
+
+          {/* Text Content */}
+          <div className="flex-1">
+            {data.headline && (
+              <h3 className="text-[18px] font-medium text-[#050505] leading-[26px] tracking-[-0.594px] mb-2">
+                <PerplexityStreamText
+                  text={data.headline}
+                  onStreamComplete={() => {
+                    setTimeout(() => setSubtextStarted(true), 1300);
+                  }}
+                />
+              </h3>
+            )}
+            {subtextStarted && data.subtext && (
+              <p className="text-[14px] text-[#40566d] leading-[20px] tracking-[-0.182px]">
+                <PerplexityStreamText
+                  text={data.subtext}
+                  onStreamComplete={() => {
+                    setIsStreaming(false);
+                    if (onStreamComplete) onStreamComplete();
+                  }}
+                />
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Website Input Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.3, duration: 0.4 }}
+          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden w-[531px]"
+        >
+          {/* Inset shadow for depth */}
+          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
+
+          {/* Card Content */}
+          <div className="relative p-6 space-y-5">
+            {/* Input Field */}
+            <div className="space-y-2">
+              <label className="font-['Inter',sans-serif] text-[13px] font-medium text-[#192839]">
+                {heading}
+              </label>
+              <input
+                type="url"
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                className="w-full h-14 px-5 font-['Inter',sans-serif] text-[16px] border-2 border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
+                placeholder={placeholder}
+                disabled={isSubmitting}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && websiteUrl.trim()) {
+                    handleSubmit();
+                  }
+                }}
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleSubmit}
+                disabled={!websiteUrl.trim() || isSubmitting}
+                className="relative flex-1 h-12 border border-[#0354e0] rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-['Inter',sans-serif] font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center overflow-hidden"
+                style={{
+                  backgroundImage: websiteUrl.trim() ? 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)' : 'linear-gradient(-23.46deg, rgba(21, 102, 241, 0.5) 54.842%, rgba(71, 147, 253, 0.5) 98.573%)'
+                }}
+              >
+                {/* Glass effect inset shadows */}
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
+                {isSubmitting ? 'Submitting...' : buttonText}
+              </button>
+
+              <button
+                onClick={handleSkip}
+                disabled={isSubmitting}
+                className="px-6 h-12 text-[#40566d] font-['Inter',sans-serif] font-medium text-[14px] hover:text-[#192839] transition-colors disabled:opacity-50"
+              >
+                {skipText}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   // 25. Ray AI Message (Standard Blocks, Max Width 398px)
   return (
     <div className="flex gap-4 items-start w-full max-w-[398px] animate-fade-in-up">

@@ -807,6 +807,61 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
       return;
     }
 
+    // Handle KYC flow progression
+    if (activeFlow === 'kyc_onboarding') {
+      if (suggestion.toLowerCase().includes('looks good') || suggestion.toLowerCase().includes('continue')) {
+        if (kycFlowStep === 3) {
+          // Progress from business details to website URL step
+          setMessages(prev => [...prev, {
+            id: `kyc-ai-4`,
+            sender: 'ai' as const,
+            ...kycScript.kyc_step_4
+          }]);
+          setKycFlowStep(4);
+          return;
+        }
+      }
+
+      // Handle website URL submission
+      if (suggestion.startsWith('website:')) {
+        const websiteUrl = suggestion.replace('website:', '');
+        setMessages(prev => [...prev, {
+          id: `kyc-u-website`,
+          sender: 'user' as const,
+          blocks: [{ type: 'text', content: websiteUrl }]
+        }]);
+        // TODO: Progress to next step (business model confirmation)
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            id: `kyc-ai-5`,
+            sender: 'ai' as const,
+            ...kycScript.kyc_step_5
+          }]);
+          setKycFlowStep(5);
+        }, 800);
+        return;
+      }
+
+      // Handle skip website
+      if (suggestion === 'skip_website') {
+        setMessages(prev => [...prev, {
+          id: `kyc-u-skip-website`,
+          sender: 'user' as const,
+          blocks: [{ type: 'text', content: 'Skip for now' }]
+        }]);
+        // TODO: Alternative flow without website
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            id: `kyc-ai-4-no-website`,
+            sender: 'ai' as const,
+            ...kycScript.kyc_step_4_no_website
+          }]);
+          setKycFlowStep(4.5); // Alternative path
+        }, 800);
+        return;
+      }
+    }
+
     // Handle Arjun's Add Funds suggestion
     if (suggestion.toLowerCase().includes('add funds')) {
       // Extract amount: "Add funds worth ₹46,000"
@@ -1894,19 +1949,20 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                      artifact: {
                        type: 'kyc_business_details',
                        data: {
-                         headline: "Great news ,we've retrieved your official business details linked to PAN XXXXXXXX.",
+                         headline: "Great news, we've retrieved your official business details linked to PAN XXXXXXXX.",
                          subtext: "Take a quick look to confirm everything's up to date before we continue.",
-                         businessName: "Ishan Nahatha",
+                         businessName: "Co-Star Network",
                          verificationBadge: "Verified via CKYC",
                          documents: [
                            { name: "Aadhar Front", type: "document" },
                            { name: "Aadhar back", type: "document" },
                            { name: "Registered address", type: "document" }
                          ],
-                         suggestions: []
+                         suggestions: ["Looks good, continue"]
                        }
                      }
                    }]);
+                   setKycFlowStep(3);
                  }, 10000);
                }, 600);
              }, 600);
