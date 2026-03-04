@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Check, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Check } from 'lucide-react';
 import Ray from '@/imports/Ray';
 
 const BUSINESS_CATEGORY_STEPS = [
@@ -48,14 +48,14 @@ export const BusinessCategoryLoadingState: React.FC<BusinessCategoryLoadingState
       {/* Ray Logo */}
       <motion.div
         className="w-4 h-4 shrink-0 mt-0.5"
+        style={{ '--fill-0': '#2563EB' } as React.CSSProperties}
         animate={{
-          rotate: [0, 90, 90, 180, 180, 270, 270, 360]
+          rotate: 360
         }}
         transition={{
-          duration: 2,
+          duration: 3,
           repeat: Infinity,
-          ease: [0.4, 0, 0.2, 1],
-          times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1]
+          ease: 'linear'
         }}
       >
         <Ray static />
@@ -72,40 +72,75 @@ export const BusinessCategoryLoadingState: React.FC<BusinessCategoryLoadingState
             <motion.div
               key={step}
               initial={{ opacity: 0, x: -5 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.3 }}
+              animate={{
+                opacity: isPending ? 0.5 : 1,
+                x: 0
+              }}
+              transition={{
+                delay: index * 0.1,
+                duration: 0.4,
+                ease: [0.4, 0, 0.2, 1],
+                opacity: { duration: 0.3 }
+              }}
               className="flex items-center gap-2 py-0.5"
             >
               {/* Icon */}
               <div className="w-4 h-4 shrink-0 flex items-center justify-center">
-                {isCompleted && (
-                  <Check size={12} className="text-[#04c982]" strokeWidth={2.5} />
-                )}
-                {isActive && (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <X size={12} className="text-[#04c982]" strokeWidth={2.5} />
-                  </motion.div>
-                )}
+                <AnimatePresence mode="wait">
+                  {isCompleted && (
+                    <motion.div
+                      key="check"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                    >
+                      <Check size={12} className="text-[#04c982]" strokeWidth={2.5} />
+                    </motion.div>
+                  )}
+                  {isActive && (
+                    <motion.div
+                      key="active"
+                      className="w-3 h-3"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{
+                        scale: 1,
+                        opacity: 1,
+                        rotate: 360
+                      }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{
+                        scale: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+                        opacity: { duration: 0.2 },
+                        rotate: { duration: 2, repeat: Infinity, ease: 'linear' }
+                      }}
+                      style={{ '--fill-0': '#04c982' } as React.CSSProperties}
+                    >
+                      <Ray static />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Step Text */}
-              <span
+              <motion.span
                 className="text-[14px] leading-[20px] tracking-[0px] font-['Inter',sans-serif] font-medium"
+                animate={{
+                  opacity: isPending ? 0.5 : 1
+                }}
+                transition={{ duration: 0.3 }}
                 style={{
                   background: isActive || isCompleted
                     ? 'linear-gradient(90deg, #04c982 0%, #2581fb 100%)'
-                    : '#7d7d7d',
+                    : '#cbd5e0',
                   WebkitBackgroundClip: isActive || isCompleted ? 'text' : 'unset',
                   backgroundClip: isActive || isCompleted ? 'text' : 'unset',
-                  WebkitTextFillColor: isActive || isCompleted ? 'transparent' : '#7d7d7d',
-                  color: isActive || isCompleted ? 'transparent' : '#7d7d7d'
+                  WebkitTextFillColor: isActive || isCompleted ? 'transparent' : '#cbd5e0',
+                  color: isActive || isCompleted ? 'transparent' : '#cbd5e0'
                 }}
               >
                 {step}
-              </span>
+              </motion.span>
             </motion.div>
           );
         })}
