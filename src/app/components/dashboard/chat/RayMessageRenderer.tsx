@@ -181,6 +181,7 @@ export interface RayResponseData {
       headline?: string;
       body: string;
       suggestions?: string[];
+      button?: { label: string; variant?: 'primary' | 'secondary' };
     };
   } | {
     type: 'bullet_list_with_buttons';
@@ -1131,16 +1132,17 @@ const SimpleTextArtifact = ({
   onSuggestionClick,
   highlightedSuggestionIndex = null
 }: {
-  data: { headline?: string; body: string; suggestions?: string[] };
+  data: { headline?: string; body: string; suggestions?: string[]; button?: { label: string; variant?: 'primary' | 'secondary' } };
   isLast: boolean;
   onSuggestionClick?: (suggestion: string) => void;
   highlightedSuggestionIndex?: number | null;
 }) => {
   const [bodyStarted, setBodyStarted] = useState(false);
   const [bodyComplete, setBodyComplete] = useState(false);
+  const [showButton, setShowButton] = useState(false);
 
   const { phase, onNarrativeComplete } = useStreamSequencer({
-    hasDataAsset: false,
+    hasDataAsset: !!data.button,
     hasInsight: false,
     hasSuggestions: !!data.suggestions?.length,
     thinkingDuration: 2000  // 2 seconds for simple text
@@ -1165,6 +1167,13 @@ const SimpleTextArtifact = ({
     setBodyComplete(true);
     onNarrativeComplete();
   }, [onNarrativeComplete]);
+
+  // Show button after narrative completes (phase 2)
+  useEffect(() => {
+    if (phase >= 2 && data.button) {
+      setShowButton(true);
+    }
+  }, [phase, data.button]);
 
   return (
     <motion.div
@@ -1201,6 +1210,28 @@ const SimpleTextArtifact = ({
             style="glow"
             onComplete={handleBodyComplete}
           />
+        </motion.div>
+      )}
+
+      {/* Action Button (appears after body completes) */}
+      {showButton && data.button && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-2"
+        >
+          <button
+            onClick={() => onSuggestionClick?.(data.button!.label)}
+            className={clsx(
+              'px-4 py-2 rounded-lg font-medium text-[14px] transition-all duration-200',
+              data.button.variant === 'secondary'
+                ? 'bg-[#f1f5fa] text-[#40566d] hover:bg-[#e2e8f0] border border-[#e2e8f0]'
+                : 'bg-[#2563EB] text-white hover:bg-[#1d4ed8] shadow-sm'
+            )}
+          >
+            {data.button.label}
+          </button>
         </motion.div>
       )}
 

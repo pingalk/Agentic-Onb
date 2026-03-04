@@ -2131,7 +2131,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                    data: {
                      headline: "Thanks, we have got everything we needed.",
                      body: "Please review your details once before submitting your application.",
-                     suggestions: ["Review details"]
+                     button: { label: "Review details", variant: "primary" }
                    }
                  }
                }]);
