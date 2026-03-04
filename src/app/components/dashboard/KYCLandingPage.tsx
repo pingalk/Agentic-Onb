@@ -19,6 +19,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const [animPhase, setAnimPhase] = useState(0);
   const [loadingOpacity, setLoadingOpacity] = useState(1);
   const [welcomeOpacity, setWelcomeOpacity] = useState(1);
+  const [panOpacity, setPanOpacity] = useState(1);
+  const [panConfirmOpacity, setPanConfirmOpacity] = useState(1);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const panTransitionVideoRef = React.useRef<HTMLVideoElement>(null);
   const loadingVideoRef = React.useRef<HTMLVideoElement>(null);
@@ -59,20 +61,32 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const handlePanSubmit = () => {
     if (panNumber.length === 10) {
       setIsSubmitting(true);
+
+      // Start fade out immediately
+      setPanOpacity(0);
+
+      // Transition to panConfirm after fade completes
       setTimeout(() => {
         setIsSubmitting(false);
         setStep('panConfirm');
         setAnimPhase(3); // Reset to show card
-      }, 800);
+        setPanOpacity(1); // Reset for next time
+      }, 500);
     }
   };
 
   const handlePanConfirm = () => {
     setIsSubmitting(true);
+
+    // Start fade out immediately
+    setPanConfirmOpacity(0);
+
+    // Transition to loading after fade completes
     setTimeout(() => {
       setIsSubmitting(false);
       setStep('loading');
-    }, 800);
+      setPanConfirmOpacity(1); // Reset for next time
+    }, 500);
   };
 
   const handleSkipLoading = () => {
@@ -217,9 +231,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             <motion.div
               key="pan"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: panOpacity }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
               className="space-y-8"
             >
               {/* PAN Entry Card - Figma glass morphism style */}
@@ -309,9 +323,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             <motion.div
               key="panConfirm"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: panConfirmOpacity }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
               className="space-y-8"
             >
               {/* PAN Confirmation Card - Figma glass morphism style */}
@@ -417,7 +431,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               initial={{ opacity: 0 }}
               animate={{ opacity: loadingOpacity }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
               className="fixed inset-0 flex items-center justify-center"
               style={{ backgroundColor: '#f8f8f8' }}
             >
