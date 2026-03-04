@@ -8,12 +8,14 @@ interface UPIVerificationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: () => void;
+  onMockPayment?: () => void;
 }
 
 export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
   isOpen,
   onClose,
-  onComplete
+  onComplete,
+  onMockPayment
 }) => {
   const [step, setStep] = useState<'qr' | 'success'>('qr');
 
@@ -25,6 +27,11 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
   }, [isOpen]);
 
   const handleMockPayment = () => {
+    // Call the onMockPayment callback first (to send user message)
+    if (onMockPayment) {
+      onMockPayment();
+    }
+
     setStep('success');
 
     // Auto-close after 2 seconds and trigger completion

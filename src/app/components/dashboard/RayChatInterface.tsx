@@ -2073,17 +2073,26 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
          <UPIVerificationModal
            isOpen={isUPIModalOpen}
            onClose={() => setIsUPIModalOpen(false)}
-           onComplete={() => {
-             // Show success message in chat
+           onMockPayment={() => {
+             // Send user message
              setMessages(prev => [...prev, {
-               id: `kyc-bank-success-${Date.now()}`,
+               id: `kyc-payment-u-${Date.now()}`,
+               sender: 'user' as const,
+               blocks: [{ type: 'text', content: 'Payment completed via UPI' }]
+             }]);
+           }}
+           onComplete={() => {
+             // Show bank account card
+             setMessages(prev => [...prev, {
+               id: `kyc-bank-account-${Date.now()}`,
                sender: 'ai',
                artifact: {
-                 type: 'simple_text',
+                 type: 'bank_account_card',
                  data: {
-                   headline: "Bank details verified successfully!",
-                   body: "Your bank account has been linked and is ready to receive payments.",
-                   suggestions: []
+                   bankName: 'HDFC Bank account',
+                   accountNumber: '2383237283283287372HA',
+                   ifscCode: 'SBI78236287362326663',
+                   accountName: 'Chinnaswamy Muthuswamy Venugopal Iyer'
                  }
                }
              }]);

@@ -7,6 +7,7 @@ import { AddFundsMiniCard } from './AddFundsMiniCard';
 import { CaptureSettingsMiniCard } from './CaptureSettingsMiniCard';
 import { BusinessCategoryCard } from './BusinessCategoryCard';
 import { BankVerificationCard } from './BankVerificationCard';
+import { BankAccountCard } from './BankAccountCard';
 import { FundsAddedCard } from './artifacts/FundsAddedCard';
 import { FundsAddedHeader, FundsAddedBody, SettlementCard, RayInsightCard } from './artifacts/FundsAddedComponents';
 import { ConfigurableSettlementCard, SettlementStatusTable, FeeCalculatorCard } from './artifacts/SettlementComponents';
@@ -446,6 +447,14 @@ export interface RayResponseData {
   } | {
     type: 'bank_verification_card';
     data: {};
+  } | {
+    type: 'bank_account_card';
+    data: {
+      bankName?: string;
+      accountNumber?: string;
+      ifscCode?: string;
+      accountName?: string;
+    };
   };
 }
 
@@ -5365,6 +5374,27 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     return (
       <div className="w-full max-w-[680px] animate-fade-in-up">
         <BankVerificationCard onVerify={handleVerify} />
+      </div>
+    );
+  }
+
+  // 24.9. Bank Account Card
+  if (data.artifact?.type === 'bank_account_card') {
+    const { bankName, accountNumber, ifscCode, accountName } = data.artifact.data;
+
+    const handleChangeAccount = () => {
+      onSuggestionClick?.('change_bank_account');
+    };
+
+    return (
+      <div className="w-full max-w-[680px] animate-fade-in-up">
+        <BankAccountCard
+          bankName={bankName}
+          accountNumber={accountNumber}
+          ifscCode={ifscCode}
+          accountName={accountName}
+          onChangeAccount={handleChangeAccount}
+        />
       </div>
     );
   }
