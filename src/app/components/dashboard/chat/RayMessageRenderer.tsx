@@ -136,6 +136,7 @@ export interface RayResponseData {
   id: string;
   sender: 'user' | 'ai';
   headline?: string;     // Optional Top Headline
+  subtext?: string;      // Optional subtext below headline
   blocks?: ContentBlock[]; // Flexible array of content
   suggestions?: string[];
   isThinking?: boolean;
