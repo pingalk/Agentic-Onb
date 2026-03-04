@@ -1572,7 +1572,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
       <motion.div
         className="flex flex-col h-full relative w-full"
         animate={{
-          x: isKYCPanelSettled ? -212.5 : 0
+          x: isKYCPanelSettled ? -200.5 : 0
         }}
         transition={{
           type: 'spring',

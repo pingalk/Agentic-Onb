@@ -95,7 +95,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               scale: 1,
               y: 0,
               x: 0,
-              height: 'calc(100vh - 64px)'
+              height: 'calc(100vh - 64px - 8px)'
             } : {
               opacity: 1,
               scale: 1,
@@ -116,12 +116,14 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               height: { type: 'spring', stiffness: 200, damping: 25 }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[393px] overflow-hidden z-[9999]"
+            className={`bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] ${
+              hasSlid ? 'shadow-sm' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]'
+            }`}
             style={{
               position: 'fixed',
               ...(hasSlid ? {
-                right: '32px',
-                top: '32px',
+                right: '8px',
+                top: '64px',
                 left: 'auto'
               } : {
                 left: '50%',
