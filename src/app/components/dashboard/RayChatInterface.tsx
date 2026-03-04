@@ -6,6 +6,7 @@ import { PaymentLinkPrefill, parsePaymentLinkIntent } from './chat/PaymentLinkWi
 import { PaymentLinkModal } from './chat/PaymentLinkModal';
 import { SourceRect } from './chat/PaymentLinkMiniCard';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
+import { KYCOTPModal } from './chat/KYCOTPModal';
 import { FloatingImageUpload } from './FloatingImageUpload';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
 import { RayInputBox } from './RayInputBox';
@@ -127,6 +128,10 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // Capture Settings Modal States
   const [isCaptureSettingsModalOpen, setIsCaptureSettingsModalOpen] = useState(false);
   const [activeCaptureCardId, setActiveCaptureCardId] = useState<string | null>(null);
+
+  // KYC OTP Modal States
+  const [isKYCOTPModalOpen, setIsKYCOTPModalOpen] = useState(false);
+  const [kycPhoneNumber, setKycPhoneNumber] = useState('2828');
 
   // Input Box States
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -790,6 +795,12 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
     // Handle "That's all for now" - navigate back to home
     if (suggestion.toLowerCase().includes("that's all")) {
       onGoHome?.();
+      return;
+    }
+
+    // Handle KYC OTP verification
+    if (suggestion === 'verify_otp' || suggestion.toLowerCase().includes('verify with an otp')) {
+      setIsKYCOTPModalOpen(true);
       return;
     }
 
@@ -1813,6 +1824,35 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                }, 500);
              }
            }}
+         />
+
+         {/* KYC OTP Verification Modal */}
+         <KYCOTPModal
+           isOpen={isKYCOTPModalOpen}
+           onClose={() => {
+             setIsKYCOTPModalOpen(false);
+           }}
+           onVerify={(otp) => {
+             console.log('OTP verified:', otp);
+             setIsKYCOTPModalOpen(false);
+
+             // TODO: Show next step in KYC flow (document verification)
+             setTimeout(() => {
+               setMessages(prev => [...prev, {
+                 id: `kyc-ai-${Date.now()}`,
+                 sender: 'ai',
+                 artifact: {
+                   type: 'simple_text',
+                   data: {
+                     headline: "OTP verified successfully!",
+                     body: "Your details have been fetched from CKYC. Let's proceed with the document verification.",
+                     suggestions: []
+                   }
+                 }
+               }]);
+             }, 500);
+           }}
+           phoneNumber={kycPhoneNumber}
          />
 
          {/* Top Fade Gradient */}
