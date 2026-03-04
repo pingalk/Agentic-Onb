@@ -885,15 +885,6 @@ Maya`,
         kyc_step_4: {
             headline: "Share the link to your website",
             subtext: "Website live? Drop the link here. No pressure if it isn't handy—you can add it later. I only suggest doing it now to fast-track your activation.",
-            artifact: {
-                type: 'kyc_website_input',
-                data: {
-                    heading: 'Website URL',
-                    placeholder: 'https://example.com',
-                    buttonText: 'Continue',
-                    skipText: 'Skip for now'
-                }
-            },
             suggestions: []
         },
         kyc_step_5: {
