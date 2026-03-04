@@ -5210,7 +5210,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           {/* Text Content */}
           <div className="flex-1">
             {headline && (
-              <h3 className="font-['TASA_Orbiter_Deck',sans-serif] text-[24px] font-semibold text-[#020202] leading-[32px] tracking-[-0.72px] mb-2">
+              <h3 className="font-['TASA_Orbiter_Deck',sans-serif] text-[18px] font-semibold text-[#020202] leading-[26px] tracking-[-0.54px] mb-1">
                 <PerplexityStreamText
                   content={headline}
                   onComplete={() => {
@@ -5220,7 +5220,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
               </h3>
             )}
             {subtextStarted && subtext && (
-              <p className="text-[16px] text-[#40566d] leading-[24px] tracking-[-0.182px]">
+              <p className="text-[14px] text-[#40566d] leading-[20px] tracking-[-0.14px]">
                 <PerplexityStreamText
                   content={subtext}
                   onComplete={() => {

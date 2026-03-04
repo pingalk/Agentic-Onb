@@ -16,28 +16,8 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   onSettled
 }) => {
   const [hasSlid, setHasSlid] = React.useState(false);
-  const [centerOffsetX, setCenterOffsetX] = React.useState(0);
 
-  // Calculate offset needed to center modal from right-anchored position
-  React.useEffect(() => {
-    const calculateOffset = () => {
-      const viewportWidth = window.innerWidth;
-      const modalWidth = 393;
-      const rightPadding = 8;
-      // Modal is anchored at right: 8px
-      // To center it, we need to move it left by: (viewportWidth/2) - (modalWidth/2) - rightPadding
-      const centerPosition = (viewportWidth - modalWidth) / 2;
-      const rightPosition = viewportWidth - modalWidth - rightPadding;
-      const offset = -(rightPosition - centerPosition);
-      setCenterOffsetX(offset);
-    };
-
-    calculateOffset();
-    window.addEventListener('resize', calculateOffset);
-    return () => window.removeEventListener('resize', calculateOffset);
-  }, []);
-
-  // Reset slide state when modal closes and notify parent
+  // Slide to right panel after 3 seconds, then notify parent
   React.useEffect(() => {
     if (isOpen) {
       // Wait 3 seconds as modal, then trigger slide to right
@@ -105,7 +85,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               scale: { type: 'spring', stiffness: 300, damping: 30 },
               height: { type: 'spring', stiffness: 200, damping: 25, duration: 0.5 }
             }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
             className={`bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] transition-all duration-500 ${
               hasSlid ? 'shadow-sm' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]'
             }`}
