@@ -50,62 +50,72 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[393px] max-h-[90vh] overflow-y-auto"
+            className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[393px] max-h-[90vh] overflow-hidden"
           >
-            {/* Top gradient overlay */}
-            <div className="absolute top-[-1.5px] left-[-1.5px] right-[-1.5px] h-[16px] pointer-events-none mix-blend-darken">
-              <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-transparent rounded-t-[16px]" />
+            {/* Top gradient overlay for depth */}
+            <div className="absolute top-0 left-0 right-0 h-[24px] pointer-events-none z-20">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent" />
             </div>
 
-            {/* Bottom gradient overlay */}
-            <div className="absolute bottom-[-1.5px] left-[-1.5px] right-[-1.5px] h-[16px] pointer-events-none mix-blend-darken">
-              <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent rounded-b-[16px]" />
+            {/* Bottom gradient overlay for depth */}
+            <div className="absolute bottom-0 left-0 right-0 h-[24px] pointer-events-none z-20">
+              <div className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent" />
             </div>
 
-            {/* Content */}
-            <div className="relative p-6">
+            {/* Scrollable Content */}
+            <div className="relative overflow-y-auto max-h-[90vh] p-6">
               {/* CKYC Card */}
-              <div className="border border-[rgba(108,132,157,0.18)] rounded-[12px] overflow-hidden">
+              <div className="border border-[rgba(108,132,157,0.18)] rounded-[12px] overflow-hidden bg-white shadow-sm">
                 {/* Header Image Section */}
-                <div className="relative h-[121px] rounded-t-[8px] overflow-hidden">
-                  {/* Placeholder image with gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a] via-[#3b82f6] to-[#60a5fa]" />
-                  <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)]" />
+                <div className="relative h-[121px] rounded-t-[12px] overflow-hidden">
+                  {/* Blurred background image */}
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{
+                      backgroundImage: 'url(https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop)',
+                      filter: 'blur(8px)',
+                      transform: 'scale(1.1)'
+                    }}
+                  />
+
+                  {/* Gradient overlay for better text contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/80 via-[#3b82f6]/75 to-[#60a5fa]/70" />
+                  <div className="absolute inset-0 bg-[rgba(0,0,0,0.25)]" />
 
                   {/* Text overlay */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                    <h3 className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[24px] leading-[32px] tracking-[0px] mb-1">
+                  <div className="relative z-10 h-full flex flex-col items-center justify-center text-white">
+                    <h3 className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[24px] leading-[32px] tracking-[0px] mb-1 drop-shadow-lg">
                       Co-Star Network
                     </h3>
-                    <p className="font-['Inter',sans-serif] font-medium text-[10px] leading-[16px] tracking-[1px] text-white/88 uppercase">
+                    <p className="font-['Inter',sans-serif] font-medium text-[10px] leading-[16px] tracking-[1px] text-white/90 uppercase drop-shadow-md">
                       A PRIVATE LIMITED COMPANY
                     </p>
                   </div>
                 </div>
 
                 {/* Details Section */}
-                <div className="p-4 space-y-4">
+                <div className="p-5 space-y-4">
                   {details.map((detail, index) => (
                     <div key={index}>
-                      <div className="flex gap-2 items-start">
-                        <p className="font-['Inter',sans-serif] font-normal text-[10px] leading-[14px] text-[#40566d] opacity-50 w-[120px] shrink-0">
+                      <div className="flex gap-3 items-start">
+                        <p className="font-['Inter',sans-serif] font-normal text-[11px] leading-[16px] text-[#40566d] opacity-60 w-[128px] shrink-0">
                           {detail.label}
                         </p>
-                        <div className="flex-1 flex items-start justify-between gap-1 min-w-0">
-                          <p className={`font-['Inter',sans-serif] font-medium text-[10px] leading-[14px] tracking-[0px] flex-1 min-w-0 break-words ${
+                        <div className="flex-1 flex items-start justify-between gap-2 min-w-0">
+                          <p className={`font-['Inter',sans-serif] font-medium text-[11px] leading-[16px] tracking-[0px] flex-1 min-w-0 break-words ${
                             detail.verified ? 'text-[#192839]' : 'text-[#768ea7]'
                           }`}>
                             {detail.value}
                           </p>
                           {detail.verified && (
-                            <div className="shrink-0 w-3 h-3 flex items-center justify-center">
-                              <Check size={9} className="text-[#04c982]" strokeWidth={2.5} />
+                            <div className="shrink-0 w-3.5 h-3.5 flex items-center justify-center">
+                              <Check size={10} className="text-[#04c982]" strokeWidth={2.5} />
                             </div>
                           )}
                         </div>
                       </div>
                       {index < details.length - 1 && (
-                        <div className="h-[1px] bg-[rgba(0,0,0,0.1)] mt-4" />
+                        <div className="h-[1px] bg-[rgba(0,0,0,0.08)] mt-4" />
                       )}
                     </div>
                   ))}
