@@ -1256,6 +1256,21 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
     const text = inputValue.toLowerCase();
     const userQuestion = inputValue;
 
+    // KYC Flow: Handle website URL input at step 4
+    if (activeFlow === 'kyc_onboarding' && kycFlowStep === 4) {
+      // Check if input looks like a URL or skip command
+      if (text.includes('skip') || text.includes('later')) {
+        handleSuggestionClick('skip_website');
+        setInputValue('');
+        return;
+      } else if (text.includes('.com') || text.includes('.in') || text.includes('.co') || text.includes('http')) {
+        // Treat as website URL
+        handleSuggestionClick(`website:${userQuestion}`);
+        setInputValue('');
+        return;
+      }
+    }
+
     // Query-based routing: Detect flow type from input and trigger appropriate flow
     const detectedFlow = detectFlowType(text);
     if (detectedFlow && activeFlow !== detectedFlow && messages.length === 0) {
