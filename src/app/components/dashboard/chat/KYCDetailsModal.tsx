@@ -93,7 +93,6 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               opacity: 1,
               scale: 1,
               x: hasSlid ? slideDistance : 0,
-              y: hasSlid ? 0 : 0,
               height: hasSlid ? 'calc(100vh - 64px - 8px)' : 'auto'
             }}
             exit={{
@@ -105,7 +104,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               opacity: { duration: 0.2 },
               scale: { type: 'spring', stiffness: 300, damping: 30 },
               y: { type: 'spring', stiffness: 300, damping: 30 },
-              x: { type: 'spring', stiffness: 200, damping: 25, duration: 0.6 },
+              x: { type: 'spring', stiffness: 200, damping: 25 },
               height: { type: 'spring', stiffness: 200, damping: 25 }
             }}
             onClick={(e) => e.stopPropagation()}
@@ -116,8 +115,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               position: 'fixed',
               left: '50%',
               top: hasSlid ? '64px' : '50%',
-              translateX: '-50%',
-              translateY: hasSlid ? '0%' : '-50%'
+              transform: hasSlid ? 'translateX(-50%)' : 'translate(-50%, -50%)'
             }}
           >
             {/* Top gradient overlay for depth */}
