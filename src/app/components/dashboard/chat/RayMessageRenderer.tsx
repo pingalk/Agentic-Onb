@@ -21,6 +21,7 @@ import { StreamingBulletList } from './StreamingBulletList';
 import { AnimatedLoadingCard } from './AnimatedLoadingCard';
 import { useTimingSettingsOptional } from '@/context/TimingSettingsContext';
 import { SparkRipplesBackground } from '../SparkRipplesBackground';
+import { KYCDetailsModal } from './KYCDetailsModal';
 
 // --- Elegant Tooltip Component ---
 const Tooltip = ({ children, text, position = 'top' }: { children: React.ReactNode; text: string; position?: 'top' | 'bottom' | 'left' | 'right' }) => {
@@ -5031,6 +5032,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const { headline, subtext, businessName, verificationBadge, documents } = data.artifact.data;
     const [isStreaming, setIsStreaming] = React.useState(true);
     const [subtextStarted, setSubtextStarted] = React.useState(false);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     return (
       <div className="w-full animate-fade-in-up">
@@ -5083,7 +5085,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.4 }}
-          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden w-[531px]"
+          onClick={() => setIsModalOpen(true)}
+          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden w-[531px] cursor-pointer hover:shadow-[0px_8px_56px_8px_rgba(59,96,181,0.15)] transition-shadow duration-200"
         >
           {/* Inset shadow for depth */}
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
@@ -5143,6 +5146,13 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             <SuggestionStack items={data.artifact.data.suggestions} />
           </div>
         )}
+
+        {/* KYC Details Modal */}
+        <KYCDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          businessName={businessName}
+        />
       </div>
     );
   }
