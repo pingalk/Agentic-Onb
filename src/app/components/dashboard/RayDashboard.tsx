@@ -221,6 +221,12 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
     if (kycPhoneData) {
       setView('chat');
       setLastQuery('Start KYC onboarding');
+      setViewTransition('entering'); // Trigger fade-in animation
+
+      // Reset transition state after animation completes
+      setTimeout(() => {
+        setViewTransition('idle');
+      }, 600);
     }
   }, [kycPhoneData]);
 

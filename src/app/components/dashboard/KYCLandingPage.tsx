@@ -18,6 +18,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
   const [loadingOpacity, setLoadingOpacity] = useState(1);
+  const [welcomeOpacity, setWelcomeOpacity] = useState(1);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const panTransitionVideoRef = React.useRef<HTMLVideoElement>(null);
   const loadingVideoRef = React.useRef<HTMLVideoElement>(null);
@@ -102,11 +103,20 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Auto-transition from welcome to Ray chat interface after 3 seconds
   useEffect(() => {
     if (step === 'welcome') {
-      const timer = setTimeout(() => {
-        // Transition to Ray chat interface
+      // Start fade out at 2.5 seconds
+      const fadeTimer = setTimeout(() => {
+        setWelcomeOpacity(0);
+      }, 2500);
+
+      // Transition to Ray chat interface at 3 seconds (after fade completes)
+      const transitionTimer = setTimeout(() => {
         onPhoneSubmit(panNumber, '');
       }, 3000);
-      return () => clearTimeout(timer);
+
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(transitionTimer);
+      };
     }
   }, [step, panNumber, onPhoneSubmit]);
 
@@ -442,9 +452,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             <motion.div
               key="welcome"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: welcomeOpacity }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.5 }}
               className="fixed inset-0 flex flex-col items-center justify-center gap-8"
               style={{ backgroundColor: '#f8f8f8' }}
             >

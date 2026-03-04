@@ -1742,13 +1742,16 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
       {/* Main Chat Container - shifts left when KYC panel is settled */}
       <motion.div
         className="flex flex-col h-full relative w-full"
+        initial={isEntering ? { opacity: 0 } : false}
         animate={{
-          x: isKYCPanelSettled ? -200.5 : 0
+          x: isKYCPanelSettled ? -200.5 : 0,
+          opacity: 1
         }}
         transition={{
           type: 'spring',
           stiffness: 200,
-          damping: 25
+          damping: 25,
+          opacity: { duration: 0.5, ease: 'easeInOut' }
         }}
       >
         {/* 1. Scrollable Chat Area */}
