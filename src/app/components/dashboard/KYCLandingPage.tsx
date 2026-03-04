@@ -358,7 +358,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         ref={panTransitionVideoRef}
                         className="absolute object-cover"
                         style={{
-                          width: 'calc(100% + 8px)',
+                          width: 'calc(100% + 7px)',
                           height: 'calc(100% + 2px)',
                           left: '-4px',
                           top: '-1px'
