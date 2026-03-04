@@ -1833,24 +1833,61 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
              setIsKYCOTPModalOpen(false);
            }}
            onVerify={(otp) => {
-             console.log('OTP verified:', otp);
              setIsKYCOTPModalOpen(false);
 
-             // TODO: Show next step in KYC flow (document verification)
+             // Show OTP as user message
+             setMessages(prev => [...prev, {
+               id: `kyc-otp-u-${Date.now()}`,
+               sender: 'user',
+               blocks: [{ type: 'text', content: otp }]
+             }]);
+
+             // Show "OTP verified" message
              setTimeout(() => {
                setMessages(prev => [...prev, {
-                 id: `kyc-ai-${Date.now()}`,
+                 id: `kyc-verified-${Date.now()}`,
                  sender: 'ai',
                  artifact: {
                    type: 'simple_text',
                    data: {
-                     headline: "OTP verified successfully!",
-                     body: "Your details have been fetched from CKYC. Let's proceed with the document verification.",
+                     headline: "OTP verified",
+                     body: "",
                      suggestions: []
                    }
                  }
                }]);
-             }, 500);
+
+               // Start KYC loading state
+               setTimeout(() => {
+                 setIsStreaming(true);
+                 setMessages(prev => [...prev, {
+                   id: `kyc-loading-${Date.now()}`,
+                   sender: 'ai',
+                   isThinking: true,
+                   kycLoading: true // Flag to indicate KYC-specific loading
+                 }]);
+
+                 // Simulate KYC verification (10 seconds)
+                 setTimeout(() => {
+                   setIsStreaming(false);
+                   setMessages(prev => prev.filter(m => !m.isThinking));
+
+                   // Show KYC success message
+                   setMessages(prev => [...prev, {
+                     id: `kyc-success-${Date.now()}`,
+                     sender: 'ai',
+                     artifact: {
+                       type: 'simple_text',
+                       data: {
+                         headline: "KYC details fetched successfully!",
+                         body: "Your details have been retrieved from CKYC. Let's proceed with the next steps.",
+                         suggestions: []
+                       }
+                     }
+                   }]);
+                 }, 10000);
+               }, 600);
+             }, 600);
            }}
            phoneNumber={kycPhoneNumber}
          />

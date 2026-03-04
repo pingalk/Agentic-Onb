@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import clsx from 'clsx';
 import { PerplexityStreamText } from './PerplexityStreamingTypography';
 import { ChainOfThought } from '../ChainOfThought';
+import { KYCLoadingState } from '../KYCLoadingState';
 import { useStreamSequencer } from '../useStreamSequencer';
 import { SmartHighlight, SmartHighlightWithBold } from './SmartHighlight';
 import { StreamingBulletList } from './StreamingBulletList';
@@ -133,6 +134,7 @@ export interface RayResponseData {
   blocks?: ContentBlock[]; // Flexible array of content
   suggestions?: string[];
   isThinking?: boolean;
+  kycLoading?: boolean; // When true, shows KYC-specific loading steps
   skipAutoScroll?: boolean; // When true, global scroll effects will skip this message
   resolution?: { title: string; content: string };
   artifact?: {
@@ -4530,6 +4532,10 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
   // 2. Ray Thinking State
   if (data.isThinking) {
+    // Show KYC-specific loading state if flagged
+    if (data.kycLoading) {
+      return <KYCLoadingState />;
+    }
     return <ChainOfThought mode="waiting" />;
   }
 
