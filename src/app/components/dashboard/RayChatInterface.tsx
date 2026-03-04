@@ -8,6 +8,7 @@ import { SourceRect } from './chat/PaymentLinkMiniCard';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
 import { KYCOTPModal } from './chat/KYCOTPModal';
 import { UPIVerificationModal } from './chat/UPIVerificationModal';
+import { KYCReviewModal } from './chat/KYCReviewModal';
 import { FloatingImageUpload } from './FloatingImageUpload';
 import { BusinessCategoryLoadingState } from './BusinessCategoryLoadingState';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
@@ -137,6 +138,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
   // UPI Verification Modal States
   const [isUPIModalOpen, setIsUPIModalOpen] = useState(false);
+
+  // KYC Review Modal States
+  const [isKYCReviewModalOpen, setIsKYCReviewModalOpen] = useState(false);
 
   // Input Box States
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -897,6 +901,12 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
       // Handle bank verification via UPI
       if (suggestion === 'verify_bank_upi') {
         setIsUPIModalOpen(true);
+        return;
+      }
+
+      // Handle review details
+      if (suggestion === 'Review details') {
+        setIsKYCReviewModalOpen(true);
         return;
       }
 
@@ -2106,7 +2116,50 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                  }
                }
              }]);
+
+             // Show final review message after a short delay
+             setTimeout(() => {
+               setMessages(prev => [...prev, {
+                 id: `kyc-final-review-${Date.now()}`,
+                 sender: 'ai',
+                 artifact: {
+                   type: 'simple_text',
+                   data: {
+                     headline: "Thanks, we have got everything we needed.",
+                     body: "Please review your details once before submitting your application.",
+                     suggestions: ["Review details"]
+                   }
+                 }
+               }]);
+             }, 1000);
+
              setKycFlowStep(6);
+           }}
+         />
+
+         {/* KYC Review Modal */}
+         <KYCReviewModal
+           isOpen={isKYCReviewModalOpen}
+           onClose={() => setIsKYCReviewModalOpen(false)}
+           businessModel={kycBusinessModel}
+           bankAccount={kycBankAccount}
+           onSubmit={() => {
+             setIsKYCReviewModalOpen(false);
+
+             // Show submission success message
+             setMessages(prev => [...prev, {
+               id: `kyc-submitted-${Date.now()}`,
+               sender: 'ai',
+               artifact: {
+                 type: 'simple_text',
+                 data: {
+                   headline: "Application submitted successfully!",
+                   body: "Your application is now under review. We'll notify you once it's approved.",
+                   suggestions: []
+                 }
+               }
+             }]);
+             setKycFlowStep(7);
            }}
          />
 
