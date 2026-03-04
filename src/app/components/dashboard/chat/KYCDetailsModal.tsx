@@ -73,8 +73,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             }}
             animate={{
               opacity: 1,
-              scale: 1,
-              height: hasSlid ? 'calc(100vh - 64px - 8px)' : 'auto'
+              scale: 1
             }}
             exit={{
               opacity: 0,
@@ -82,22 +81,24 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             }}
             transition={{
               opacity: { duration: 0.2 },
-              scale: { type: 'spring', stiffness: 300, damping: 30 },
-              height: { type: 'spring', stiffness: 200, damping: 25, duration: 0.5 }
+              scale: { type: 'spring', stiffness: 300, damping: 30 }
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            className={`bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] transition-all duration-500 ${
+            className={`bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] ${
               hasSlid ? 'shadow-sm' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]'
             }`}
             style={hasSlid ? {
               position: 'fixed',
               right: '8px',
-              top: '64px'
+              top: '64px',
+              height: 'calc(100vh - 64px - 8px)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)'
             } : {
               position: 'fixed',
               left: '50%',
               top: '50%',
-              transform: 'translate(-50%, -50%)'
+              transform: 'translate(-50%, -50%)',
+              transition: 'all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)'
             }}
           >
             {/* Top gradient overlay for depth */}
