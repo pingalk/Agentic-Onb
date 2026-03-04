@@ -780,6 +780,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
       setMessages(prev => [...prev, {
         id: captureCardId,
         sender: 'ai' as const,
+        headline: "Let's update your payment capture settings",
+        subtext: "I've prepared a quick setup to change how you capture payments. Review the settings and confirm when ready.",
         artifact: {
           type: 'capture_settings_form_card' as const,
           data: {
@@ -1392,6 +1394,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             setMessages(prev => [...prev, {
               id: continueCardId,
               sender: 'ai' as const,
+              headline: "Ready to continue with your capture settings?",
+              subtext: "Click the card below to open the settings and make your changes.",
               artifact: {
                 type: 'capture_settings_form_card' as const,
                 data: {
