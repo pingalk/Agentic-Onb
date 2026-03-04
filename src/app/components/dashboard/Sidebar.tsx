@@ -141,32 +141,14 @@ export const RazorpayLogo = ({ isCollapsed }: { isCollapsed: boolean }) => {
     <motion.div
       className="relative overflow-hidden h-6"
       initial={false}
-      animate={{ width: isCollapsed ? 24 : 148 }}
+      animate={{ width: isCollapsed ? 24 : 120 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
     >
-      <div className="absolute left-0 top-0 flex items-center h-full w-[148px]">
-         {/* Icon - Fixed Anchor */}
-         <div className="shrink-0 w-6 h-6 z-20">
-            <svg className="block w-full h-full" fill="none" viewBox="0 0 24 24">
-               <path d={svgPaths.p11aadc00} fill="#3395FF" />
-               <path d={svgPaths.p2f9fae00} fill="#0C2651" />
-            </svg>
-         </div>
-         
-         {/* Text - Animated Reveal */}
-         <motion.div 
-            className="ml-2 h-6 w-[122px] shrink-0"
-            animate={{ 
-                x: isCollapsed ? -20 : 0, 
-                opacity: isCollapsed ? 0 : 1 
-            }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-         >
-             <svg className="block w-full h-full" fill="none" viewBox="0 0 122 24">
-                <path d={svgPaths.p2159db00} fill="#0C2651" />
-             </svg>
-         </motion.div>
-      </div>
+      <img
+        src="/rzp-logo-negative.svg"
+        alt="Razorpay"
+        className="h-6 w-auto object-contain"
+      />
     </motion.div>
   );
 };
