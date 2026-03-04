@@ -1955,7 +1955,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                    }]);
                    setKycFlowStep(3);
 
-                   // Automatically progress to website step after 3 seconds
+                   // Automatically progress to website step after 5 seconds (3s modal morph + 2s delay)
                    setTimeout(() => {
                      setMessages(prev => [...prev, {
                        id: `kyc-ai-4`,
@@ -1963,7 +1963,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                        ...kycScript.kyc_step_4
                      }]);
                      setKycFlowStep(4);
-                   }, 3000);
+                   }, 5000);
                  }, 10000);
                }, 600);
              }, 600);

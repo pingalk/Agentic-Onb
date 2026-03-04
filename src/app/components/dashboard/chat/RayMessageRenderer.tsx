@@ -5080,13 +5080,11 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           <motion.div
             className="w-6 h-6 shrink-0 mt-0.5"
             animate={isStreaming ? {
-              rotate: [0, 90, 90, 180, 180, 270, 270, 360]
+              rotate: 360
             } : { rotate: 0 }}
             transition={isStreaming ? {
-              duration: 2,
-              repeat: Infinity,
-              ease: [0.4, 0, 0.2, 1],
-              times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1]
+              duration: 1.2,
+              ease: [0.4, 0, 0.2, 1]
             } : { duration: 0.3 }}
           >
             <Ray static />
@@ -5181,6 +5179,16 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const [subtextStarted, setSubtextStarted] = React.useState(false);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+    // Auto-open modal when streaming completes
+    React.useEffect(() => {
+      if (!isStreaming && !isModalOpen) {
+        const timer = setTimeout(() => {
+          setIsModalOpen(true);
+        }, 500); // Small delay after streaming completes
+        return () => clearTimeout(timer);
+      }
+    }, [isStreaming, isModalOpen]);
+
     return (
       <div className="w-full animate-fade-in-up">
         {/* Ray Logo + Headline and Subtext with streaming */}
@@ -5189,13 +5197,11 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           <motion.div
             className="w-6 h-6 shrink-0 mt-0.5"
             animate={isStreaming ? {
-              rotate: [0, 90, 90, 180, 180, 270, 270, 360]
+              rotate: 360
             } : { rotate: 0 }}
             transition={isStreaming ? {
-              duration: 2,
-              repeat: Infinity,
-              ease: [0.4, 0, 0.2, 1],
-              times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1]
+              duration: 1.2,
+              ease: [0.4, 0, 0.2, 1]
             } : { duration: 0.3 }}
           >
             <Ray static />
@@ -5232,8 +5238,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.4 }}
-          onClick={() => setIsModalOpen(true)}
-          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden w-[531px] cursor-pointer hover:shadow-[0px_8px_56px_8px_rgba(59,96,181,0.15)] transition-shadow duration-200"
+          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden w-[531px]"
         >
           {/* Inset shadow for depth */}
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
@@ -5339,13 +5344,11 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           <motion.div
             className="w-6 h-6 shrink-0 mt-0.5"
             animate={isStreaming ? {
-              rotate: [0, 90, 90, 180, 180, 270, 270, 360]
+              rotate: 360
             } : { rotate: 0 }}
             transition={isStreaming ? {
-              duration: 2,
-              repeat: Infinity,
-              ease: [0.4, 0, 0.2, 1],
-              times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1]
+              duration: 1.2,
+              ease: [0.4, 0, 0.2, 1]
             } : { duration: 0.3 }}
           >
             <Ray static />
