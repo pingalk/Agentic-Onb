@@ -16,22 +16,25 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   onSettled
 }) => {
   const [hasSlid, setHasSlid] = React.useState(false);
-  const [slideDistance, setSlideDistance] = React.useState(0);
+  const [centerOffsetX, setCenterOffsetX] = React.useState(0);
 
-  // Calculate slide distance based on viewport
+  // Calculate offset needed to center modal from right-anchored position
   React.useEffect(() => {
-    const calculateDistance = () => {
+    const calculateOffset = () => {
       const viewportWidth = window.innerWidth;
       const modalWidth = 393;
       const rightPadding = 8;
-      // Distance from center to right edge position
-      const distance = (viewportWidth / 2) - rightPadding - (modalWidth / 2);
-      setSlideDistance(distance);
+      // Modal is anchored at right: 8px
+      // To center it, we need to move it left by: (viewportWidth/2) - (modalWidth/2) - rightPadding
+      const centerPosition = (viewportWidth - modalWidth) / 2;
+      const rightPosition = viewportWidth - modalWidth - rightPadding;
+      const offset = -(rightPosition - centerPosition);
+      setCenterOffsetX(offset);
     };
 
-    calculateDistance();
-    window.addEventListener('resize', calculateDistance);
-    return () => window.removeEventListener('resize', calculateDistance);
+    calculateOffset();
+    window.addEventListener('resize', calculateOffset);
+    return () => window.removeEventListener('resize', calculateOffset);
   }, []);
 
   // Reset slide state when modal closes and notify parent
@@ -92,7 +95,8 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             animate={{
               opacity: 1,
               scale: 1,
-              x: hasSlid ? slideDistance : 0,
+              x: hasSlid ? 0 : centerOffsetX,
+              y: hasSlid ? 0 : `calc(-50vh + 32px)`,
               height: hasSlid ? 'calc(100vh - 64px - 8px)' : 'auto'
             }}
             exit={{
@@ -113,9 +117,8 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             }`}
             style={{
               position: 'fixed',
-              left: '50%',
-              top: hasSlid ? '64px' : '50%',
-              transform: hasSlid ? 'translateX(-50%)' : 'translate(-50%, -50%)'
+              right: '8px',
+              top: '64px'
             }}
           >
             {/* Top gradient overlay for depth */}
