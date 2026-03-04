@@ -5131,9 +5131,14 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const [isStreaming, setIsStreaming] = React.useState(true);
     const [subtextStarted, setSubtextStarted] = React.useState(false);
 
+    // Debug: Log to check if headline and subtext are present
+    console.log('KYC OTP Card - headline:', data.headline);
+    console.log('KYC OTP Card - subtext:', data.subtext);
+
     return (
       <div className="w-full animate-fade-in-up">
         {/* Ray Logo + Headline and Subtext with streaming */}
+        {(data.headline || data.subtext) && (
         <div className="flex items-start gap-3 max-w-[398px] mb-4">
           {/* Ray Logo - rotates while streaming */}
           <motion.div
@@ -5174,6 +5179,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             )}
           </div>
         </div>
+        )}
 
         {/* OTP Card */}
         <motion.div
