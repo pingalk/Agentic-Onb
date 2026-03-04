@@ -69,36 +69,44 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
           <motion.div
             initial={{
               opacity: 0,
-              scale: 0.95
+              scale: 0.95,
+              x: '-50%',
+              y: '-50%'
             }}
-            animate={{
+            animate={hasSlid ? {
               opacity: 1,
-              scale: 1
+              scale: 1,
+              x: 0,
+              y: 0
+            } : {
+              opacity: 1,
+              scale: 1,
+              x: '-50%',
+              y: '-50%'
             }}
             exit={{
               opacity: 0,
-              scale: 0.95
+              scale: 0.95,
+              x: '-50%',
+              y: '-50%'
             }}
             transition={{
               opacity: { duration: 0.2 },
-              scale: { type: 'spring', stiffness: 300, damping: 30 }
+              scale: { type: 'spring', stiffness: 300, damping: 30 },
+              x: { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] },
+              y: { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            className={`bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] ${
+            className={`fixed bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] ${
               hasSlid ? 'shadow-sm' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]'
             }`}
             style={hasSlid ? {
-              position: 'fixed',
               right: '8px',
               top: '64px',
-              height: 'calc(100vh - 64px - 8px)',
-              transition: 'all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)'
+              height: 'calc(100vh - 64px - 8px)'
             } : {
-              position: 'fixed',
               left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              transition: 'all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)'
+              top: '50%'
             }}
           >
             {/* Top gradient overlay for depth */}
