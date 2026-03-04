@@ -248,6 +248,22 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
     wasStreamingRef.current = isStreaming;
   }, [isStreaming]);
 
+  // Trigger website question when KYC panel settles
+  const kycWebsiteQuestionShownRef = useRef(false);
+  useEffect(() => {
+    if (isKYCPanelSettled && activeFlow === 'kyc_onboarding' && kycFlowStep === 3 && !kycWebsiteQuestionShownRef.current) {
+      kycWebsiteQuestionShownRef.current = true;
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: 'kyc-ai-4',
+          sender: 'ai' as const,
+          ...kycScript.kyc_step_4
+        }]);
+        setKycFlowStep(4);
+      }, 800);
+    }
+  }, [isKYCPanelSettled, activeFlow, kycFlowStep]);
+
   // EXPERIMENTAL: Pin-to-top / Roll-up animation - scroll to show newest content
   useEffect(() => {
     if (!ENABLE_ROLL_UP_ANIMATION && !ENABLE_PIN_TO_TOP && !ENABLE_SMART_SCROLL_ON_THINKING) return;
@@ -1662,7 +1678,10 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                         animatingCardId={isPaymentLinkModalOpen ? activeFormCardId : null}
                         personaId={activeFlow || 'default'}
                         onKYCPanelSettled={() => setIsKYCPanelSettled(true)}
-                        onKYCPanelClosed={() => setIsKYCPanelSettled(false)}
+                        onKYCPanelClosed={() => {
+                          setIsKYCPanelSettled(false);
+                          kycWebsiteQuestionShownRef.current = false;
+                        }}
                         onMiniCardClick={(formId, sourceRect) => {
                           // Check which type of card was clicked
                           if (formId.includes('add-funds')) {

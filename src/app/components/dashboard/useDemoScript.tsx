@@ -884,7 +884,7 @@ Maya`,
         },
         kyc_step_4: {
             headline: "Share the link to your website",
-            subtext: "Website live? Drop the link here. No pressure if it isn't handy—you can add it later. I only suggest doing it now to fast-track your activation.",
+            subtext: "Share the link to live website to help fast-track your setup. And if not yet setup and live, that's okay too. You can skip this step and add it later.",
             suggestions: []
         },
         kyc_step_5: {
