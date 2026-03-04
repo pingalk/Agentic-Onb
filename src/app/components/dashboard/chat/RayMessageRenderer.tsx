@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import { PerplexityStreamText } from './PerplexityStreamingTypography';
 import { ChainOfThought } from '../ChainOfThought';
 import { KYCLoadingState } from '../KYCLoadingState';
+import { BusinessCategoryLoadingState } from '../BusinessCategoryLoadingState';
 import { useStreamSequencer } from '../useStreamSequencer';
 import { SmartHighlight, SmartHighlightWithBold } from './SmartHighlight';
 import { StreamingBulletList } from './StreamingBulletList';
@@ -136,6 +137,7 @@ export interface RayResponseData {
   suggestions?: string[];
   isThinking?: boolean;
   kycLoading?: boolean; // When true, shows KYC-specific loading steps
+  isBusinessCategoryLoading?: boolean; // When true, shows business category identification loading steps
   skipAutoScroll?: boolean; // When true, global scroll effects will skip this message
   resolution?: { title: string; content: string };
   artifact?: {
@@ -4548,6 +4550,11 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
       return <KYCLoadingState />;
     }
     return <ChainOfThought mode="waiting" />;
+  }
+
+  // 3. Business Category Loading State
+  if (data.isBusinessCategoryLoading) {
+    return <BusinessCategoryLoadingState />;
   }
 
   // 3. Ray AI Message with Investigation Report Artifact

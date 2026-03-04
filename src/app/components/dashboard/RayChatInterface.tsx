@@ -8,6 +8,7 @@ import { SourceRect } from './chat/PaymentLinkMiniCard';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
 import { KYCOTPModal } from './chat/KYCOTPModal';
 import { FloatingImageUpload } from './FloatingImageUpload';
+import { BusinessCategoryLoadingState } from './BusinessCategoryLoadingState';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
 import { RayInputBox } from './RayInputBox';
 import { useDemo } from '@/context/DemoContext';
@@ -835,15 +836,27 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
           sender: 'user' as const,
           blocks: [{ type: 'text', content: websiteUrl }]
         }]);
-        // TODO: Progress to next step (business model confirmation)
+
+        // Show business category loading state
         setTimeout(() => {
+          const loadingId = 'kyc-business-loading';
           setMessages(prev => [...prev, {
-            id: `kyc-ai-5`,
+            id: loadingId,
             sender: 'ai' as const,
-            ...kycScript.kyc_step_5
+            isBusinessCategoryLoading: true
           }]);
-          setKycFlowStep(5);
-        }, 800);
+
+          // After loading completes (8 seconds = 4 steps * 2 seconds), show next step
+          setTimeout(() => {
+            setMessages(prev => prev.filter(m => m.id !== loadingId));
+            setMessages(prev => [...prev, {
+              id: `kyc-ai-5`,
+              sender: 'ai' as const,
+              ...kycScript.kyc_step_5
+            }]);
+            setKycFlowStep(5);
+          }, 8500); // 8 seconds for steps + 500ms buffer
+        }, 600);
         return;
       }
 
