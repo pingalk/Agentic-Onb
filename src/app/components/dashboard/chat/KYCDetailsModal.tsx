@@ -13,6 +13,38 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const [hasSlid, setHasSlid] = React.useState(false);
+  const [slideDistance, setSlideDistance] = React.useState(0);
+
+  // Calculate slide distance based on viewport
+  React.useEffect(() => {
+    const calculateDistance = () => {
+      const viewportWidth = window.innerWidth;
+      const modalWidth = 393;
+      const rightPadding = 32;
+      // Distance from center to right edge position
+      const distance = (viewportWidth / 2) - rightPadding - (modalWidth / 2);
+      setSlideDistance(distance);
+    };
+
+    calculateDistance();
+    window.addEventListener('resize', calculateDistance);
+    return () => window.removeEventListener('resize', calculateDistance);
+  }, []);
+
+  // Reset slide state when modal closes
+  React.useEffect(() => {
+    if (isOpen) {
+      // Trigger slide to right after initial center animation
+      const timer = setTimeout(() => {
+        setHasSlid(true);
+      }, 400); // Delay to allow center animation to complete
+      return () => clearTimeout(timer);
+    } else {
+      setHasSlid(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const details = [
@@ -37,20 +69,42 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          className="fixed inset-0 z-[9999]"
           onClick={onClose}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-[rgba(0,0,0,0.8)]" />
 
-          {/* Modal Card */}
+          {/* Modal Card - positioned at center, then slides right */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            initial={{
+              opacity: 0,
+              scale: 0.95,
+              y: 20
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              x: hasSlid ? slideDistance : 0
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.95,
+              y: 20
+            }}
+            transition={{
+              opacity: { duration: 0.2 },
+              scale: { type: 'spring', stiffness: 300, damping: 30 },
+              y: { type: 'spring', stiffness: 300, damping: 30 },
+              x: {
+                type: 'spring',
+                stiffness: 200,
+                damping: 25
+              }
+            }}
             onClick={(e) => e.stopPropagation()}
-            className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[393px] max-h-[90vh] overflow-hidden"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[393px] max-h-[90vh] overflow-hidden"
           >
             {/* Top gradient overlay for depth */}
             <div className="absolute top-0 left-0 right-0 h-[24px] pointer-events-none z-20">
