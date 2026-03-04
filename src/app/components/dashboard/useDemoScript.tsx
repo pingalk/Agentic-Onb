@@ -893,15 +893,13 @@ Maya`,
             }
         },
         kyc_step_5: {
-            headline: "Please confirm your business model",
-            subtext: "I've had a quick look at your website and it looks like you're building an awesome **E-commerce platform for Fashion Accessories**. Does that sound about right? We just want to make sure we have your business category spot on so we can tailor everything to your needs.",
+            headline: "Where would you like to receive payments?",
+            subtext: "Linking your bank via UPI is the fastest way to start receiving payments.",
             artifact: {
-                type: 'intent',
-                data: {
-                    intent: 'kyc_business_model'
-                }
+                type: 'bank_verification_card',
+                data: {}
             },
-            suggestions: ["Yes, this is correct", "No, change"]
+            suggestions: []
         },
         kyc_step_6: {
             headline: "Which bank account would you like to collect payments in?",

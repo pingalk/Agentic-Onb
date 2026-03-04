@@ -6,6 +6,7 @@ import { PaymentLinkMiniCard, SourceRect } from './PaymentLinkMiniCard';
 import { AddFundsMiniCard } from './AddFundsMiniCard';
 import { CaptureSettingsMiniCard } from './CaptureSettingsMiniCard';
 import { BusinessCategoryCard } from './BusinessCategoryCard';
+import { BankVerificationCard } from './BankVerificationCard';
 import { FundsAddedCard } from './artifacts/FundsAddedCard';
 import { FundsAddedHeader, FundsAddedBody, SettlementCard, RayInsightCard } from './artifacts/FundsAddedComponents';
 import { ConfigurableSettlementCard, SettlementStatusTable, FeeCalculatorCard } from './artifacts/SettlementComponents';
@@ -442,6 +443,9 @@ export interface RayResponseData {
       category: string;
       subCategory: string;
     };
+  } | {
+    type: 'bank_verification_card';
+    data: {};
   };
 }
 
@@ -5348,6 +5352,19 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           onConfirm={handleConfirm}
           onChange={handleChange}
         />
+      </div>
+    );
+  }
+
+  // 24.8. Bank Verification Card
+  if (data.artifact?.type === 'bank_verification_card') {
+    const handleVerify = () => {
+      onSuggestionClick?.('verify_bank_upi');
+    };
+
+    return (
+      <div className="w-full max-w-[680px] animate-fade-in-up">
+        <BankVerificationCard onVerify={handleVerify} />
       </div>
     );
   }
