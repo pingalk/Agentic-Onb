@@ -7,6 +7,7 @@ import { PaymentLinkModal } from './chat/PaymentLinkModal';
 import { SourceRect } from './chat/PaymentLinkMiniCard';
 import { CaptureSettingsModal } from './chat/CaptureSettingsModal';
 import { KYCOTPModal } from './chat/KYCOTPModal';
+import { UPIVerificationModal } from './chat/UPIVerificationModal';
 import { FloatingImageUpload } from './FloatingImageUpload';
 import { BusinessCategoryLoadingState } from './BusinessCategoryLoadingState';
 import { ArrowDown, ArrowUp, Mic, Plus, Sparkles } from 'lucide-react';
@@ -133,6 +134,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // KYC OTP Modal States
   const [isKYCOTPModalOpen, setIsKYCOTPModalOpen] = useState(false);
   const [kycPhoneNumber, setKycPhoneNumber] = useState('2828');
+
+  // UPI Verification Modal States
+  const [isUPIModalOpen, setIsUPIModalOpen] = useState(false);
 
   // Input Box States
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -882,6 +886,12 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
           }]);
           setKycFlowStep(5);
         }, 800);
+        return;
+      }
+
+      // Handle bank verification via UPI
+      if (suggestion === 'verify_bank_upi') {
+        setIsUPIModalOpen(true);
         return;
       }
 
@@ -2057,6 +2067,28 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
              }, 600);
            }}
            phoneNumber={kycPhoneNumber}
+         />
+
+         {/* UPI Verification Modal */}
+         <UPIVerificationModal
+           isOpen={isUPIModalOpen}
+           onClose={() => setIsUPIModalOpen(false)}
+           onComplete={() => {
+             // Show success message in chat
+             setMessages(prev => [...prev, {
+               id: `kyc-bank-success-${Date.now()}`,
+               sender: 'ai',
+               artifact: {
+                 type: 'simple_text',
+                 data: {
+                   headline: "Bank details verified successfully!",
+                   body: "Your bank account has been linked and is ready to receive payments.",
+                   suggestions: []
+                 }
+               }
+             }]);
+             setKycFlowStep(6);
+           }}
          />
 
          {/* Top Fade Gradient */}
