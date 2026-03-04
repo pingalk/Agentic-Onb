@@ -4509,7 +4509,7 @@ const ChatAttachmentPill = ({ filename, fileType, onClick }: { filename: string;
   );
 };
 
-export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, onKYCPanelSettled, onKYCPanelClosed }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; onKYCPanelSettled?: () => void; onKYCPanelClosed?: () => void }) => {
+export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, kycBusinessModel, kycBankAccount, onKYCPanelSettled, onKYCPanelClosed }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; kycBusinessModel?: string; kycBankAccount?: string; onKYCPanelSettled?: () => void; onKYCPanelClosed?: () => void }) => {
   // State for WhatsApp preview modal
   const [isWhatsAppPreviewOpen, setIsWhatsAppPreviewOpen] = useState(false);
 
@@ -5335,6 +5335,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             onKYCPanelClosed?.();
           }}
           businessName={businessName}
+          businessModel={kycBusinessModel}
+          bankAccount={kycBankAccount}
           onSettled={onKYCPanelSettled}
         />
       </div>

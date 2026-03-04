@@ -162,6 +162,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
   // KYC Onboarding Flow State
   const [kycFlowStep, setKycFlowStep] = useState(0);
+  const [kycBusinessModel, setKycBusinessModel] = useState<string | undefined>(undefined);
+  const [kycBankAccount, setKycBankAccount] = useState<string | undefined>(undefined);
 
   // KYC Details Panel State
   const [isKYCPanelSettled, setIsKYCPanelSettled] = useState(false);
@@ -877,6 +879,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
           sender: 'user' as const,
           blocks: [{ type: 'text', content: 'Confirm' }]
         }]);
+
+        // Update business model in KYC panel
+        setKycBusinessModel('E-commerce, Fashion');
 
         setTimeout(() => {
           setMessages(prev => [...prev, {
@@ -1766,6 +1771,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                         highlightedSuggestionIndex={highlightedSuggestionIndex}
                         animatingCardId={isPaymentLinkModalOpen ? activeFormCardId : null}
                         personaId={activeFlow || 'default'}
+                        kycBusinessModel={kycBusinessModel}
+                        kycBankAccount={kycBankAccount}
                         onKYCPanelSettled={() => setIsKYCPanelSettled(true)}
                         onKYCPanelClosed={() => {
                           setIsKYCPanelSettled(false);
@@ -2082,6 +2089,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
              }]);
            }}
            onComplete={() => {
+             // Update bank account in KYC panel
+             setKycBankAccount('2028U32U38Q\nState Bank of India, Sarjapura Branch');
+
              // Show bank account card
              setMessages(prev => [...prev, {
                id: `kyc-bank-account-${Date.now()}`,

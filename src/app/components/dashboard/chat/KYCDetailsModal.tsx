@@ -8,12 +8,16 @@ export interface KYCDetailsModalProps {
   onClose: () => void;
   businessName: string;
   onSettled?: () => void;
+  businessModel?: string;
+  bankAccount?: string;
 }
 
 export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   isOpen,
   onClose,
-  onSettled
+  onSettled,
+  businessModel,
+  bankAccount
 }) => {
   const [hasSlid, setHasSlid] = React.useState(false);
 
@@ -46,8 +50,16 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
       value: 'B410, Salarpuria Arena Regency Max Grande ,Domlur karnataka third line',
       verified: true
     },
-    { label: 'Business model', value: 'Pending...', verified: false },
-    { label: 'Bank Account', value: 'Pending...', verified: false }
+    {
+      label: 'Business Category',
+      value: businessModel || 'Pending...',
+      verified: !!businessModel
+    },
+    {
+      label: 'Bank Account',
+      value: bankAccount || 'Pending...',
+      verified: !!bankAccount
+    }
   ];
 
   return createPortal(
