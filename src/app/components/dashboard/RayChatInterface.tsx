@@ -142,6 +142,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
   // KYC Review Modal States
   const [isKYCReviewModalOpen, setIsKYCReviewModalOpen] = useState(false);
+  const [isKYCModalTransitioning, setIsKYCModalTransitioning] = useState(false);
 
   // Success Animation State
   const [isSuccessAnimationOpen, setIsSuccessAnimationOpen] = useState(false);
@@ -2144,15 +2145,29 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
          {/* KYC Review Modal */}
          <KYCReviewModal
            isOpen={isKYCReviewModalOpen}
-           onClose={() => setIsKYCReviewModalOpen(false)}
+           onClose={() => {
+             setIsKYCReviewModalOpen(false);
+             setIsKYCModalTransitioning(false);
+           }}
            businessModel={kycBusinessModel}
            bankAccount={kycBankAccount}
+           isTransitioningToPanel={isKYCModalTransitioning}
            onSubmit={() => {
-             setIsKYCReviewModalOpen(false);
+             // Start transition animation to panel
+             setIsKYCModalTransitioning(true);
 
-             // Trigger success animation
-             setIsSuccessAnimationOpen(true);
-             setKycFlowStep(7);
+             // Close modal and settle panel after animation completes (500ms)
+             setTimeout(() => {
+               setIsKYCReviewModalOpen(false);
+               setIsKYCModalTransitioning(false);
+               setIsKYCPanelSettled(true);
+
+               // Trigger success animation after panel settles
+               setTimeout(() => {
+                 setIsSuccessAnimationOpen(true);
+                 setKycFlowStep(7);
+               }, 100);
+             }, 500);
            }}
          />
 

@@ -9,6 +9,7 @@ interface KYCReviewModalProps {
   onSubmit: () => void;
   businessModel?: string;
   bankAccount?: string;
+  isTransitioningToPanel?: boolean;
 }
 
 export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
@@ -16,7 +17,8 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
   onClose,
   onSubmit,
   businessModel,
-  bankAccount
+  bankAccount,
+  isTransitioningToPanel = false
 }) => {
   if (!isOpen) return null;
 
@@ -49,21 +51,58 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: isTransitioningToPanel ? 0 : 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: isTransitioningToPanel ? 0.3 : 0.2 }}
             className="fixed inset-0 z-[9998] bg-[rgba(0,0,0,0.8)]"
-            onClick={onClose}
+            onClick={isTransitioningToPanel ? undefined : onClose}
+            style={{ pointerEvents: isTransitioningToPanel ? 'none' : 'auto' }}
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            initial={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+            animate={isTransitioningToPanel ? {
+              opacity: 1,
+              scale: 1,
+              x: 0,
+              y: 0
+            } : {
+              opacity: 1,
+              scale: 1,
+              x: '-50%',
+              y: '-50%'
+            }}
+            exit={isTransitioningToPanel ? {
+              opacity: 1,
+              scale: 1,
+              x: 0,
+              y: 0
+            } : {
+              opacity: 0,
+              scale: 0.95,
+              x: '-50%',
+              y: '-50%'
+            }}
+            transition={isTransitioningToPanel ? {
+              opacity: { duration: 0.2 },
+              scale: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+              x: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+              y: { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
+            } : {
+              duration: 0.3,
+              ease: [0.4, 0, 0.2, 1]
+            }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]"
+            className="fixed bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]"
+            style={isTransitioningToPanel ? {
+              right: '8px',
+              top: '64px',
+              height: 'calc(100vh - 64px - 8px)'
+            } : {
+              left: '50%',
+              top: '50%'
+            }}
           >
             {/* Top gradient overlay for depth */}
             <div className="absolute top-0 left-0 right-0 h-[24px] pointer-events-none z-20">
