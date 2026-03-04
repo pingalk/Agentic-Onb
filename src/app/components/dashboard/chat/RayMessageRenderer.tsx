@@ -422,6 +422,16 @@ export interface RayResponseData {
         email?: string;
       };
     };
+  } | {
+    type: 'kyc_business_details';
+    data: {
+      headline: string;
+      subtext: string;
+      businessName: string;
+      verificationBadge: string;
+      documents: Array<{ name: string; type: string }>;
+      suggestions?: string[];
+    };
   };
 }
 
@@ -5010,6 +5020,127 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
         {isLast && data.suggestions && data.suggestions.length > 0 && (
           <div className="mt-4">
             <SuggestionStack items={data.suggestions} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 24.6. KYC Business Details Card
+  if (data.artifact?.type === 'kyc_business_details') {
+    const { headline, subtext, businessName, verificationBadge, documents } = data.artifact.data;
+    const [isStreaming, setIsStreaming] = React.useState(true);
+    const [subtextStarted, setSubtextStarted] = React.useState(false);
+
+    return (
+      <div className="w-full animate-fade-in-up">
+        {/* Ray Logo + Headline and Subtext with streaming */}
+        <div className="flex items-start gap-3 max-w-[680px] mb-6">
+          {/* Ray Logo - rotates while streaming */}
+          <motion.div
+            className="w-6 h-6 shrink-0 mt-0.5"
+            animate={isStreaming ? {
+              rotate: [0, 90, 90, 180, 180, 270, 270, 360]
+            } : { rotate: 0 }}
+            transition={isStreaming ? {
+              duration: 2,
+              repeat: Infinity,
+              ease: [0.4, 0, 0.2, 1],
+              times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1]
+            } : { duration: 0.3 }}
+          >
+            <Ray static />
+          </motion.div>
+
+          {/* Text Content */}
+          <div className="flex-1">
+            {headline && (
+              <h3 className="text-[18px] font-medium text-[#050505] leading-[26px] tracking-[-0.594px] mb-2">
+                <PerplexityStreamText
+                  text={headline}
+                  onStreamComplete={() => {
+                    setTimeout(() => setSubtextStarted(true), 1300);
+                  }}
+                />
+              </h3>
+            )}
+            {subtextStarted && subtext && (
+              <p className="text-[14px] text-[#40566d] leading-[20px] tracking-[-0.182px]">
+                <PerplexityStreamText
+                  text={subtext}
+                  onStreamComplete={() => {
+                    setIsStreaming(false);
+                    if (onStreamComplete) onStreamComplete();
+                  }}
+                />
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Business Details Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.3, duration: 0.4 }}
+          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden w-[531px]"
+        >
+          {/* Inset shadow for depth */}
+          <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
+
+          {/* Card Content */}
+          <div className="relative p-5">
+            {/* Header: Name and Photo */}
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h4 className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[18px] leading-[24px] text-[#050505] mb-2">
+                  {businessName}
+                </h4>
+                <div className="inline-flex items-center gap-2 bg-[rgba(0,141,71,0.09)] px-3 py-1 rounded-[32px]">
+                  <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px] text-[#008d47] tracking-[-0.182px]">
+                    {verificationBadge}
+                  </span>
+                </div>
+              </div>
+              {/* Placeholder for profile photo */}
+              <div className="w-[60px] h-[60px] rounded-[6px] bg-gradient-to-br from-blue-400 to-purple-500" />
+            </div>
+
+            {/* Divider */}
+            <div className="h-[1px] bg-[rgba(0,0,0,0.1)] my-5" />
+
+            {/* Documents Section */}
+            <div>
+              <p className="font-['Inter',sans-serif] text-[14px] leading-[20px] text-[rgba(0,0,0,0.56)] tracking-[-0.182px] mb-4">
+                Documents and details retrieved
+              </p>
+
+              {/* Document List */}
+              <div className="flex flex-wrap gap-x-8 gap-y-3">
+                {documents.map((doc, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    {/* File Icon */}
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M14 2V8H20" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M16 13H8" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M16 17H8" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M10 9H9H8" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="font-['Inter',sans-serif] text-[14px] leading-[20px] text-black tracking-[-0.182px]">
+                      {doc.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Stacked Suggestions - Only visible for last message */}
+        {isLast && data.artifact.data.suggestions && data.artifact.data.suggestions.length > 0 && (
+          <div className="mt-4">
+            <SuggestionStack items={data.artifact.data.suggestions} />
           </div>
         )}
       </div>

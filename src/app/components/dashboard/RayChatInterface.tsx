@@ -1872,15 +1872,22 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                    setIsStreaming(false);
                    setMessages(prev => prev.filter(m => !m.isThinking));
 
-                   // Show KYC success message
+                   // Show KYC success message with business details card
                    setMessages(prev => [...prev, {
                      id: `kyc-success-${Date.now()}`,
                      sender: 'ai',
                      artifact: {
-                       type: 'simple_text',
+                       type: 'kyc_business_details',
                        data: {
-                         headline: "KYC details fetched successfully!",
-                         body: "Your details have been retrieved from CKYC. Let's proceed with the next steps.",
+                         headline: "Great news ,we've retrieved your official business details linked to PAN XXXXXXXX.",
+                         subtext: "Take a quick look to confirm everything's up to date before we continue.",
+                         businessName: "Ishan Nahatha",
+                         verificationBadge: "Verified via CKYC",
+                         documents: [
+                           { name: "Aadhar Front", type: "document" },
+                           { name: "Aadhar back", type: "document" },
+                           { name: "Registered address", type: "document" }
+                         ],
                          suggestions: []
                        }
                      }
