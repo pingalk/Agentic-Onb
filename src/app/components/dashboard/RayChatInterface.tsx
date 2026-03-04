@@ -2194,6 +2194,30 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             <div className="absolute inset-x-0 bottom-0 h-[120px]" />
          </div>
 
+         {/* Background Video - plays when agent is thinking/streaming - z-60 (behind input) */}
+         <AnimatePresence>
+            {isStreaming && (
+               <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="fixed bottom-0 left-0 right-0 z-[60] pointer-events-none"
+               >
+                  <div className="w-full max-w-2xl mx-auto px-3 md:px-4">
+                     <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-auto"
+                        src="/rzrsense.mov"
+                     />
+                  </div>
+               </motion.div>
+            )}
+         </AnimatePresence>
+
          {/* Input Container - z-70 (above modal) - using RayInputBox for consistency */}
          {/* Fades in when transitioning from landing page to create seamless illusion */}
          {/* Starts above (y: -12) and settles down to final position, matching hero's downward motion */}
