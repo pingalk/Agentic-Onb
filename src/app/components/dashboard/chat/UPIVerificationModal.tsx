@@ -130,19 +130,15 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                   {/* Mock Payment Button (for demo) */}
                   <button
                     onClick={handleMockPayment}
-                    className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-sans font-medium text-[14px] rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all shadow-sm"
+                    className="relative w-full h-12 px-6 border rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden"
+                    style={{
+                      backgroundImage: 'linear-gradient(-23.46deg, rgb(31, 41, 55) 54.842%, rgb(55, 65, 81) 98.573%)',
+                      borderColor: '#1f2937'
+                    }}
                   >
+                    {/* Glass effect inset shadows */}
+                    <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#111827,inset_0px_0px_0px_0.5px_#374151,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
                     Mock Payment Completion
-                  </button>
-
-                  {/* Manual Entry Option */}
-                  <button className="w-full h-12 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between px-5 hover:bg-gray-100 transition-colors">
-                    <span className="font-sans text-[14px] font-medium text-[#192839]">
-                      Enter account details manually
-                    </span>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M4 6l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
                   </button>
                 </motion.div>
               ) : (
