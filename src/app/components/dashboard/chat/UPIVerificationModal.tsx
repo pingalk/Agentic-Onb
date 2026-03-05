@@ -154,10 +154,10 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
               ) : (
                 <motion.div
                   key="success"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="p-8 space-y-6"
+                  className="p-6 space-y-6"
                 >
                   {/* Header with Logo */}
                   <div className="flex items-center justify-between">
@@ -171,7 +171,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                   </div>
 
                   {/* Success Content */}
-                  <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                  <div className="flex flex-col items-center justify-center py-12 space-y-4">
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
