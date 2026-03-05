@@ -5141,8 +5141,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
       <div className="w-full animate-fade-in-up" style={{ position: 'relative', zIndex: 10 }}>
         {/* Ray Logo + Headline and Subtext with streaming */}
         {(data.headline || data.subtext) && (
-        <div className="flex items-start gap-3 w-full mb-4" style={{ visibility: 'visible', display: 'flex' }}>
-          {/* Ray Logo - rotates while streaming */}
+        <div className="flex items-start gap-3 mb-4" style={{ visibility: 'visible', display: 'flex', marginLeft: '-36px' }}>
+          {/* Ray Logo - rotates while streaming - positioned to the left */}
           <motion.div
             className="w-6 h-6 shrink-0 mt-0.5"
             animate={isStreaming ? {
@@ -5156,7 +5156,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             <Ray static />
           </motion.div>
 
-          {/* Text Content */}
+          {/* Text Content - aligns with card below */}
           <div className="flex-1" style={{ visibility: 'visible' }}>
             {data.headline && (
               <h3 className="font-['TASA_Orbiter_Display',sans-serif] text-[18px] font-semibold text-[#020202] leading-[24px] mb-2 [&_*]:font-['TASA_Orbiter_Display',sans-serif]" style={{ visibility: 'visible', display: 'block' }}>
