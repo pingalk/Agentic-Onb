@@ -159,7 +159,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
+    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#fafafa' }}>
       {/* Top Navigation - only for form steps */}
       {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
         <div className="relative z-20 bg-black h-14 flex items-center justify-between px-4">
@@ -444,7 +444,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
               className="fixed inset-0 flex items-center justify-center"
-              style={{ backgroundColor: '#f8f8f8' }}
+              style={{ backgroundColor: '#fafafa' }}
             >
               {/* Loading Video Container - cropped by 40px on all sides, 2x size */}
               <div className="relative w-[160%] h-[160%] max-w-[1600px] max-h-[1600px] overflow-hidden flex items-center justify-center">
@@ -481,7 +481,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
               className="fixed inset-0 flex flex-col items-center justify-center gap-8"
-              style={{ backgroundColor: '#f8f8f8' }}
+              style={{ backgroundColor: '#fafafa' }}
             >
               {/* Ray Icon with rotation animation */}
               <motion.div
