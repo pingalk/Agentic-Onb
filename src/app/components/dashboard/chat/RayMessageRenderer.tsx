@@ -5334,7 +5334,16 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
                 </div>
               </div>
               {/* Placeholder for profile photo */}
-              <div className="w-[60px] h-[60px] rounded-[6px] bg-gradient-to-br from-blue-400 to-purple-500" />
+              <div className="w-[60px] h-[60px] rounded-[6px] overflow-hidden relative">
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{
+                    backgroundImage: 'url("https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop")',
+                    filter: 'blur(3px)',
+                    transform: 'scale(1.1)'
+                  }}
+                />
+              </div>
             </div>
 
             {/* Divider */}
