@@ -284,63 +284,25 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
     }
   }, [isKYCPanelSettled, activeFlow, kycFlowStep]);
 
-  // EXPERIMENTAL: Pin-to-top / Roll-up animation - scroll to show newest content
+  // Pin-to-top: scroll to show newest content at top
   useEffect(() => {
-    if (!ENABLE_ROLL_UP_ANIMATION && !ENABLE_PIN_TO_TOP && !ENABLE_SMART_SCROLL_ON_THINKING) return;
-
     // Check if a new message was added
     if (messages.length > prevMessageCountRef.current) {
       const latestMessage = messages[messages.length - 1];
 
-      // Skip auto-scroll if message has skipAutoScroll flag (used by Varun elegant scroll)
+      // Skip auto-scroll if message has skipAutoScroll flag
       if (latestMessage?.skipAutoScroll) {
         prevMessageCountRef.current = messages.length;
         return;
       }
 
-      if (ENABLE_PIN_TO_TOP) {
-        // In pin-to-top mode, always scroll to top to show newest content
-        // (newest messages appear at top with flex-col-reverse)
-        setTimeout(() => {
-          scrollContainerRef.current?.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-        }, 100);
-      } else if (ENABLE_SMART_SCROLL_ON_THINKING && latestMessage?.sender === 'user') {
-        // Smart scroll: When user sends a message, scroll it to the top of the viewport
-        // This gives maximum room for Ray's response to appear below
-        if (scrollContainerRef.current) {
-          // Use requestAnimationFrame to ensure DOM is fully rendered
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              const userMessageEl = messageRefs.current.get(latestMessage.id);
-              const container = scrollContainerRef.current;
-              if (userMessageEl && container) {
-                // Calculate the element's position relative to the scroll container
-                const containerRect = container.getBoundingClientRect();
-                const elementRect = userMessageEl.getBoundingClientRect();
-
-                // Calculate scroll position to put element near the top of container
-                // Subtract a small offset (24px) for breathing room at the top
-                const topOffset = 24;
-                const scrollTop = container.scrollTop + (elementRect.top - containerRect.top) - topOffset;
-
-                // Use smooth scroll with custom easing
-                smoothScrollTo(container, Math.max(0, scrollTop), 600);
-              }
-            }, 100); // Reduced delay - scroll immediately when user message appears
-          });
-        }
-      } else if (ENABLE_ROLL_UP_ANIMATION && latestMessage?.sender === 'user') {
-        // Legacy roll-up: only scroll to top for user messages
-        setTimeout(() => {
-          scrollContainerRef.current?.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-        }, 100);
-      }
+      // Always scroll to top to show newest content (newest messages appear at top with flex-col-reverse)
+      setTimeout(() => {
+        scrollContainerRef.current?.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }, 100);
     }
     prevMessageCountRef.current = messages.length;
   }, [messages]);
@@ -1773,9 +1735,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className={`flex-1 overflow-y-auto px-3 md:px-6 pt-4 md:pt-6 pb-[80vh] scrollbar-hide relative z-[1] ${ENABLE_PIN_TO_TOP ? 'flex flex-col' : ''}`}
+          className="flex-1 overflow-y-auto px-3 md:px-6 scrollbar-hide relative z-[1] flex flex-col"
         >
-           <div className={`flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full max-w-full md:max-w-2xl ${ENABLE_PIN_TO_TOP ? 'flex-col-reverse mt-auto' : 'flex-col'}`}>
+           <div className="flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full max-w-full md:max-w-2xl flex-col-reverse pt-[40px] pb-[80vh]">
               {messages.map((msg, index) => {
                  // When pin-to-top is enabled, "isLast" should be the most recent message (highest index)
                  // which will appear at the TOP of the reversed layout
@@ -1786,16 +1748,16 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                      key={msg.id}
                      ref={el => { if (el) messageRefs.current.set(msg.id, el) }}
                      className="w-full"
-                     // EXPERIMENTAL: Roll-up animation for user messages
-                     initial={ENABLE_ROLL_UP_ANIMATION && msg.sender === 'user' ? { opacity: 0, y: ENABLE_PIN_TO_TOP ? -200 : 200 } : { opacity: 1, y: 0 }}
+                     // Animation for new messages appearing at top
+                     initial={{ opacity: 0, y: -20 }}
                      animate={{ opacity: 1, y: 0 }}
-                     transition={ENABLE_ROLL_UP_ANIMATION && msg.sender === 'user' ? {
+                     transition={{
                        type: "spring",
                        stiffness: 100,
                        damping: 20,
                        mass: 1,
                        delay: 0.05
-                     } : { duration: 0 }}
+                     }}
                    >
                       <RayMessageRenderer
                         data={msg}
