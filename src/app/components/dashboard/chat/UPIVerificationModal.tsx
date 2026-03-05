@@ -155,7 +155,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                 >
                   {/* Header with Logo */}
                   <div className="flex items-center justify-between">
-                    <img src="/rzp-logo-negative.svg" alt="Razorpay" className="h-6" />
+                    <img src="/rzp-logo-positive.svg" alt="Razorpay" className="h-6" />
                     <button
                       onClick={onClose}
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
