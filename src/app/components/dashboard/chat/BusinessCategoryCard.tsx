@@ -28,7 +28,7 @@ export const BusinessCategoryCard: React.FC<BusinessCategoryCardProps> = ({
         {/* Header */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h3 className="font-sans text-[18px] font-semibold text-[#020202] leading-[24px]">
+            <h3 className="font-['TASA_Orbiter_Deck',sans-serif] text-[18px] font-semibold text-[#020202] leading-[24px]">
               Business Category Detected
             </h3>
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#e6f9f2] rounded-md">

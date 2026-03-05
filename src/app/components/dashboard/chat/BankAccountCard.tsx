@@ -1,13 +1,11 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Edit2 } from 'lucide-react';
 
 interface BankAccountCardProps {
   bankName?: string;
   accountNumber?: string;
   ifscCode?: string;
   accountName?: string;
-  onChangeAccount?: () => void;
   isConfirmed?: boolean;
 }
 
@@ -16,7 +14,6 @@ export const BankAccountCard: React.FC<BankAccountCardProps> = ({
   accountNumber = '2383237283283287372HA',
   ifscCode = 'SBI78236287362326663',
   accountName = 'Chinnaswamy Muthuswamy Venugopal Iyer',
-  onChangeAccount,
   isConfirmed = false
 }) => {
   return (
@@ -29,7 +26,7 @@ export const BankAccountCard: React.FC<BankAccountCardProps> = ({
       <div className="p-6 space-y-5">
         {/* Header with Bank Name and Verified Badge */}
         <div className="space-y-2">
-          <h3 className="font-sans text-[18px] font-semibold text-[#020202] leading-[24px]">
+          <h3 className="font-['TASA_Orbiter_Deck',sans-serif] text-[18px] font-semibold text-[#020202] leading-[24px]">
             {bankName}
           </h3>
           <div className="flex items-center gap-1.5">
@@ -75,17 +72,6 @@ export const BankAccountCard: React.FC<BankAccountCardProps> = ({
             </span>
           </div>
         </div>
-
-        {/* Change Account Link */}
-        {!isConfirmed && (
-          <button
-            onClick={onChangeAccount}
-            className="flex items-center gap-2 text-[#1566f1] hover:text-[#0e54cc] transition-colors font-sans text-[14px] font-medium"
-          >
-            <Edit2 size={14} />
-            Change account
-          </button>
-        )}
       </div>
     </motion.div>
   );

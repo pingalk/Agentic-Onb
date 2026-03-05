@@ -18,7 +18,7 @@ export const BankVerificationCard: React.FC<BankVerificationCardProps> = ({ onVe
       <div className="p-6 space-y-5">
         {/* Header with Instant Badge */}
         <div className="flex items-center gap-3">
-          <h3 className="font-sans text-[18px] font-semibold text-[#020202] leading-[24px]">
+          <h3 className="font-['TASA_Orbiter_Deck',sans-serif] text-[18px] font-semibold text-[#020202] leading-[24px]">
             Verify bank via UPI
           </h3>
           <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#e6f9f2] rounded-md">

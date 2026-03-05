@@ -5081,7 +5081,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           <div className="relative space-y-2">
             {/* Heading with tag */}
             <div className="flex items-center gap-2">
-              <h4 className="font-sans font-semibold text-[16px] text-[#020202]">{heading}</h4>
+              <h4 className="font-['TASA_Orbiter_Deck',sans-serif] font-semibold text-[16px] text-[#020202]">{heading}</h4>
               {tag && (
                 <span className="px-2 py-0.5 bg-gradient-to-r from-[#1566f1] to-[#4793fd] text-white text-[10px] font-medium rounded-full uppercase tracking-wide">
                   {tag}
@@ -5246,7 +5246,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             {/* Header: Name and Photo */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h4 className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[18px] leading-[24px] text-[#050505] mb-2">
+                <h4 className="font-['TASA_Orbiter_Deck',sans-serif] font-semibold text-[18px] leading-[24px] text-[#050505] mb-2">
                   {businessName}
                 </h4>
                 <div className="inline-flex items-center gap-2 bg-[rgba(0,141,71,0.09)] px-3 py-1 rounded-[32px]">
