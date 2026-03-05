@@ -5161,8 +5161,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             {data.headline && (
               <h3 className="font-['TASA_Orbiter_Display',sans-serif] text-[18px] font-semibold text-[#020202] leading-[24px] mb-2" style={{ visibility: 'visible', display: 'block' }}>
                 <PerplexityStreamText
-                  text={data.headline}
-                  onStreamComplete={() => {
+                  content={data.headline}
+                  onComplete={() => {
                     setTimeout(() => setSubtextStarted(true), 1300);
                   }}
                 />
@@ -5171,8 +5171,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             {subtextStarted && data.subtext && (
               <p className="font-['Inter',sans-serif] text-[14px] text-[#40566d] leading-[20px]" style={{ visibility: 'visible', display: 'block' }}>
                 <PerplexityStreamText
-                  text={data.subtext}
-                  onStreamComplete={() => {
+                  content={data.subtext}
+                  onComplete={() => {
                     setIsStreaming(false);
                     if (onStreamComplete) onStreamComplete();
                   }}
