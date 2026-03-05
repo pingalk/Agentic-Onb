@@ -1087,41 +1087,6 @@ const FollowupQuestionArtifact = ({
         </motion.div>
       )}
 
-      {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-      {phase >= 4 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="flex items-center justify-between w-full mt-2"
-        >
-          <div className="flex gap-[8px] items-center">
-            <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
-              </button>
-            </Tooltip>
-            <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
-              </button>
-            </Tooltip>
-            <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <div className="size-[16px]">
-                  <Copy />
-                </div>
-              </button>
-            </Tooltip>
-            <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
-              </button>
-            </Tooltip>
-          </div>
-          <RelativeTimestamp />
-        </motion.div>
-      )}
     </motion.div>
   );
 };
@@ -1236,41 +1201,6 @@ const SimpleTextArtifact = ({
         </motion.div>
       )}
 
-      {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-      {phase >= 4 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="flex items-center justify-between w-full mt-2"
-        >
-          <div className="flex gap-[8px] items-center">
-            <Tooltip text="Good response" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
-              </button>
-            </Tooltip>
-            <Tooltip text="Bad response" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
-              </button>
-            </Tooltip>
-            <Tooltip text="Copy to clipboard" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <div className="size-[16px]">
-                  <Copy />
-                </div>
-              </button>
-            </Tooltip>
-            <Tooltip text="Share" position="bottom">
-              <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
-              </button>
-            </Tooltip>
-          </div>
-          <RelativeTimestamp />
-        </motion.div>
-      )}
 
       {/* ChainOfThought - Always at bottom, shows thinking during streaming, suggestions when complete */}
       {isLast && (
@@ -1359,41 +1289,6 @@ const BulletListWithButtonsArtifact = ({
             </motion.div>
           )}
 
-          {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-          {phase >= 4 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center justify-between w-full mt-2"
-            >
-              <div className="flex gap-[8px] items-center">
-                <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
-                  </button>
-                </Tooltip>
-                <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
-                  </button>
-                </Tooltip>
-                <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <div className="size-[16px]">
-                      <Copy />
-                    </div>
-                  </button>
-                </Tooltip>
-                <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
-                  </button>
-                </Tooltip>
-              </div>
-              <RelativeTimestamp />
-            </motion.div>
-          )}
         </motion.div>
       )}
     </>
@@ -1514,41 +1409,6 @@ const SettingUpdatedWithBulletsArtifact = ({
             </motion.div>
           )}
 
-          {/* Phase 4+: Footer Actions Strip - Only visible for last message */}
-          {phase >= 4 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center justify-between w-full mt-2"
-            >
-              <div className="flex gap-[8px] items-center">
-                <Tooltip text="Good response" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
-                  </button>
-                </Tooltip>
-                <Tooltip text="Bad response" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
-                  </button>
-                </Tooltip>
-                <Tooltip text="Copy to clipboard" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <div className="size-[16px]">
-                      <Copy />
-                    </div>
-                  </button>
-                </Tooltip>
-                <Tooltip text="Share" position="bottom">
-                  <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                    <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
-                  </button>
-                </Tooltip>
-              </div>
-              <RelativeTimestamp />
-            </motion.div>
-          )}
         </motion.div>
       )}
     </>
@@ -4458,38 +4318,6 @@ const FundsAddedMessage = ({ data, isLast, onSuggestionClick, highlightedSuggest
                 </motion.div>
             )}
 
-            {/* 4. Footer Actions (Only when done and is last) */}
-            {(sequence === 'done') && isLast && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center justify-between w-full mt-2"
-              >
-                <div className="flex gap-[8px] items-center">
-                  <Tooltip text="Good response" position="bottom">
-                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                      <ThumbsUp size={16} className="text-[#40566D]" strokeWidth={2} />
-                    </button>
-                  </Tooltip>
-                  <Tooltip text="Bad response" position="bottom">
-                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                      <ThumbsDown size={16} className="text-[#40566D]" strokeWidth={2} />
-                    </button>
-                  </Tooltip>
-                  <Tooltip text="Copy to clipboard" position="bottom">
-                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                      <div className="size-[16px]"><Copy /></div>
-                    </button>
-                  </Tooltip>
-                  <Tooltip text="Share" position="bottom">
-                    <button className="group relative size-[32px] hover:bg-[#e2e8f0] rounded-full flex items-center justify-center transition-colors">
-                      <Share2 size={16} className="text-[#40566D]" strokeWidth={2} />
-                    </button>
-                  </Tooltip>
-                </div>
-                <RelativeTimestamp />
-              </motion.div>
-            )}
 
             {/* ChainOfThought - Always at bottom, shows thinking during streaming, suggestions when complete */}
             {isLast && (
