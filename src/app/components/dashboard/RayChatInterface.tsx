@@ -147,6 +147,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
   // Success Animation State
   const [isSuccessAnimationOpen, setIsSuccessAnimationOpen] = useState(false);
+  const [showFinalVideo, setShowFinalVideo] = useState(false);
 
   // Input Box States
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -2164,21 +2165,12 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
            bankAccount={kycBankAccount}
            isTransitioningToPanel={isKYCModalTransitioning}
            onSubmit={() => {
-             // Start transition animation to panel
-             setIsKYCModalTransitioning(true);
+             // Close modal immediately
+             setIsKYCReviewModalOpen(false);
+             setIsKYCModalTransitioning(false);
 
-             // Close modal and settle panel after animation completes (500ms)
-             setTimeout(() => {
-               setIsKYCReviewModalOpen(false);
-               setIsKYCModalTransitioning(false);
-               setIsKYCPanelSettled(true);
-
-               // Trigger success animation after panel settles
-               setTimeout(() => {
-                 setIsSuccessAnimationOpen(true);
-                 setKycFlowStep(7);
-               }, 100);
-             }, 500);
+             // Show final success video
+             setShowFinalVideo(true);
            }}
          />
 
@@ -2189,6 +2181,27 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
              // Animation stays open, no auto-close
            }}
          />
+
+         {/* Final Success Video */}
+         <AnimatePresence>
+           {showFinalVideo && (
+             <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               transition={{ duration: 0.3 }}
+               className="fixed inset-0 z-[10000] bg-black"
+             >
+               <video
+                 autoPlay
+                 playsInline
+                 className="w-full h-full object-contain"
+               >
+                 <source src="/final-success.mov" type="video/quicktime" />
+                 Your browser does not support the video tag.
+               </video>
+             </motion.div>
+           )}
+         </AnimatePresence>
 
          {/* Top Fade Gradient */}
          <div className="h-16 w-full bg-gradient-to-t from-[#f8f8f8] via-[#f8f8f8]/80 to-transparent pointer-events-none z-30" />
