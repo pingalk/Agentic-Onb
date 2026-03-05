@@ -1795,6 +1795,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                         kycBusinessModel={kycBusinessModel}
                         kycBankAccount={kycBankAccount}
                         isKYCReviewModalOpen={isKYCReviewModalOpen}
+                        showFinalVideo={showFinalVideo}
                         onKYCPanelSettled={() => setIsKYCPanelSettled(true)}
                         onKYCPanelClosed={() => {
                           setIsKYCPanelSettled(false);
@@ -2154,25 +2155,23 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
            }}
          />
 
-         {/* KYC Review Modal */}
-         <KYCReviewModal
-           isOpen={isKYCReviewModalOpen}
-           onClose={() => {
-             setIsKYCReviewModalOpen(false);
-             setIsKYCModalTransitioning(false);
-           }}
-           businessModel={kycBusinessModel}
-           bankAccount={kycBankAccount}
-           isTransitioningToPanel={isKYCModalTransitioning}
-           onSubmit={() => {
-             // Close modal immediately
-             setIsKYCReviewModalOpen(false);
-             setIsKYCModalTransitioning(false);
-
-             // Show final success video
-             setShowFinalVideo(true);
-           }}
-         />
+         {/* KYC Review Modal - hide when final video is playing */}
+         {!showFinalVideo && (
+           <KYCReviewModal
+             isOpen={isKYCReviewModalOpen}
+             onClose={() => {
+               setIsKYCReviewModalOpen(false);
+               setIsKYCModalTransitioning(false);
+             }}
+             businessModel={kycBusinessModel}
+             bankAccount={kycBankAccount}
+             isTransitioningToPanel={isKYCModalTransitioning}
+             onSubmit={() => {
+               // Show final success video
+               setShowFinalVideo(true);
+             }}
+           />
+         )}
 
          {/* Success Animation */}
          <SuccessAnimation
@@ -2183,25 +2182,18 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
          />
 
          {/* Final Success Video */}
-         <AnimatePresence>
-           {showFinalVideo && (
-             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               transition={{ duration: 0.3 }}
-               className="fixed inset-0 z-[10000] bg-black"
+         {showFinalVideo && (
+           <div className="fixed inset-0 z-[99999] bg-black">
+             <video
+               autoPlay
+               playsInline
+               className="w-full h-full object-contain"
              >
-               <video
-                 autoPlay
-                 playsInline
-                 className="w-full h-full object-contain"
-               >
-                 <source src="/final-success.mov" type="video/quicktime" />
-                 Your browser does not support the video tag.
-               </video>
-             </motion.div>
-           )}
-         </AnimatePresence>
+               <source src="/final-success.mov" type="video/quicktime" />
+               Your browser does not support the video tag.
+             </video>
+           </div>
+         )}
 
          {/* Top Fade Gradient */}
          <div className="h-16 w-full bg-gradient-to-t from-[#f8f8f8] via-[#f8f8f8]/80 to-transparent pointer-events-none z-30" />
