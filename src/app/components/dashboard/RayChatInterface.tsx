@@ -2192,6 +2192,26 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             <div className="absolute inset-x-0 bottom-0 h-[120px]" />
          </div>
 
+         {/* Background Static Image - shows when agent is idle - z-0 (bottom layer) */}
+         <AnimatePresence>
+            {!isStreaming && (
+               <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="fixed bottom-0 left-0 right-0 z-0 pointer-events-none overflow-hidden"
+               >
+                  <img
+                     className="w-full h-auto relative"
+                     style={{ top: '-4px' }}
+                     src="/rzrsense-static.png"
+                     alt=""
+                  />
+               </motion.div>
+            )}
+         </AnimatePresence>
+
          {/* Background Video - plays when agent is thinking/streaming - z-0 (bottom layer) */}
          <AnimatePresence>
             {isStreaming && (
