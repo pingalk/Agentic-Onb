@@ -78,9 +78,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <svg width="100" height="24" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M24.24 10.432c0-2.24-.64-4.032-2.816-4.032H17.6v8.064h3.824c2.176 0 2.816-1.792 2.816-4.032zm-2.816 6.208H17.6v8.96h-3.136V4.224h6.96c4.032 0 5.952 2.496 5.952 6.208 0 2.624-1.088 4.608-3.2 5.568l4.032 9.6h-3.392l-3.392-8.96z" fill="#3395FF"/>
-                      </svg>
+                      <img src="/rzp-logo-negative.svg" alt="Razorpay" className="h-6" />
                     </div>
                     <button
                       onClick={onClose}
@@ -157,9 +155,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                 >
                   {/* Header with Logo */}
                   <div className="flex items-center justify-between">
-                    <svg width="100" height="24" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M24.24 10.432c0-2.24-.64-4.032-2.816-4.032H17.6v8.064h3.824c2.176 0 2.816-1.792 2.816-4.032zm-2.816 6.208H17.6v8.96h-3.136V4.224h6.96c4.032 0 5.952 2.496 5.952 6.208 0 2.624-1.088 4.608-3.2 5.568l4.032 9.6h-3.392l-3.392-8.96z" fill="#3395FF"/>
-                    </svg>
+                    <img src="/rzp-logo-negative.svg" alt="Razorpay" className="h-6" />
                     <button
                       onClick={onClose}
                       className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
