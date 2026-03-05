@@ -586,49 +586,9 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
         <div className="flex-1 relative overflow-hidden dashboard-bg transition-[background] duration-700">
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-               {/* Base background - always visible */}
-               <div className="absolute inset-0 bg-[#fafafa]" />
-
-               {/* Spark Ripples WebGL Background - only on landing */}
-               {view === 'landing' && (
-                  <motion.div
-                     initial={{ opacity: 1 }}
-                     animate={{ opacity: viewTransition === 'exiting' ? 0 : 1 }}
-                     transition={{ duration: 0.3 }}
-                  >
-                     <motion.div
-                        className="absolute inset-0"
-                        style={{
-                          transform: `translateY(${sparkRipplesConfig.offsetY - scrollY * 0.5}px) scale(${sparkRipplesConfig.scale})`,
-                          filter: `hue-rotate(${bgHue}deg)`
-                        }}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
-                     >
-                        <SparkRipplesBackground
-                          opacity={sparkRipplesConfig.opacity / 100}
-                          loop={false}
-                          playbackRate={sparkRipplesConfig.playbackRate}
-                        />
-                     </motion.div>
-                     <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
-                  </motion.div>
-               )}
-
-               {/* Bottom green fade - visible in both views */}
-               <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, transparent 0%, hsla(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%, 0.6) 25%, hsla(${gradientConfig.greenHue}, ${gradientConfig.greenSaturation}%, ${gradientConfig.greenLightness}%, 0.95) 40%, ${gradientGreenColor} 50%)` }} />
+               {/* Base background - solid color */}
+               <div className="absolute inset-0 bg-[#F6F6F6]" />
             </div>
-
-            {/* Gradient Overlay - sits above animation, below content - uses soft-light blend to tint animation */}
-            {/* Inverted: higher intensity = less white wash = stronger green */}
-            <div
-              className="absolute inset-0 pointer-events-none z-[1] mix-blend-soft-light transition-all duration-300"
-              style={{
-                background: `linear-gradient(180deg, #FFFFFF ${gradientConfig.startPoint}%, ${gradientGreenColor} ${gradientConfig.endPoint}%)`,
-                opacity: 1 - (bgIntensity / 100)
-              }}
-            />
 
             {view === 'landing' ? (
                 landingVariant === 'v2' ? (
