@@ -2198,21 +2198,24 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
          {/* Final Success Video */}
          {showFinalVideo && (
-           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8] flex items-center justify-center overflow-hidden">
-             <video
-               autoPlay
-               muted
-               playsInline
-               onEnded={() => setShowSuccessText(true)}
-               className="block w-full"
-               style={{
-                 height: 'auto',
-                 clipPath: 'inset(2px)'
-               }}
-             >
-               <source src="/success-animation.mp4" type="video/mp4" />
-               Your browser does not support the video tag.
-             </video>
+           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8] overflow-hidden">
+             {/* Video */}
+             <div className="absolute inset-0 flex items-center justify-center">
+               <video
+                 autoPlay
+                 muted
+                 playsInline
+                 onEnded={() => setShowSuccessText(true)}
+                 className="block w-full"
+                 style={{
+                   height: 'auto',
+                   clipPath: 'inset(2px)'
+                 }}
+               >
+                 <source src="/success-animation.mp4" type="video/mp4" />
+                 Your browser does not support the video tag.
+               </video>
+             </div>
 
              {/* Success Text Overlay */}
              <AnimatePresence>
