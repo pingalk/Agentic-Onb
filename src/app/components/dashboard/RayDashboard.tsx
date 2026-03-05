@@ -598,7 +598,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
                {/* Base background - always visible */}
-               <div className="absolute inset-0 bg-[#f8f8f8]" />
+               <div className="absolute inset-0 bg-[#fafafa]" />
 
                {/* Spark Ripples WebGL Background - only on landing */}
                {view === 'landing' && (
