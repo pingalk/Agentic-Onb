@@ -2226,7 +2226,7 @@ const SupportTicketStatusArtifact = ({ data, onButtonClick, onSuggestionClick, i
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="relative rounded-[12px] overflow-hidden shadow-[0px_6px_32px_4px_rgba(184,196,214,0.06)] border border-[#e2e8f0] max-max-w-[531px]"
+          className="relative rounded-[12px] overflow-hidden shadow-[0px_6px_32px_4px_rgba(184,196,214,0.06)] border border-[#e2e8f0] max-w-[531px]"
           style={{ background: 'linear-gradient(180deg, #ffffff 0%, #ffffff 72%, #E3F6FF 100%)' }}
         >
           {/* Inner border effect */}
@@ -2793,7 +2793,7 @@ const PaymentLinkCreatedArtifact = ({ data, onSuggestionClick, isLast, highlight
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="relative rounded-[12px] overflow-hidden shadow-[0px_6px_32px_4px_rgba(184,196,214,0.06)] border border-[#e2e8f0] max-max-w-[531px]"
+          className="relative rounded-[12px] overflow-hidden shadow-[0px_6px_32px_4px_rgba(184,196,214,0.06)] border border-[#e2e8f0] max-w-[531px]"
           style={{ background: 'linear-gradient(180deg, #ffffff 0%, #ffffff 72%, #E3F6FF 100%)' }}
         >
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_1px_white,inset_0px_1.5px_0px_1px_white]" />
@@ -3073,7 +3073,7 @@ const GenUICard = ({
   return (
     <div
       className={clsx(
-        'max-max-w-[531px] rounded-[8px] border border-[#E4E9F1] overflow-hidden bg-white',
+        'max-w-[531px] rounded-[8px] border border-[#E4E9F1] overflow-hidden bg-white',
         'shadow-[0px_1px_2px_rgba(18,25,38,0.04)]',
         className
       )}
@@ -3208,7 +3208,7 @@ const GenUIMilestoneCard = ({
 
   return (
     <div
-      className="max-max-w-[531px] rounded-[8px] border overflow-hidden"
+      className="max-w-[531px] rounded-[8px] border overflow-hidden"
       style={{
         backgroundColor: colors.bg,
         borderColor: colors.border
@@ -3498,7 +3498,7 @@ const InstantSettlementOfferArtifact = ({ data, onSuggestionClick, isLast, highl
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-            className="w-full max-max-w-[531px] rounded-xl overflow-hidden border border-[#d1fae5] transition-shadow hover:shadow-md"
+            className="w-full max-w-[531px] rounded-xl overflow-hidden border border-[#d1fae5] transition-shadow hover:shadow-md"
             style={{ background: 'linear-gradient(180deg, rgb(255,255,255) 0%, rgb(255,255,255) 72%, rgb(240,253,244) 100%)' }}
           >
             <div className="p-4">
@@ -3618,7 +3618,7 @@ const InstantSettlementChargesArtifact = ({ data, onSuggestionClick, onButtonCli
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <div className="max-max-w-[531px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
+              <div className="max-w-[531px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
                 {/* Header - Overline + Anchor */}
                 <div className="px-4 pt-4 pb-3">
                   <p className="text-[13px] font-medium text-[#768EA7] mb-1">Fee Breakdown</p>
@@ -3873,7 +3873,7 @@ const SettlementExplanationWithOfferArtifact = ({ data, onButtonClick, isLast, o
           transition={{ duration: 0.4 }}
         >
           <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={200} borderRadius="8px">
-            <div className="max-max-w-[531px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
+            <div className="max-w-[531px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
               {/* Header - Overline + Anchor */}
               <div className="px-4 pt-4 pb-3">
                 <p className="text-[13px] font-medium text-[#768EA7] mb-1">Settlement Status</p>
@@ -4153,7 +4153,7 @@ const EarlySettlementsEnabledArtifact = ({ data, isLast, onSuggestionClick, high
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <div className="max-max-w-[531px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
+          <div className="max-w-[531px] bg-white border border-[#E4E9F1] rounded-[8px] overflow-hidden shadow-[0px_1px_2px_rgba(18,25,38,0.04)]">
             {/* Header - Overline + Anchor */}
             <div className="px-4 pt-4 pb-3">
               <p className="text-[13px] font-medium text-[#768EA7] mb-1">Early Settlements</p>
@@ -4390,7 +4390,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           initial={{ opacity: 0, y: 40, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="flex flex-col items-end gap-[8px] ml-auto max-max-w-[531px]"
+          className="flex flex-col items-end gap-[8px] ml-auto max-w-[531px]"
         >
           {/* Attachment Pill - shown first */}
           {hasImage && (
@@ -4800,7 +4800,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
         {/* Headline and Subtext with streaming */}
         {(data.headline || data.subtext) && (
-          <div className="max-max-w-[531px] mb-6">
+          <div className="max-w-[531px] mb-6">
             {/* Text Content */}
             <div className="flex-1">
               {data.headline && (
@@ -4871,7 +4871,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
         {/* Headline and Subtext with streaming */}
         {(data.headline || data.subtext) && (
-          <div className="max-max-w-[531px] mb-6">
+          <div className="max-w-[531px] mb-6">
             {/* Text Content */}
             <div className="flex-1">
               {data.headline && (
@@ -4942,7 +4942,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
         {/* Headline and Subtext with streaming */}
         {(data.headline || data.subtext) && (
-          <div className="max-max-w-[531px] mb-6">
+          <div className="max-w-[531px] mb-6">
             {/* Text Content */}
             <div className="flex-1">
               {data.headline && (
@@ -5055,7 +5055,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.4 }}
-          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden p-6 max-max-w-[531px]"
+          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden p-6 max-w-[531px]"
         >
           {/* Inner shadow for depth */}
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
@@ -5294,7 +5294,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     };
 
     return (
-      <div className="w-full max-max-w-[531px] animate-fade-in-up">
+      <div className="w-full max-w-[531px] animate-fade-in-up">
         <BusinessCategoryCard
           category={category}
           subCategory={subCategory}
@@ -5312,7 +5312,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     };
 
     return (
-      <div className="w-full max-max-w-[531px] animate-fade-in-up">
+      <div className="w-full max-w-[531px] animate-fade-in-up">
         <BankVerificationCard onVerify={handleVerify} />
       </div>
     );
@@ -5327,7 +5327,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     };
 
     return (
-      <div className="w-full max-max-w-[531px] animate-fade-in-up">
+      <div className="w-full max-w-[531px] animate-fade-in-up">
         <BankAccountCard
           bankName={bankName}
           accountNumber={accountNumber}
@@ -5340,7 +5340,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
   }
 
   return (
-    <div className="flex gap-4 items-start w-full max-max-w-[531px] animate-fade-in-up">
+    <div className="flex gap-4 items-start w-full max-w-[531px] animate-fade-in-up">
         {/* Content Container - No Avatar */}
         <div className="flex flex-col gap-2 flex-1 min-w-0">
 
