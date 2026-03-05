@@ -2205,7 +2205,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
          {/* Fades in when transitioning from landing page to create seamless illusion */}
          {/* Starts above (y: -12) and settles down to final position, matching hero's downward motion */}
          <motion.div
-            className="fixed bottom-[8px] left-0 right-0 z-[70] px-3 md:px-4 pointer-events-none"
+            className="fixed bottom-[24px] left-0 right-0 z-[70] px-3 md:px-4 pointer-events-none"
             initial={isEntering ? { opacity: 0, y: -8 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
@@ -2228,7 +2228,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
       {/* Modal Overlay Input - Only shows when a modal is open, rendered via portal at z-70 */}
       {(isPaymentLinkModalOpen || isCaptureSettingsModalOpen) && createPortal(
-        <div className="fixed bottom-[8px] left-0 right-0 z-[70] px-3 md:px-4">
+        <div className="fixed bottom-[24px] left-0 right-0 z-[70] px-3 md:px-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
