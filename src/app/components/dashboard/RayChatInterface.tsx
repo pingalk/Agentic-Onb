@@ -2194,7 +2194,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             <div className="absolute inset-x-0 bottom-0 h-[120px]" />
          </div>
 
-         {/* Background Video - plays when agent is thinking/streaming - z-60 (behind input) */}
+         {/* Background Video - plays when agent is thinking/streaming - z-0 (bottom layer) */}
          <AnimatePresence>
             {isStreaming && (
                <motion.div
@@ -2202,7 +2202,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="fixed bottom-0 left-0 right-0 z-[60] pointer-events-none overflow-hidden"
+                  className="fixed bottom-0 left-0 right-0 z-0 pointer-events-none overflow-hidden"
                >
                   <video
                      autoPlay
