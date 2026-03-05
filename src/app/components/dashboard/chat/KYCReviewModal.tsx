@@ -59,50 +59,54 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
             style={{ pointerEvents: isTransitioningToPanel ? 'none' : 'auto' }}
           />
 
-          {/* Modal */}
+          {/* Modal - starts from right panel position, animates to center */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+            initial={{
+              right: '0',
+              top: '56px',
+              left: 'auto',
+              opacity: 1,
+              scale: 1
+            }}
             animate={isTransitioningToPanel ? {
+              right: '0',
+              top: '56px',
+              left: 'auto',
               opacity: 1,
-              scale: 1,
-              x: 0,
-              y: 0
+              scale: 1
             } : {
-              opacity: 1,
-              scale: 1,
+              left: '50%',
+              top: '50%',
+              right: 'auto',
               x: '-50%',
-              y: '-50%'
+              y: '-50%',
+              opacity: 1,
+              scale: 1
             }}
             exit={isTransitioningToPanel ? {
+              right: '0',
+              top: '56px',
+              left: 'auto',
               opacity: 1,
-              scale: 1,
-              x: 0,
-              y: 0
+              scale: 1
             } : {
-              opacity: 0,
-              scale: 0.95,
+              left: '50%',
+              top: '50%',
+              right: 'auto',
               x: '-50%',
-              y: '-50%'
+              y: '-50%',
+              opacity: 0,
+              scale: 0.95
             }}
-            transition={isTransitioningToPanel ? {
-              opacity: { duration: 0.2 },
-              scale: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
-              x: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
-              y: { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
-            } : {
-              duration: 0.3,
+            transition={{
+              duration: 0.5,
               ease: [0.4, 0, 0.2, 1]
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
             className="fixed bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]"
             style={isTransitioningToPanel ? {
-              right: '8px',
-              top: '64px',
-              height: 'calc(100vh - 64px - 8px)'
-            } : {
-              left: '50%',
-              top: '50%'
-            }}
+              height: 'calc(100vh - 56px)'
+            } : {}}
           >
             {/* Top gradient overlay for depth */}
             <div className="absolute top-0 left-0 right-0 h-[24px] pointer-events-none z-20">
