@@ -4989,12 +4989,23 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const { heading, tag, phoneNumber, buttonText, isVerified = false } = data.artifact.data;
     const [isStreaming, setIsStreaming] = React.useState(true);
     const [subtextStarted, setSubtextStarted] = React.useState(false);
+    const [showCard, setShowCard] = React.useState(false);
 
     // Auto-trigger subtext display after mount
     React.useEffect(() => {
       const timer = setTimeout(() => setSubtextStarted(true), 1300);
       return () => clearTimeout(timer);
     }, []);
+
+    // Show card after streaming completes
+    React.useEffect(() => {
+      if (!isStreaming && !showCard) {
+        const timer = setTimeout(() => {
+          setShowCard(true);
+        }, 500); // Small delay after streaming completes
+        return () => clearTimeout(timer);
+      }
+    }, [isStreaming, showCard]);
 
     return (
       <div className="w-full animate-fade-in-up relative" style={{ position: 'relative', zIndex: 10 }}>
@@ -5054,13 +5065,16 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
         </div>
         )}
 
-        {/* OTP Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3, duration: 0.4 }}
-          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden p-6 max-w-[531px]"
-        >
+        {/* OTP Card - Only shown after streaming completes */}
+        <AnimatePresence>
+          {showCard && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden p-6 max-w-[531px]"
+            >
           {/* Inner shadow for depth */}
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
 
@@ -5104,6 +5118,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             </button>
           </div>
         </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Stacked Suggestions - Only visible for last message */}
         {isLast && data.suggestions && data.suggestions.length > 0 && (
@@ -5120,6 +5136,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const { headline, subtext, businessName, verificationBadge, documents } = data.artifact.data;
     const [isStreaming, setIsStreaming] = React.useState(true);
     const [subtextStarted, setSubtextStarted] = React.useState(false);
+    const [showCard, setShowCard] = React.useState(false);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     // Auto-trigger subtext display after mount
@@ -5128,15 +5145,25 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
       return () => clearTimeout(timer);
     }, []);
 
-    // Auto-open modal when streaming completes
+    // Show card after streaming completes
     React.useEffect(() => {
-      if (!isStreaming && !isModalOpen) {
+      if (!isStreaming && !showCard) {
         const timer = setTimeout(() => {
-          setIsModalOpen(true);
+          setShowCard(true);
         }, 500); // Small delay after streaming completes
         return () => clearTimeout(timer);
       }
-    }, [isStreaming, isModalOpen]);
+    }, [isStreaming, showCard]);
+
+    // Auto-open modal when card is shown
+    React.useEffect(() => {
+      if (showCard && !isModalOpen) {
+        const timer = setTimeout(() => {
+          setIsModalOpen(true);
+        }, 500); // Small delay after card appears
+        return () => clearTimeout(timer);
+      }
+    }, [showCard, isModalOpen]);
 
     return (
       <div className="w-full animate-fade-in-up relative">
@@ -5193,13 +5220,16 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           </div>
         </div>
 
-        {/* Business Details Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3, duration: 0.4 }}
-          className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden max-w-[531px]"
-        >
+        {/* Business Details Card - Only shown after streaming completes */}
+        <AnimatePresence>
+          {showCard && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden max-w-[531px]"
+            >
           {/* Inset shadow for depth */}
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
 
@@ -5260,6 +5290,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             </div>
           </div>
         </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Stacked Suggestions - Only visible for last message */}
         {isLast && data.artifact.data.suggestions && data.artifact.data.suggestions.length > 0 && (
