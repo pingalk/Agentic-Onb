@@ -134,7 +134,7 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
                   <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{
-                      backgroundImage: 'url(https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop)',
+                      backgroundImage: 'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=400&fit=crop)',
                       filter: 'blur(3px)',
                       transform: 'scale(1.1)'
                     }}
