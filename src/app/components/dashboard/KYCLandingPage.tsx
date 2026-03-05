@@ -93,7 +93,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     setStep('welcome');
   };
 
-  // Auto-transition for loading video (fade in, then fade out at 9s, transition at 10s)
+  // Auto-transition for loading video (fade in, then fade out at 1s, transition at 2s)
   useEffect(() => {
     if (step === 'loading') {
       // Fade in after a brief delay for smooth crossfade
@@ -101,16 +101,16 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
         setLoadingOpacity(1);
       }, 100);
 
-      // Start fade out at 9 seconds
+      // Start fade out at 1 second
       const fadeTimer = setTimeout(() => {
         setLoadingOpacity(0);
-      }, 9000);
+      }, 1000);
 
-      // Transition to welcome at 10 seconds
+      // Transition to welcome at 2 seconds
       const transitionTimer = setTimeout(() => {
         setStep('welcome');
         setLoadingOpacity(0); // Reset for next time
-      }, 10000);
+      }, 2000);
 
       return () => {
         clearTimeout(fadeInTimer);
