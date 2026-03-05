@@ -184,21 +184,25 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
         </div>
       )}
 
-      {/* Background Video - only for form steps */}
+      {/* SparkRipples Background - only for form steps */}
       {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
+          <div
             style={{
               transform: 'scale(0.75)',
-              filter: 'brightness(1.5)'
+              filter: 'brightness(1.5)',
+              width: '100%',
+              height: '100%'
             }}
-            src="/rzrsense.mov"
-          />
+          >
+            <SparkRipplesBackground
+              className="absolute inset-0"
+              opacity={0.3}
+              muted={true}
+              loop={false}
+              playbackRate={0.8}
+            />
+          </div>
         </div>
       )}
 
