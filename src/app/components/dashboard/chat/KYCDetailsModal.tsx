@@ -114,9 +114,9 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             }`}
             style={hasSlid ? {
               right: '0',
-              top: '0',
+              top: '56px',
               bottom: '0',
-              height: '100vh',
+              height: 'calc(100vh - 56px)',
               width: '393px'
             } : {
               left: '50%',
@@ -135,11 +135,11 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
 
 
             {/* Scrollable Content */}
-            <div className="relative overflow-y-auto h-full">
+            <div className="relative overflow-y-auto h-full p-2">
               {/* CKYC Card */}
-              <div className="border border-[rgba(108,132,157,0.18)] overflow-hidden bg-white shadow-sm">
+              <div className="border border-[rgba(108,132,157,0.18)] overflow-hidden bg-white shadow-sm rounded-[12px]">
                 {/* Header Image Section */}
-                <div className="relative h-[121px] overflow-hidden">
+                <div className="relative h-[121px] overflow-hidden rounded-t-[12px]">
                   {/* Blurred background image */}
                   <div
                     className="absolute inset-0 bg-cover bg-center"
