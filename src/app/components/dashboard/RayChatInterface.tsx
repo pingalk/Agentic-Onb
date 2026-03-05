@@ -103,9 +103,10 @@ interface RayChatInterfaceProps {
   isEntering?: boolean; // True when transitioning from landing → chat
   onGoHome?: () => void; // Navigate back to landing page
   skipInitialUserMessage?: boolean; // Skip showing user query, go directly to Ray's response
+  kycPanNumber?: string; // PAN number from KYC landing page
 }
 
-export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, skipInitialUserMessage }: RayChatInterfaceProps) => {
+export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, skipInitialUserMessage, kycPanNumber }: RayChatInterfaceProps) => {
   const demoContext = useDemo();
   const { config: currentMagicColor } = useMagicColor();
   const { arjunScript, sarahScript, mayaScript, samScript, shyamScript, kiaraScript, varunScript, kycScript, briefingReviewResponses, showcaseCards } = useDemoScript();
@@ -136,6 +137,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // KYC OTP Modal States
   const [isKYCOTPModalOpen, setIsKYCOTPModalOpen] = useState(false);
   const [kycPhoneNumber, setKycPhoneNumber] = useState('2828');
+  const [kycPanNumber, setKycPanNumber] = useState('');
 
   // UPI Verification Modal States
   const [isUPIModalOpen, setIsUPIModalOpen] = useState(false);
@@ -2067,7 +2069,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                      artifact: {
                        type: 'kyc_business_details',
                        data: {
-                         headline: "Great news, we've retrieved your official business details linked to PAN XXXXXXXX.",
+                         headline: `Great news, we've retrieved your official business details linked to PAN ${kycPanNumber || 'XXXXXXXX'}.`,
                          subtext: "Take a quick look to confirm everything's up to date before we continue.",
                          businessName: "Co-Star Network",
                          verificationBadge: "Verified via CKYC",

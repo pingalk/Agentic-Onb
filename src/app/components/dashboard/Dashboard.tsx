@@ -20,7 +20,7 @@ export interface DashboardProps {
     onSceneChange?: (sceneId: string) => void;
     kycMode?: boolean;
     initialQuery?: string;
-    kycPhoneData?: { phone: string; otp: string } | null;
+    kycPhoneData?: { phone: string; otp: string; pan: string } | null;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ initialConfig, onLogout, onSceneChange, kycMode, initialQuery, kycPhoneData }) => {

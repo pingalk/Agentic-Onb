@@ -8,7 +8,7 @@ import { ActionAccordion } from './ActionAccordion';
 import { ActionWidgetVariant2 } from './ActionWidgetVariant2';
 import { ViewModeToggle } from './ViewModeToggle';
 
-const RayLayoutContent = ({ initialQuery, isEntering, onGoHome, skipInitialUserMessage }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void; skipInitialUserMessage?: boolean }) => {
+const RayLayoutContent = ({ initialQuery, isEntering, onGoHome, skipInitialUserMessage, kycPanNumber }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void; skipInitialUserMessage?: boolean; kycPanNumber?: string }) => {
   const flow = useFormStore();
   const { viewMode, isOpen, intent } = flow;
 
@@ -39,7 +39,7 @@ const RayLayoutContent = ({ initialQuery, isEntering, onGoHome, skipInitialUserM
           ease: [0.2, 0, 0, 1] // Rauno Bezier
         }}
       >
-         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} isEntering={isEntering} onGoHome={onGoHome} skipInitialUserMessage={skipInitialUserMessage} />
+         <RayChatInterface initialQuery={initialQuery} isSplit={isSplitActive} isEntering={isEntering} onGoHome={onGoHome} skipInitialUserMessage={skipInitialUserMessage} kycPanNumber={kycPanNumber} />
       </motion.div>
 
       {/* RIGHT PANEL: ARTIFACT CONTAINER (Split Mode) */}
@@ -108,10 +108,10 @@ const RayLayoutContent = ({ initialQuery, isEntering, onGoHome, skipInitialUserM
   );
 };
 
-export const RayLayout = ({ initialQuery, isEntering, onGoHome, skipInitialUserMessage }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void; skipInitialUserMessage?: boolean }) => {
+export const RayLayout = ({ initialQuery, isEntering, onGoHome, skipInitialUserMessage, kycPanNumber }: { initialQuery?: string; isEntering?: boolean; onGoHome?: () => void; skipInitialUserMessage?: boolean; kycPanNumber?: string }) => {
   return (
     <FormProvider>
-      <RayLayoutContent initialQuery={initialQuery} isEntering={isEntering} onGoHome={onGoHome} skipInitialUserMessage={skipInitialUserMessage} />
+      <RayLayoutContent initialQuery={initialQuery} isEntering={isEntering} onGoHome={onGoHome} skipInitialUserMessage={skipInitialUserMessage} kycPanNumber={kycPanNumber} />
     </FormProvider>
   );
 };

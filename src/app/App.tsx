@@ -18,7 +18,7 @@ function AppContent() {
 
   // KYC state
   const [showKYCLanding, setShowKYCLanding] = useState(false);
-  const [kycPhoneData, setKycPhoneData] = useState<{ phone: string; otp: string } | null>(null);
+  const [kycPhoneData, setKycPhoneData] = useState<{ phone: string; otp: string; pan: string } | null>(null);
 
   // Listen for hash changes
   useEffect(() => {
@@ -43,9 +43,9 @@ function AppContent() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [hash]);
 
-  // Handle phone verification completion
-  const handleKYCPhoneSubmit = (phoneNumber: string, otp: string) => {
-    setKycPhoneData({ phone: phoneNumber, otp });
+  // Handle phone verification completion (phoneNumber is actually PAN number from KYCLandingPage)
+  const handleKYCPhoneSubmit = (panNumber: string, otp: string) => {
+    setKycPhoneData({ phone: '2828', otp, pan: panNumber });
     setShowKYCLanding(false);
   };
 

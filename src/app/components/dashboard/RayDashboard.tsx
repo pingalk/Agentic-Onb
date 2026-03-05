@@ -195,7 +195,7 @@ interface RayDashboardProps {
   autoSubmit?: boolean;
   onLogout?: () => void;
   onSceneChange?: (sceneId: string) => void;
-  kycPhoneData?: { phone: string; otp: string } | null;
+  kycPhoneData?: { phone: string; otp: string; pan: string } | null;
 }
 
 export const RayDashboard: React.FC<RayDashboardProps> = (props) => {
@@ -1337,7 +1337,7 @@ const RayDashboardContent: React.FC<RayDashboardProps> = ({ onNavigate, initialQ
                 </div>
                 )
             ) : (
-                <RayLayout initialQuery={lastQuery} isEntering={viewTransition === 'entering'} onGoHome={handleHomeClick} skipInitialUserMessage={!!kycPhoneData} />
+                <RayLayout initialQuery={lastQuery} isEntering={viewTransition === 'entering'} onGoHome={handleHomeClick} skipInitialUserMessage={!!kycPhoneData} kycPanNumber={kycPhoneData?.pan} />
             )}
 
         </div>
