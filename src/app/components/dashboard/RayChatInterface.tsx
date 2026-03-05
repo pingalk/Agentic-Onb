@@ -2183,20 +2183,18 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
          {/* Final Success Video */}
          {showFinalVideo && (
-           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8] flex items-center justify-center px-3 md:px-6">
-             <div className="w-full max-w-full md:max-w-2xl mx-auto">
-               <video
-                 autoPlay
-                 muted
-                 playsInline
-                 className="block w-full h-auto"
-                 style={{ maxHeight: '100vh' }}
-               >
-                 <source src="/final-success.mov" type="video/quicktime" />
-                 <source src="/final-success.mov" type="video/mp4" />
-                 Your browser does not support the video tag.
-               </video>
-             </div>
+           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8] flex items-center justify-center px-4 md:px-6">
+             <video
+               autoPlay
+               muted
+               playsInline
+               className="block w-full h-auto"
+               style={{ maxHeight: '100vh' }}
+             >
+               <source src="/final-success.mov" type="video/quicktime" />
+               <source src="/final-success.mov" type="video/mp4" />
+               Your browser does not support the video tag.
+             </video>
            </div>
          )}
 
