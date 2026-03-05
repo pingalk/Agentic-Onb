@@ -6,7 +6,9 @@ import { Check } from 'lucide-react';
 export interface KYCDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  businessName: string;
+  panNumber?: string;
+  website?: string;
+  businessName?: string;
   onSettled?: () => void;
   businessModel?: string;
   bankAccount?: string;
@@ -15,6 +17,9 @@ export interface KYCDetailsModalProps {
 export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   isOpen,
   onClose,
+  panNumber,
+  website,
+  businessName,
   onSettled,
   businessModel,
   bankAccount
@@ -41,8 +46,8 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
   if (!isOpen) return null;
 
   const details = [
-    { label: 'PAN number', value: 'EIUGF5433G', verified: true },
-    { label: 'Payment Channel', value: 'mokobara.com', verified: true },
+    { label: 'PAN number', value: panNumber || 'Pending...', verified: !!panNumber },
+    { label: 'Payment Channel', value: website || 'Pending...', verified: !!website },
     { label: 'Aadhar front', value: 'Image verified', verified: true },
     { label: 'Aadhar back', value: 'Image verified', verified: true },
     {
@@ -156,7 +161,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
                   {/* Text overlay */}
                   <div className="relative z-10 h-full flex flex-col items-center justify-center text-white">
                     <h3 className="font-['TASA_Orbiter_Display',sans-serif] font-semibold text-[24px] leading-[32px] tracking-[0px] mb-1 drop-shadow-lg">
-                      Co-Star Network
+                      {businessName || 'Business Name'}
                     </h3>
                     <p className="font-['Inter',sans-serif] font-medium text-[10px] leading-[16px] tracking-[1px] text-white/90 uppercase drop-shadow-md">
                       A PRIVATE LIMITED COMPANY

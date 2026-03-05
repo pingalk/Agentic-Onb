@@ -4373,7 +4373,7 @@ const ChatAttachmentPill = ({ filename, fileType, onClick }: { filename: string;
   );
 };
 
-export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, kycBusinessModel, kycBankAccount, onKYCPanelSettled, onKYCPanelClosed }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; kycBusinessModel?: string; kycBankAccount?: string; onKYCPanelSettled?: () => void; onKYCPanelClosed?: () => void }) => {
+export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, kycPanNumber, kycWebsite, kycBusinessName, kycBusinessModel, kycBankAccount, onKYCPanelSettled, onKYCPanelClosed }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; kycPanNumber?: string; kycWebsite?: string; kycBusinessName?: string; kycBusinessModel?: string; kycBankAccount?: string; onKYCPanelSettled?: () => void; onKYCPanelClosed?: () => void }) => {
   // State for WhatsApp preview modal
   const [isWhatsAppPreviewOpen, setIsWhatsAppPreviewOpen] = useState(false);
 
@@ -5276,7 +5276,9 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             // Reset panel settled state when closing
             onKYCPanelClosed?.();
           }}
-          businessName={businessName}
+          panNumber={kycPanNumber}
+          website={kycWebsite}
+          businessName={kycBusinessName || businessName}
           businessModel={kycBusinessModel}
           bankAccount={kycBankAccount}
           onSettled={onKYCPanelSettled}

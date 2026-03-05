@@ -174,6 +174,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   const [kycFlowStep, setKycFlowStep] = useState(0);
   const [kycBusinessModel, setKycBusinessModel] = useState<string | undefined>(undefined);
   const [kycBankAccount, setKycBankAccount] = useState<string | undefined>(undefined);
+  const [kycWebsite, setKycWebsite] = useState<string | undefined>(undefined);
+  const [kycBusinessName, setKycBusinessName] = useState<string | undefined>(undefined);
   const [kycOTPVerified, setKycOTPVerified] = useState(false);
 
   // KYC Details Panel State
@@ -848,6 +850,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
       // Handle website URL submission
       if (suggestion.startsWith('website:')) {
         const websiteUrl = suggestion.replace('website:', '');
+        setKycWebsite(websiteUrl);
         setMessages(prev => [...prev, {
           id: `kyc-u-website`,
           sender: 'user' as const,
@@ -1801,6 +1804,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                         highlightedSuggestionIndex={highlightedSuggestionIndex}
                         animatingCardId={isPaymentLinkModalOpen ? activeFormCardId : null}
                         personaId={activeFlow || 'default'}
+                        kycPanNumber={kycPanNumber}
+                        kycWebsite={kycWebsite}
+                        kycBusinessName={kycBusinessName}
                         kycBusinessModel={kycBusinessModel}
                         kycBankAccount={kycBankAccount}
                         onKYCPanelSettled={() => setIsKYCPanelSettled(true)}
@@ -2070,6 +2076,10 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                  setTimeout(() => {
                    setIsStreaming(false);
 
+                   // Store business name
+                   const businessName = "Co-Star Network";
+                   setKycBusinessName(businessName);
+
                    // Show KYC success message with business details card
                    setMessages(prev => [
                      ...prev.filter(m => !m.isThinking),
@@ -2081,7 +2091,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                          data: {
                            headline: `Great news, we've retrieved your official business details linked to PAN ${kycPanNumber || 'XXXXXXXX'}.`,
                            subtext: "Take a quick look to confirm everything's up to date before we continue.",
-                           businessName: "Co-Star Network",
+                           businessName: businessName,
                            verificationBadge: "Verified via CKYC",
                            documents: [
                              { name: "Aadhar Front", type: "document" },
