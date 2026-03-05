@@ -114,7 +114,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                     <p className="font-sans text-[13px] font-medium text-[#576375] text-center">
                       Scan with any app
                     </p>
-                    <div className="flex items-center justify-center gap-4">
+                    <div className="flex items-center justify-center gap-4 flex-wrap">
                       <div className="w-10 h-10 flex items-center justify-center">
                         <img src="/google-pay-icon.svg" alt="Google Pay" className="w-10 h-10" />
                       </div>
@@ -123,6 +123,18 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                       </div>
                       <div className="w-10 h-10 flex items-center justify-center">
                         <img src="/paytm-icon.svg" alt="Paytm" className="w-10 h-10" />
+                      </div>
+                      <div className="w-10 h-10 flex items-center justify-center">
+                        <img src="/pop-upi-icon.svg" alt="POP UPI" className="w-10 h-10" />
+                      </div>
+                      <div className="w-10 h-10 flex items-center justify-center">
+                        <img src="/bhim-icon.svg" alt="BHIM" className="w-10 h-10" />
+                      </div>
+                      <div className="w-10 h-10 flex items-center justify-center">
+                        <img src="/amazon-pay-icon.svg" alt="Amazon Pay" className="w-10 h-10" />
+                      </div>
+                      <div className="w-10 h-10 flex items-center justify-center">
+                        <img src="/cred-icon.svg" alt="CRED" className="w-10 h-10" />
                       </div>
                     </div>
                   </div>
