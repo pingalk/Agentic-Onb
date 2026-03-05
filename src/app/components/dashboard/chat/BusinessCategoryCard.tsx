@@ -40,7 +40,7 @@ export const BusinessCategoryCard: React.FC<BusinessCategoryCardProps> = ({
           </div>
 
           <p className="font-sans text-[14px] text-[#576375] leading-[20px]">
-            Category auto-detected from your website. Confirm to personalise your setup.
+            We've scraped your website and identified your business category. Confirm to personalise your setup.
           </p>
         </div>
 
