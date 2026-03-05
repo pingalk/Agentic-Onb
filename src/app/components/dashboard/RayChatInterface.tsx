@@ -2183,8 +2183,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
          {/* Final Success Video */}
          {showFinalVideo && (
-           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8] flex items-center justify-center">
-             <div className="w-full max-w-2xl px-1">
+           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8] flex items-center justify-center px-3 md:px-6">
+             <div className="w-full max-w-full md:max-w-2xl mx-auto">
                <video
                  autoPlay
                  muted
