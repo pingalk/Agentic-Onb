@@ -72,7 +72,7 @@ export const BusinessCategoryCard: React.FC<BusinessCategoryCardProps> = ({
         <div className="flex items-center gap-3 pt-2">
           <button
             onClick={onConfirm}
-            className="relative flex-1 h-12 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
+            className="relative h-12 px-6 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
             style={{
               backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
             }}
@@ -84,7 +84,7 @@ export const BusinessCategoryCard: React.FC<BusinessCategoryCardProps> = ({
 
           <button
             onClick={onChange}
-            className="font-sans text-[14px] font-medium text-[#1566f1] hover:text-[#0e54cc] transition-colors px-4"
+            className="font-sans text-[14px] font-medium text-[#1566f1] hover:text-[#0e54cc] transition-colors"
           >
             Change
           </button>

@@ -55,7 +55,7 @@ export const BankVerificationCard: React.FC<BankVerificationCardProps> = ({ onVe
         {/* Action Button */}
         <button
           onClick={onVerify}
-          className="relative w-full h-12 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
+          className="relative h-12 px-6 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
           style={{
             backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
           }}
