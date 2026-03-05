@@ -5474,9 +5474,6 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             {/* Sequenced Blocks */}
             {data.blocks && <BlockSequencer blocks={data.blocks} />}
 
-            {/* Footer Actions - Only visible for last message (except OTP verified) */}
-            {isLast && data.headline !== "OTP verified" && <MessageFooter />}
-
             {/* Stacked Suggestions - Only visible for last message */}
             {isLast && data.suggestions && (
                 <SuggestionStack items={data.suggestions} />
