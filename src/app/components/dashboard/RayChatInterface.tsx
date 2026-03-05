@@ -151,6 +151,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // Success Animation State
   const [isSuccessAnimationOpen, setIsSuccessAnimationOpen] = useState(false);
   const [showFinalVideo, setShowFinalVideo] = useState(false);
+  const [showSuccessText, setShowSuccessText] = useState(false);
 
   // Input Box States
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -2202,16 +2203,46 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                autoPlay
                muted
                playsInline
+               onEnded={() => setShowSuccessText(true)}
                className="block w-full"
                style={{
                  height: 'auto',
                  clipPath: 'inset(2px)'
                }}
              >
-               <source src="/success-final.mov" type="video/quicktime" />
-               <source src="/success-final.mov" type="video/mp4" />
+               <source src="/success-animation.mp4" type="video/mp4" />
                Your browser does not support the video tag.
              </video>
+
+             {/* Success Text Overlay */}
+             <AnimatePresence>
+               {showSuccessText && (
+                 <motion.div
+                   initial={{ opacity: 0, y: 20 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   exit={{ opacity: 0 }}
+                   transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+                   className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center"
+                 >
+                   <motion.h1
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     transition={{ delay: 0.2, duration: 0.5 }}
+                     className="font-sans font-semibold text-[32px] leading-[40px] tracking-[-0.5px] text-[#020202] mb-4 max-w-2xl"
+                   >
+                     Congratulations! Your KYC application is successfully submitted
+                   </motion.h1>
+                   <motion.p
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     transition={{ delay: 0.4, duration: 0.5 }}
+                     className="font-sans text-[16px] leading-[24px] text-[#40566d] max-w-xl"
+                   >
+                     We'll handle the remaining verification behind the scenes
+                   </motion.p>
+                 </motion.div>
+               )}
+             </AnimatePresence>
            </div>
          )}
 
