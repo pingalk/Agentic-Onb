@@ -53,7 +53,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
+            className="fixed inset-0 bg-[rgba(0,0,0,0.8)] z-[9998]"
             onClick={step === 'qr' ? onClose : undefined}
           />
 
@@ -63,9 +63,11 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-[9999] overflow-hidden"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] z-[9999] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Inset shadow for depth */}
+            <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
             <AnimatePresence mode="wait">
               {step === 'qr' ? (
                 <motion.div
@@ -123,9 +125,6 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                       </div>
                       <div className="w-10 h-10 flex items-center justify-center">
                         <img src="/paytm-icon.svg" alt="Paytm" className="w-10 h-10" />
-                      </div>
-                      <div className="w-10 h-10 flex items-center justify-center">
-                        <img src="/pop-upi-icon.svg" alt="POP UPI" className="w-10 h-10" />
                       </div>
                       <div className="w-10 h-10 flex items-center justify-center">
                         <img src="/bhim-icon.svg" alt="BHIM" className="w-10 h-10" />
