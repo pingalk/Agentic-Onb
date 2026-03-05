@@ -2197,13 +2197,17 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
          {/* Final Success Video */}
          {showFinalVideo && (
-           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8]">
+           <div className="fixed inset-0 z-[99999] bg-[#f8f8f8] flex items-center justify-center">
              <video
                autoPlay
                muted
                playsInline
-               className="block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-               style={{ maxWidth: '100vw', maxHeight: '100vh', width: 'auto', height: 'auto' }}
+               className="block"
+               style={{
+                 width: '100vw',
+                 height: 'auto',
+                 clipPath: 'inset(2px)'
+               }}
              >
                <source src="/success-final.mov" type="video/quicktime" />
                <source src="/success-final.mov" type="video/mp4" />
