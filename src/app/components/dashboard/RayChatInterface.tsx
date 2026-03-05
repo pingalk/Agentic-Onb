@@ -2188,8 +2188,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                autoPlay
                muted
                playsInline
-               controls
-               className="max-w-[90%] max-h-[90%]"
+               className="w-auto h-auto max-w-full max-h-full"
              >
                <source src="/final-success.mov" type="video/quicktime" />
                <source src="/final-success.mov" type="video/mp4" />
