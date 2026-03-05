@@ -2221,8 +2221,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                      className="w-full h-auto block"
                      style={{
                         marginTop: '-8px',
-                        maskImage: 'linear-gradient(to bottom, transparent 0%, black 30%)',
-                        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 30%)'
+                        maskImage: 'linear-gradient(to bottom, transparent 0%, black 40%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 40%)'
                      }}
                      src="/rzrsense-static.png"
                      alt=""
