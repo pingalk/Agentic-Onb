@@ -2036,30 +2036,15 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                blocks: [{ type: 'text', content: otp }]
              }]);
 
-             // Show "OTP verified" message
+             // Start KYC loading state directly (skip OTP verified message)
              setTimeout(() => {
+               setIsStreaming(true);
                setMessages(prev => [...prev, {
-                 id: `kyc-verified-${Date.now()}`,
+                 id: `kyc-loading-${Date.now()}`,
                  sender: 'ai',
-                 artifact: {
-                   type: 'simple_text',
-                   data: {
-                     headline: "OTP verified",
-                     body: "",
-                     suggestions: []
-                   }
-                 }
+                 isThinking: true,
+                 kycLoading: true // Flag to indicate KYC-specific loading
                }]);
-
-               // Start KYC loading state
-               setTimeout(() => {
-                 setIsStreaming(true);
-                 setMessages(prev => [...prev, {
-                   id: `kyc-loading-${Date.now()}`,
-                   sender: 'ai',
-                   isThinking: true,
-                   kycLoading: true // Flag to indicate KYC-specific loading
-                 }]);
 
                  // Simulate KYC verification (10 seconds)
                  setTimeout(() => {
@@ -2088,7 +2073,6 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                    }]);
                    setKycFlowStep(3);
                  }, 10000);
-               }, 600);
              }, 600);
            }}
            phoneNumber={kycPhoneNumber}
