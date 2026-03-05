@@ -2203,8 +2203,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                   className="fixed bottom-0 left-0 right-0 z-0 pointer-events-none overflow-hidden"
                >
                   <img
-                     className="w-full h-auto relative"
-                     style={{ top: '-4px' }}
+                     className="w-full h-auto block"
                      src="/rzrsense-static.png"
                      alt=""
                   />
@@ -2227,8 +2226,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                      loop
                      muted
                      playsInline
-                     className="w-full h-auto relative"
-                     style={{ top: '-4px' }}
+                     className="w-full h-auto block"
                      src="/rzrsense.mov"
                   />
                </motion.div>
