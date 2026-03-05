@@ -148,8 +148,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
                     }}
                   />
 
-                  {/* Gradient overlay for better text contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/80 via-[#3b82f6]/75 to-[#60a5fa]/70" />
+                  {/* Overlay for better text contrast */}
                   <div className="absolute inset-0 bg-[rgba(0,0,0,0.25)]" />
 
                   {/* Text overlay */}
