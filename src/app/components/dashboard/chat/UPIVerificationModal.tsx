@@ -83,7 +83,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
             animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, x: 0, y: 20 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] z-[9999] overflow-hidden"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md min-h-[600px] backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] z-[9999] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Inset shadow for depth */}
@@ -191,7 +191,7 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                   </div>
 
                   {/* Success Content */}
-                  <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                  <div className="flex flex-col items-center justify-center py-24 space-y-4">
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
