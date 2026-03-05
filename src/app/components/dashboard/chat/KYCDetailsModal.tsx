@@ -72,7 +72,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             animate={{ opacity: hasSlid ? 0 : 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[9998] bg-[rgba(0,0,0,0.8)]"
+            className="fixed inset-0 z-[89] bg-[rgba(0,0,0,0.8)]"
             onClick={hasSlid ? undefined : onClose}
             style={{ pointerEvents: hasSlid ? 'none' : 'auto' }}
           />
@@ -109,7 +109,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               y: { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            className={`fixed bg-gradient-to-b from-white to-[#f0f0f0] overflow-hidden z-[9999] ${
+            className={`fixed bg-gradient-to-b from-white to-[#f0f0f0] overflow-hidden z-[90] ${
               hasSlid ? 'shadow-sm border-l-[1.5px] border-l-[rgba(0,0,0,0.1)]' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px]'
             }`}
             style={hasSlid ? {

@@ -1758,11 +1758,11 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
           opacity: { duration: 0.5, ease: 'easeInOut' }
         }}
       >
-        {/* 1. Scrollable Chat Area */}
+        {/* 1. Scrollable Chat Area - z-[1] (bottommost content layer) */}
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className={`flex-1 overflow-y-auto px-3 md:px-6 pt-4 md:pt-6 pb-[80vh] scrollbar-hide ${ENABLE_PIN_TO_TOP ? 'flex flex-col' : ''}`}
+          className={`flex-1 overflow-y-auto px-3 md:px-6 pt-4 md:pt-6 pb-[80vh] scrollbar-hide relative z-[1] ${ENABLE_PIN_TO_TOP ? 'flex flex-col' : ''}`}
         >
            <div className={`flex gap-6 md:gap-10 mx-auto transition-all duration-300 w-full max-w-full md:max-w-2xl ${ENABLE_PIN_TO_TOP ? 'flex-col-reverse mt-auto' : 'flex-col'}`}>
               {messages.map((msg, index) => {
@@ -1847,7 +1847,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             onClick={scrollToNext}
-            className="absolute bottom-[72px] left-1/2 -translate-x-1/2 z-[68] size-9 bg-white border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.06)] rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors"
+            className="absolute bottom-[72px] left-1/2 -translate-x-1/2 z-[58] size-9 bg-white border border-slate-200 shadow-[0_4px_12px_rgba(0,0,0,0.06)] rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-colors"
           >
             <ArrowDown size={18} />
           </motion.button>
@@ -2185,14 +2185,14 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
          {/* Bottom fade gradient - chat content fades out towards input */}
          {/* Structure: 120px gradient (0→100 opacity) on top, 120px solid below */}
-         <div className="fixed bottom-0 left-0 right-0 h-[240px] pointer-events-none z-[65]">
+         <div className="fixed bottom-0 left-0 right-0 h-[240px] pointer-events-none z-[55]">
             {/* Top 120px: transparent to show gradient */}
             <div className="absolute inset-x-0 top-0 h-[120px] bg-gradient-to-b from-transparent to-transparent" />
             {/* Bottom 120px: transparent to show gradient */}
             <div className="absolute inset-x-0 bottom-0 h-[120px]" />
          </div>
 
-         {/* Background Static Image - shows when agent is idle - z-[-1] (bottommost layer) */}
+         {/* Background Static Image - shows when agent is idle - z-[10] (above messages) */}
          <AnimatePresence>
             {!isStreaming && (
                <motion.div
@@ -2200,7 +2200,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="fixed bottom-0 left-0 right-0 z-[-1] pointer-events-none overflow-hidden"
+                  className="fixed bottom-0 left-0 right-0 z-[10] pointer-events-none overflow-hidden"
                >
                   <img
                      className="w-full h-auto block"
@@ -2212,7 +2212,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             )}
          </AnimatePresence>
 
-         {/* Background Video - plays when agent is thinking/streaming - z-0 (bottom layer) */}
+         {/* Background Video - plays when agent is thinking/streaming - z-[10] (above messages) */}
          <AnimatePresence>
             {isStreaming && (
                <motion.div
@@ -2220,7 +2220,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="fixed bottom-0 left-0 right-0 z-0 pointer-events-none overflow-hidden"
+                  className="fixed bottom-0 left-0 right-0 z-[10] pointer-events-none overflow-hidden"
                >
                   <video
                      autoPlay
@@ -2234,11 +2234,11 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
             )}
          </AnimatePresence>
 
-         {/* Input Container - z-70 (above modal) - using RayInputBox for consistency */}
+         {/* Input Container - z-60 (below co-star card) - using RayInputBox for consistency */}
          {/* Fades in when transitioning from landing page to create seamless illusion */}
          {/* Starts above (y: -12) and settles down to final position, matching hero's downward motion */}
          <motion.div
-            className="fixed bottom-[24px] left-0 right-0 z-[70] px-3 md:px-4 pointer-events-none"
+            className="fixed bottom-[24px] left-0 right-0 z-[60] px-3 md:px-4 pointer-events-none"
             initial={isEntering ? { opacity: 0, y: -8 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
@@ -2259,9 +2259,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
         </div>
       </motion.div>
 
-      {/* Modal Overlay Input - Only shows when a modal is open, rendered via portal at z-70 */}
+      {/* Modal Overlay Input - Only shows when a modal is open, rendered via portal at z-60 */}
       {(isPaymentLinkModalOpen || isCaptureSettingsModalOpen) && createPortal(
-        <div className="fixed bottom-[24px] left-0 right-0 z-[70] px-3 md:px-4">
+        <div className="fixed bottom-[24px] left-0 right-0 z-[60] px-3 md:px-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
