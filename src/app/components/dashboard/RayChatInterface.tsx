@@ -2034,19 +2034,19 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
              setIsKYCOTPModalOpen(false);
              setKycOTPVerified(true);
 
-             // Update the OTP card message to show verified state
-             setMessages(prev => prev.map(msg =>
-               msg.artifact?.type === 'kyc_otp_card'
-                 ? { ...msg, artifact: { ...msg.artifact, data: { ...msg.artifact.data, isVerified: true } } }
-                 : msg
-             ));
-
-             // Show OTP as user message
-             setMessages(prev => [...prev, {
-               id: `kyc-otp-u-${Date.now()}`,
-               sender: 'user',
-               blocks: [{ type: 'text', content: otp }]
-             }]);
+             // Update the OTP card message to show verified state and add user message
+             setMessages(prev => [
+               ...prev.map(msg =>
+                 msg.artifact?.type === 'kyc_otp_card'
+                   ? { ...msg, artifact: { ...msg.artifact, data: { ...msg.artifact.data, isVerified: true } } }
+                   : msg
+               ),
+               {
+                 id: `kyc-otp-u-${Date.now()}`,
+                 sender: 'user',
+                 blocks: [{ type: 'text', content: otp }]
+               }
+             ]);
 
              // Start KYC loading state directly (skip OTP verified message)
              setTimeout(() => {
@@ -2061,28 +2061,30 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                  // Simulate KYC verification (10 seconds)
                  setTimeout(() => {
                    setIsStreaming(false);
-                   setMessages(prev => prev.filter(m => !m.isThinking));
 
                    // Show KYC success message with business details card
-                   setMessages(prev => [...prev, {
-                     id: `kyc-success-${Date.now()}`,
-                     sender: 'ai',
-                     artifact: {
-                       type: 'kyc_business_details',
-                       data: {
-                         headline: `Great news, we've retrieved your official business details linked to PAN ${kycPanNumber || 'XXXXXXXX'}.`,
-                         subtext: "Take a quick look to confirm everything's up to date before we continue.",
-                         businessName: "Co-Star Network",
-                         verificationBadge: "Verified via CKYC",
-                         documents: [
-                           { name: "Aadhar Front", type: "document" },
-                           { name: "Aadhar back", type: "document" },
-                           { name: "Registered address", type: "document" }
-                         ],
-                         suggestions: []
+                   setMessages(prev => [
+                     ...prev.filter(m => !m.isThinking),
+                     {
+                       id: `kyc-success-${Date.now()}`,
+                       sender: 'ai',
+                       artifact: {
+                         type: 'kyc_business_details',
+                         data: {
+                           headline: `Great news, we've retrieved your official business details linked to PAN ${kycPanNumber || 'XXXXXXXX'}.`,
+                           subtext: "Take a quick look to confirm everything's up to date before we continue.",
+                           businessName: "Co-Star Network",
+                           verificationBadge: "Verified via CKYC",
+                           documents: [
+                             { name: "Aadhar Front", type: "document" },
+                             { name: "Aadhar back", type: "document" },
+                             { name: "Registered address", type: "document" }
+                           ],
+                           suggestions: []
+                         }
                        }
                      }
-                   }]);
+                   ]);
                    setKycFlowStep(3);
                  }, 10000);
              }, 600);
