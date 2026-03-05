@@ -2226,6 +2226,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                    exit={{ opacity: 0 }}
                    transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
                    className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center"
+                   style={{ marginTop: '48px' }}
                  >
                    <motion.h1
                      initial={{ opacity: 0, y: 10 }}
