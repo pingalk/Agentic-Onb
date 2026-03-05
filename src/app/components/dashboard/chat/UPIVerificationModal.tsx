@@ -142,14 +142,13 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
                   {/* Mock Payment Button (for demo) */}
                   <button
                     onClick={handleMockPayment}
-                    className="relative w-full h-12 px-6 border rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden"
+                    className="relative w-full h-[48px] border border-[#0354e0] rounded-[12px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.1)] text-white font-['Inter',sans-serif] font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center hover:opacity-90"
                     style={{
-                      backgroundImage: 'linear-gradient(-23.46deg, rgb(31, 41, 55) 54.842%, rgb(55, 65, 81) 98.573%)',
-                      borderColor: '#1f2937'
+                      backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
                     }}
                   >
-                    {/* Glass effect inset shadows */}
-                    <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#111827,inset_0px_0px_0px_0.5px_#374151,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
+                    {/* Inset shadow */}
+                    <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_0px_rgba(255,255,255,0.2),inset_0px_2px_0px_0px_rgba(255,255,255,0.2)]" />
                     Mock Payment Completion
                   </button>
                 </motion.div>
