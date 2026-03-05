@@ -69,8 +69,8 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
   const displayText = isComplete ? "How can I help you next?" : currentStep;
   const textKey = isComplete ? 'complete' : `step-${stepIndex}`;
 
-  // Show text in waiting mode (shimmery) or complete mode (static)
-  const shouldShowText = isWaiting || isComplete;
+  // Show text in waiting mode (shimmery) only
+  const shouldShowText = isWaiting;
 
   return (
     <motion.div
