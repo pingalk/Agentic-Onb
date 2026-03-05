@@ -165,7 +165,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#F6F6F6' }}>
+    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#fafafa' }}>
       {/* Top Navigation - only for form steps */}
       {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
         <div className="relative z-20 bg-black h-14 flex items-center justify-between px-4">
