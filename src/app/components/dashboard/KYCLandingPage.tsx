@@ -62,16 +62,12 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     if (panNumber.length === 10) {
       setIsSubmitting(true);
 
-      // Start fade out immediately
-      setPanOpacity(0);
-
-      // Transition to panConfirm after fade completes
+      // Transition to panConfirm immediately without fade
       setTimeout(() => {
         setIsSubmitting(false);
         setStep('panConfirm');
         setAnimPhase(3); // Reset to show card
-        setPanOpacity(1); // Reset for next time
-      }, 500);
+      }, 300);
     }
   };
 
@@ -236,16 +232,16 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 src="/kyc-intro.mp4"
               />
             </motion.div>
-          ) : step === 'pan' ? (
+          ) : step === 'pan' || step === 'panConfirm' ? (
             <motion.div
-              key="pan"
+              key="pan-flow"
               initial={{ opacity: 0 }}
-              animate={{ opacity: panOpacity }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
               className="space-y-8"
             >
-              {/* PAN Entry Card - Figma glass morphism style */}
+              {/* PAN Modal Card - Figma glass morphism style */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{
@@ -258,7 +254,16 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 {/* Inner shadow for depth */}
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
 
-                <div className="relative p-8 space-y-6">
+                <AnimatePresence mode="wait">
+                {step === 'pan' ? (
+                <motion.div
+                  key="pan-entry"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  className="relative p-8 space-y-6"
+                >
                   {/* Title with gradient inside card */}
                   <motion.div
                     initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
@@ -325,29 +330,16 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                       )}
                     </button>
                   </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          ) : step === 'panConfirm' ? (
-            <motion.div
-              key="panConfirm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: panConfirmOpacity }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="space-y-8"
-            >
-              {/* PAN Confirmation Card - Figma glass morphism style */}
-              <motion.div
-                initial={{ opacity: 1, scale: 1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
-              >
-                {/* Inner shadow for depth */}
-                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-2px_0px_1px_white]" />
-
-                <div className="relative p-8 space-y-6">
+                </motion.div>
+                ) : (
+                <motion.div
+                  key="pan-confirm"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  className="relative p-8 space-y-6"
+                >
                   {/* Back Link */}
                   <button
                     onClick={() => setStep('pan')}
@@ -424,7 +416,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                       )}
                     </button>
                   </div>
-                </div>
+                </motion.div>
+                )}
+                </AnimatePresence>
               </motion.div>
             </motion.div>
           ) : step === 'loading' ? (
