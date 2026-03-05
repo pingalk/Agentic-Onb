@@ -322,8 +322,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                 const elementRect = userMessageEl.getBoundingClientRect();
 
                 // Calculate scroll position to put element near the top of container
-                // Subtract a small offset (24px) for breathing room at the top
-                const topOffset = 24;
+                // Subtract 40px offset from top nav
+                const topOffset = 40;
                 const scrollTop = container.scrollTop + (elementRect.top - containerRect.top) - topOffset;
 
                 // Use smooth scroll with custom easing
