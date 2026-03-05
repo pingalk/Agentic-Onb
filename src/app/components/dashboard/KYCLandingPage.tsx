@@ -48,9 +48,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     setAnimPhase(3); // Show card immediately
   };
 
-  // Entry animation sequence for form steps
+  // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
   useEffect(() => {
-    if (step !== 'video') {
+    if (step !== 'video' && step !== 'panConfirm') {
       const t1 = setTimeout(() => setAnimPhase(1), 200);  // Ray appears
       const t2 = setTimeout(() => setAnimPhase(2), 600);  // Title
       const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
@@ -347,11 +347,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             >
               {/* PAN Confirmation Card - Figma glass morphism style */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{
-                  opacity: animPhase >= 3 ? 1 : 0,
-                  scale: animPhase >= 3 ? 1 : 0.96
-                }}
+                initial={{ opacity: 1, scale: 1 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                 className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
               >
@@ -370,12 +367,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
 
                   {/* Title with gradient */}
                   <motion.div
-                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                    animate={{
-                      opacity: animPhase >= 2 ? 1 : 0,
-                      y: animPhase >= 2 ? 0 : 8,
-                      filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
-                    }}
+                    initial={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
                     className="text-center space-y-3"
                   >
