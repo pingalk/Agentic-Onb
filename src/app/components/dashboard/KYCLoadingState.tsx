@@ -103,7 +103,7 @@ export const KYCLoadingState: React.FC = () => {
                 transition={{ duration: 0.3 }}
                 style={{
                   background: isActive || isCompleted
-                    ? 'linear-gradient(90deg, #04c982 0%, #2581fb 100%)'
+                    ? 'linear-gradient(90deg, #04c982 0%, #3ae19d 100%)'
                     : '#cbd5e0',
                   WebkitBackgroundClip: isActive || isCompleted ? 'text' : 'unset',
                   backgroundClip: isActive || isCompleted ? 'text' : 'unset',
