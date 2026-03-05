@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { CheckCircle, Zap } from 'lucide-react';
+import { CircleCheckBig, Zap } from 'lucide-react';
 
 interface BankVerificationCardProps {
   onVerify: () => void;
@@ -32,21 +32,21 @@ export const BankVerificationCard: React.FC<BankVerificationCardProps> = ({ onVe
         {/* Bullet Points */}
         <div className="space-y-3">
           <div className="flex items-start gap-3">
-            <CheckCircle size={20} className="text-[#04c982] shrink-0 mt-0.5" fill="#04c982" strokeWidth={0} />
+            <CircleCheckBig size={20} className="text-[#04c982] shrink-0 mt-0.5" strokeWidth={2} />
             <p className="font-sans text-[14px] font-medium text-[#192839] leading-[20px]">
               Scan the QR and pay ₹1 via UPI
             </p>
           </div>
 
           <div className="flex items-start gap-3">
-            <CheckCircle size={20} className="text-[#04c982] shrink-0 mt-0.5" fill="#04c982" strokeWidth={0} />
+            <CircleCheckBig size={20} className="text-[#04c982] shrink-0 mt-0.5" strokeWidth={2} />
             <p className="font-sans text-[14px] font-medium text-[#192839] leading-[20px]">
               The same ₹1 is refunded within 48 hours
             </p>
           </div>
 
           <div className="flex items-start gap-3">
-            <CheckCircle size={20} className="text-[#04c982] shrink-0 mt-0.5" fill="#04c982" strokeWidth={0} />
+            <CircleCheckBig size={20} className="text-[#04c982] shrink-0 mt-0.5" strokeWidth={2} />
             <p className="font-sans text-[14px] font-medium text-[#192839] leading-[20px]">
               Ray will auto fetch your bank details
             </p>
