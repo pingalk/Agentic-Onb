@@ -5132,16 +5132,29 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const [subtextStarted, setSubtextStarted] = React.useState(false);
 
     // Debug: Log to check if headline and subtext are present
-    console.log('KYC OTP Card - Full data:', data);
-    console.log('KYC OTP Card - headline:', data.headline);
-    console.log('KYC OTP Card - subtext:', data.subtext);
-    console.log('KYC OTP Card - Has headline?', !!data.headline);
-    console.log('KYC OTP Card - Has subtext?', !!data.subtext);
+    console.log('=== KYC OTP Card Rendering ===');
+    console.log('Full data:', JSON.stringify(data, null, 2));
+    console.log('headline:', data.headline);
+    console.log('subtext:', data.subtext);
+    console.log('Has headline?', !!data.headline);
+    console.log('Has subtext?', !!data.subtext);
+    console.log('Condition check:', (data.headline || data.subtext));
+
+    // TEMPORARY: Force display the text section for debugging
+    const forceShowText = true;
+
+    // Auto-trigger subtext when forcing display
+    React.useEffect(() => {
+      if (forceShowText && !subtextStarted) {
+        const timer = setTimeout(() => setSubtextStarted(true), 1300);
+        return () => clearTimeout(timer);
+      }
+    }, [forceShowText, subtextStarted]);
 
     return (
       <div className="w-full animate-fade-in-up">
         {/* Ray Logo + Headline and Subtext with streaming */}
-        {(data.headline || data.subtext) && (
+        {(forceShowText || data.headline || data.subtext) && (
         <div className="flex items-start gap-3 max-w-[398px] mb-4">
           {/* Ray Logo - rotates while streaming */}
           <motion.div
@@ -5159,20 +5172,20 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
           {/* Text Content */}
           <div className="flex-1">
-            {data.headline && (
+            {(data.headline || forceShowText) && (
               <h3 className="font-['TASA_Orbiter_Display',sans-serif] text-[18px] font-semibold text-[#020202] leading-[24px] mb-2">
                 <PerplexityStreamText
-                  text={data.headline}
+                  text={data.headline || "Let's get started with your details"}
                   onStreamComplete={() => {
                     setTimeout(() => setSubtextStarted(true), 1300);
                   }}
                 />
               </h3>
             )}
-            {subtextStarted && data.subtext && (
+            {(subtextStarted || forceShowText) && (data.subtext || forceShowText) && (
               <p className="font-['Inter',sans-serif] text-[14px] text-[#40566d] leading-[20px]">
                 <PerplexityStreamText
-                  text={data.subtext}
+                  text={data.subtext || "I've identified the mobile number linked to your PAN and sent an OTP. Enter it to verify. I'll automatically fetch your CKYC details so you don't have to fill them manually."}
                   onStreamComplete={() => {
                     setIsStreaming(false);
                     if (onStreamComplete) onStreamComplete();
