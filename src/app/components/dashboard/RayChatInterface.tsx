@@ -148,9 +148,6 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // Success Animation State
   const [isSuccessAnimationOpen, setIsSuccessAnimationOpen] = useState(false);
 
-  // Final Success Video State
-  const [showFinalVideo, setShowFinalVideo] = useState(false);
-
   // Input Box States
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -2167,14 +2164,21 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
            bankAccount={kycBankAccount}
            isTransitioningToPanel={isKYCModalTransitioning}
            onSubmit={() => {
-             // Close modal and show final success video
-             setIsKYCReviewModalOpen(false);
-             setIsKYCModalTransitioning(false);
+             // Start transition animation to panel
+             setIsKYCModalTransitioning(true);
 
-             // Show final success video after brief delay
+             // Close modal and settle panel after animation completes (500ms)
              setTimeout(() => {
-               setShowFinalVideo(true);
-             }, 300);
+               setIsKYCReviewModalOpen(false);
+               setIsKYCModalTransitioning(false);
+               setIsKYCPanelSettled(true);
+
+               // Trigger success animation after panel settles
+               setTimeout(() => {
+                 setIsSuccessAnimationOpen(true);
+                 setKycFlowStep(7);
+               }, 100);
+             }, 500);
            }}
          />
 
@@ -2185,33 +2189,6 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
              // Animation stays open, no auto-close
            }}
          />
-
-         {/* Final Success Video */}
-         <AnimatePresence>
-           {showFinalVideo && (
-             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               transition={{ duration: 0.5 }}
-               className="fixed inset-0 z-[10000] bg-black flex items-center justify-center"
-             >
-               <video
-                 autoPlay
-                 playsInline
-                 className="w-full h-full object-cover"
-                 onEnded={() => {
-                   // Video has ended - prototype complete
-                   console.log('Prototype complete');
-                 }}
-               >
-                 <source src="/final-success.mov" type="video/quicktime" />
-                 <source src="/final-success.mp4" type="video/mp4" />
-                 Your browser does not support the video tag.
-               </video>
-             </motion.div>
-           )}
-         </AnimatePresence>
 
          {/* Top Fade Gradient */}
          <div className="h-16 w-full bg-gradient-to-t from-[#f8f8f8] via-[#f8f8f8]/80 to-transparent pointer-events-none z-30" />
