@@ -110,7 +110,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
             className={`fixed bg-gradient-to-b from-white to-[#f0f0f0] overflow-hidden z-[9999] ${
-              hasSlid ? 'shadow-sm border-l-[1.5px] border-l-[rgba(0,0,0,0.1)] rounded-l-[16px]' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px]'
+              hasSlid ? 'shadow-sm border-l-[1.5px] border-l-[rgba(0,0,0,0.1)]' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px]'
             }`}
             style={hasSlid ? {
               right: '0',
@@ -137,9 +137,9 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
             {/* Scrollable Content */}
             <div className="relative overflow-y-auto h-full p-2">
               {/* CKYC Card */}
-              <div className="border border-[rgba(108,132,157,0.18)] overflow-hidden bg-white shadow-sm rounded-[12px]">
+              <div className="border border-[rgba(108,132,157,0.18)] overflow-hidden bg-white shadow-sm">
                 {/* Header Image Section */}
-                <div className="relative h-[121px] overflow-hidden rounded-t-[12px]">
+                <div className="relative h-[121px] overflow-hidden">
                   {/* Blurred background image */}
                   <div
                     className="absolute inset-0 bg-cover bg-center"
