@@ -137,7 +137,6 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // KYC OTP Modal States
   const [isKYCOTPModalOpen, setIsKYCOTPModalOpen] = useState(false);
   const [kycPhoneNumber, setKycPhoneNumber] = useState('2828');
-  const [kycPanNumber, setKycPanNumber] = useState('');
 
   // UPI Verification Modal States
   const [isUPIModalOpen, setIsUPIModalOpen] = useState(false);
