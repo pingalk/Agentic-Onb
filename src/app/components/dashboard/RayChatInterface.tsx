@@ -2206,7 +2206,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                  muted
                  playsInline
                  onEnded={() => setShowSuccessText(true)}
-                 className="block w-full"
+                 className="block w-1/2"
                  style={{
                    height: 'auto',
                    clipPath: 'inset(2px)'
