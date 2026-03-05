@@ -866,18 +866,20 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
           // After loading completes (8 seconds = 4 steps * 2 seconds), show business category card
           setTimeout(() => {
-            setMessages(prev => prev.filter(m => m.id !== loadingId));
-            setMessages(prev => [...prev, {
-              id: `kyc-business-category`,
-              sender: 'ai' as const,
-              artifact: {
-                type: 'business_category_card' as const,
-                data: {
-                  category: 'E Commerce',
-                  subCategory: 'Fashion Retailer'
+            setMessages(prev => [
+              ...prev.filter(m => m.id !== loadingId),
+              {
+                id: `kyc-business-category`,
+                sender: 'ai' as const,
+                artifact: {
+                  type: 'business_category_card' as const,
+                  data: {
+                    category: 'E Commerce',
+                    subCategory: 'Fashion Retailer'
+                  }
                 }
               }
-            }]);
+            ]);
             setKycFlowStep(4.5); // Intermediate step for category confirmation
           }, 8500); // 8 seconds for steps + 500ms buffer
         }, 600);
