@@ -5089,7 +5089,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
                 }
               }}
               disabled={isVerified}
-              className="relative w-full h-12 border rounded-[12px] font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden mt-4 disabled:cursor-not-allowed disabled:opacity-60"
+              className="relative h-12 px-6 border rounded-[12px] font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden mt-4 disabled:cursor-not-allowed disabled:opacity-60"
               style={{
                 backgroundImage: isVerified
                   ? 'linear-gradient(-23.46deg, rgb(156, 163, 175) 54.842%, rgb(209, 213, 219) 98.573%)'
