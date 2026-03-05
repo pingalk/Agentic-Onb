@@ -2250,6 +2250,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                      muted
                      playsInline
                      className="w-full h-auto block"
+                     style={{ clipPath: 'inset(4px 0 0 0)' }}
                      src="/rzrsense.mov"
                   />
                </motion.div>
