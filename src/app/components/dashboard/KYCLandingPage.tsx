@@ -74,15 +74,12 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const handlePanConfirm = () => {
     setIsSubmitting(true);
 
-    // Start fade out immediately
-    setPanConfirmOpacity(0);
-
-    // Transition to loading after fade completes
+    // Wait for modal exit animation to complete before showing loading
     setTimeout(() => {
       setIsSubmitting(false);
+      setLoadingOpacity(0); // Start with 0 opacity
       setStep('loading');
-      setPanConfirmOpacity(1); // Reset for next time
-    }, 500);
+    }, 400); // Extra 100ms buffer after 300ms exit animation
   };
 
   const handleSkipLoading = () => {
@@ -92,7 +89,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Auto-transition for loading video (fade in, then fade out at 1s, transition at 2s)
   useEffect(() => {
     if (step === 'loading') {
-      // Fade in after a brief delay for smooth crossfade
+      // Fade in after a brief moment
       const fadeInTimer = setTimeout(() => {
         setLoadingOpacity(1);
       }, 100);
@@ -237,8 +234,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               key="pan-flow"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
               className="space-y-8"
             >
               {/* PAN Modal Card - Figma glass morphism style */}
