@@ -2231,7 +2231,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                      initial={{ opacity: 0, y: 10 }}
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: 0.2, duration: 0.5 }}
-                     className="font-sans font-semibold text-[32px] leading-[40px] tracking-[-0.5px] text-[#047857] mb-4 max-w-2xl"
+                     className="font-['TASA_Orbiter_Deck',sans-serif] font-semibold text-[32px] leading-[40px] tracking-[-0.5px] text-[#008D47] mb-4 max-w-2xl"
                    >
                      Congratulations! Your KYC application is successfully submitted
                    </motion.h1>
