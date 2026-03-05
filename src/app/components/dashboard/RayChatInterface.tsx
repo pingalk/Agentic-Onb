@@ -284,62 +284,46 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
     }
   }, [isKYCPanelSettled, activeFlow, kycFlowStep]);
 
-  // EXPERIMENTAL: Pin-to-top / Roll-up animation - scroll to show newest content
+  // Auto-scroll to keep latest user message at 40px from top
   useEffect(() => {
-    if (!ENABLE_ROLL_UP_ANIMATION && !ENABLE_PIN_TO_TOP && !ENABLE_SMART_SCROLL_ON_THINKING) return;
-
     // Check if a new message was added
     if (messages.length > prevMessageCountRef.current) {
       const latestMessage = messages[messages.length - 1];
 
-      // Skip auto-scroll if message has skipAutoScroll flag (used by Varun elegant scroll)
+      // Skip auto-scroll if message has skipAutoScroll flag
       if (latestMessage?.skipAutoScroll) {
         prevMessageCountRef.current = messages.length;
         return;
       }
 
-      if (ENABLE_PIN_TO_TOP) {
-        // In pin-to-top mode, always scroll to top to show newest content
-        // (newest messages appear at top with flex-col-reverse)
-        setTimeout(() => {
-          scrollContainerRef.current?.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-        }, 100);
-      } else if (ENABLE_SMART_SCROLL_ON_THINKING && latestMessage?.sender === 'user') {
-        // Smart scroll: When user sends a message, scroll it to the top of the viewport
-        // This gives maximum room for Ray's response to appear below
-        if (scrollContainerRef.current) {
-          // Use requestAnimationFrame to ensure DOM is fully rendered
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              const userMessageEl = messageRefs.current.get(latestMessage.id);
-              const container = scrollContainerRef.current;
-              if (userMessageEl && container) {
-                // Calculate the element's position relative to the scroll container
-                const containerRect = container.getBoundingClientRect();
-                const elementRect = userMessageEl.getBoundingClientRect();
-
-                // Calculate scroll position to put element near the top of container
-                // Subtract 40px offset from top nav
-                const topOffset = 40;
-                const scrollTop = container.scrollTop + (elementRect.top - containerRect.top) - topOffset;
-
-                // Use smooth scroll with custom easing
-                smoothScrollTo(container, Math.max(0, scrollTop), 600);
-              }
-            }, 100); // Reduced delay - scroll immediately when user message appears
-          });
+      // Find the most recent user message
+      let latestUserMessage = null;
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].sender === 'user') {
+          latestUserMessage = messages[i];
+          break;
         }
-      } else if (ENABLE_ROLL_UP_ANIMATION && latestMessage?.sender === 'user') {
-        // Legacy roll-up: only scroll to top for user messages
-        setTimeout(() => {
-          scrollContainerRef.current?.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-        }, 100);
+      }
+
+      // Scroll the latest user message to 40px from top
+      if (latestUserMessage && scrollContainerRef.current) {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            const userMessageEl = messageRefs.current.get(latestUserMessage.id);
+            const container = scrollContainerRef.current;
+            if (userMessageEl && container) {
+              const containerRect = container.getBoundingClientRect();
+              const elementRect = userMessageEl.getBoundingClientRect();
+
+              // Calculate scroll position to put user message 40px from top
+              const topOffset = 40;
+              const scrollTop = container.scrollTop + (elementRect.top - containerRect.top) - topOffset;
+
+              // Use smooth scroll
+              smoothScrollTo(container, Math.max(0, scrollTop), 400);
+            }
+          }, 50);
+        });
       }
     }
     prevMessageCountRef.current = messages.length;
