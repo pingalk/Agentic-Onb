@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { CircleCheckBig, Zap } from 'lucide-react';
 
 interface BankVerificationCardProps {
-  onVerify: () => void;
+  onVerify: (rect?: DOMRect) => void;
   isVerified?: boolean;
 }
 
@@ -55,8 +55,11 @@ export const BankVerificationCard: React.FC<BankVerificationCardProps> = ({ onVe
 
         {/* Action Button */}
         <button
-          onClick={() => {
-            if (!isVerified) onVerify();
+          onClick={(e) => {
+            if (!isVerified) {
+              const rect = e.currentTarget.getBoundingClientRect();
+              onVerify(rect);
+            }
           }}
           disabled={isVerified}
           className="relative h-12 px-6 border rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden disabled:cursor-not-allowed disabled:opacity-60"

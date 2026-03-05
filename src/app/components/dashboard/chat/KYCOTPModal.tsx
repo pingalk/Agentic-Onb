@@ -8,13 +8,15 @@ export interface KYCOTPModalProps {
   onClose: () => void;
   onVerify: (otp: string) => void;
   phoneNumber: string;
+  originRect?: DOMRect | null;
 }
 
 export const KYCOTPModal: React.FC<KYCOTPModalProps> = ({
   isOpen,
   onClose,
   onVerify,
-  phoneNumber
+  phoneNumber,
+  originRect
 }) => {
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,6 +91,24 @@ export const KYCOTPModal: React.FC<KYCOTPModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Calculate initial position from origin card if provided
+  const getInitialPosition = () => {
+    if (!originRect) return { x: 0, y: 20, scale: 0.95 };
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const originCenterX = originRect.left + originRect.width / 2;
+    const originCenterY = originRect.top + originRect.height / 2;
+
+    return {
+      x: originCenterX - centerX,
+      y: originCenterY - centerY,
+      scale: 0.8
+    };
+  };
+
+  const initialPos = getInitialPosition();
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -105,9 +125,9 @@ export const KYCOTPModal: React.FC<KYCOTPModalProps> = ({
 
           {/* Modal Card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: initialPos.scale, x: initialPos.x, y: initialPos.y }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, x: 0, y: 20 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
             className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] w-[555px] h-[380px] flex flex-col items-center justify-center p-10"

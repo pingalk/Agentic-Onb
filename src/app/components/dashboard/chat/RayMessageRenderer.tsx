@@ -5096,10 +5096,11 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
             {/* Button */}
             <button
-              onClick={() => {
+              onClick={(e) => {
                 // Trigger KYC OTP flow
                 if (!isVerified && onSuggestionClick) {
-                  onSuggestionClick('verify_otp');
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  onSuggestionClick('verify_otp', rect);
                 }
               }}
               disabled={isVerified}
@@ -5357,8 +5358,8 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
   if (data.artifact?.type === 'bank_verification_card') {
     const { isVerified = false } = data.artifact.data;
 
-    const handleVerify = () => {
-      onSuggestionClick?.('verify_bank_upi');
+    const handleVerify = (rect?: DOMRect) => {
+      onSuggestionClick?.('verify_bank_upi', rect);
     };
 
     return (

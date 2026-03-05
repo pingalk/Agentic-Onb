@@ -137,13 +137,16 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   // KYC OTP Modal States
   const [isKYCOTPModalOpen, setIsKYCOTPModalOpen] = useState(false);
   const [kycPhoneNumber, setKycPhoneNumber] = useState('2828');
+  const [kycOTPOriginRect, setKycOTPOriginRect] = useState<DOMRect | null>(null);
 
   // UPI Verification Modal States
   const [isUPIModalOpen, setIsUPIModalOpen] = useState(false);
+  const [upiOriginRect, setUpiOriginRect] = useState<DOMRect | null>(null);
 
   // KYC Review Modal States
   const [isKYCReviewModalOpen, setIsKYCReviewModalOpen] = useState(false);
   const [isKYCModalTransitioning, setIsKYCModalTransitioning] = useState(false);
+  const [kycReviewOriginRect, setKycReviewOriginRect] = useState<DOMRect | null>(null);
 
   // Success Animation State
   const [isSuccessAnimationOpen, setIsSuccessAnimationOpen] = useState(false);
@@ -817,7 +820,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
     }, 500);
   }, [activeFlow]);
 
-  const handleSuggestionClick = (suggestion: string) => {
+  const handleSuggestionClick = (suggestion: string, originRect?: DOMRect) => {
     // Handle "That's all for now" - navigate back to home
     if (suggestion.toLowerCase().includes("that's all")) {
       onGoHome?.();
@@ -826,6 +829,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
     // Handle KYC OTP verification
     if (suggestion === 'verify_otp' || suggestion.toLowerCase().includes('verify with an otp')) {
+      if (originRect) setKycOTPOriginRect(originRect);
       setIsKYCOTPModalOpen(true);
       return;
     }
@@ -905,12 +909,14 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
       // Handle bank verification via UPI
       if (suggestion === 'verify_bank_upi') {
+        if (originRect) setUpiOriginRect(originRect);
         setIsUPIModalOpen(true);
         return;
       }
 
       // Handle review details
       if (suggestion === 'Review details') {
+        if (originRect) setKycReviewOriginRect(originRect);
         setIsKYCReviewModalOpen(true);
         return;
       }
@@ -2028,8 +2034,10 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
          {/* KYC OTP Verification Modal */}
          <KYCOTPModal
            isOpen={isKYCOTPModalOpen}
+           originRect={kycOTPOriginRect}
            onClose={() => {
              setIsKYCOTPModalOpen(false);
+             setKycOTPOriginRect(null);
            }}
            onVerify={(otp) => {
              setIsKYCOTPModalOpen(false);
@@ -2100,7 +2108,11 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
          {/* UPI Verification Modal */}
          <UPIVerificationModal
            isOpen={isUPIModalOpen}
-           onClose={() => setIsUPIModalOpen(false)}
+           originRect={upiOriginRect}
+           onClose={() => {
+             setIsUPIModalOpen(false);
+             setUpiOriginRect(null);
+           }}
            onMockPayment={() => {
              // Send user message
              setMessages(prev => [...prev, {
@@ -2159,9 +2171,11 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
          {!showFinalVideo && (
            <KYCReviewModal
              isOpen={isKYCReviewModalOpen}
+             originRect={kycReviewOriginRect}
              onClose={() => {
                setIsKYCReviewModalOpen(false);
                setIsKYCModalTransitioning(false);
+               setKycReviewOriginRect(null);
              }}
              businessModel={kycBusinessModel}
              bankAccount={kycBankAccount}

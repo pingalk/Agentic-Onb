@@ -9,13 +9,15 @@ interface UPIVerificationModalProps {
   onClose: () => void;
   onComplete: () => void;
   onMockPayment?: () => void;
+  originRect?: DOMRect | null;
 }
 
 export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
   isOpen,
   onClose,
   onComplete,
-  onMockPayment
+  onMockPayment,
+  originRect
 }) => {
   const [step, setStep] = useState<'qr' | 'success'>('qr');
 
@@ -25,6 +27,24 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
       setStep('qr');
     }
   }, [isOpen]);
+
+  // Calculate initial position from origin card if provided
+  const getInitialPosition = () => {
+    if (!originRect) return { x: 0, y: 20, scale: 0.95 };
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const originCenterX = originRect.left + originRect.width / 2;
+    const originCenterY = originRect.top + originRect.height / 2;
+
+    return {
+      x: originCenterX - centerX,
+      y: originCenterY - centerY,
+      scale: 0.8
+    };
+  };
+
+  const initialPos = getInitialPosition();
 
   const handleMockPayment = () => {
     // Call the onMockPayment callback first (to send user message)
@@ -59,9 +79,9 @@ export const UPIVerificationModal: React.FC<UPIVerificationModalProps> = ({
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: initialPos.scale, x: initialPos.x, y: initialPos.y }}
+            animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, x: 0, y: 20 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] z-[9999] overflow-hidden"
             onClick={(e) => e.stopPropagation()}

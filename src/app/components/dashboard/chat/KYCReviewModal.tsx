@@ -10,6 +10,7 @@ interface KYCReviewModalProps {
   businessModel?: string;
   bankAccount?: string;
   isTransitioningToPanel?: boolean;
+  originRect?: DOMRect | null;
 }
 
 export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
@@ -18,9 +19,27 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
   onSubmit,
   businessModel,
   bankAccount,
-  isTransitioningToPanel = false
+  isTransitioningToPanel = false,
+  originRect
 }) => {
   if (!isOpen) return null;
+
+  // Calculate initial position from origin card if provided
+  const getInitialPosition = () => {
+    if (!originRect) return { x: '-50%', y: '-50%' };
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const originCenterX = originRect.left + originRect.width / 2;
+    const originCenterY = originRect.top + originRect.height / 2;
+
+    return {
+      x: `calc(-50% + ${originCenterX - centerX}px)`,
+      y: `calc(-50% + ${originCenterY - centerY}px)`
+    };
+  };
+
+  const initialPos = getInitialPosition();
 
   const details = [
     { label: 'PAN number', value: 'EIUGF5433G', verified: true },
@@ -59,9 +78,17 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
             style={{ pointerEvents: isTransitioningToPanel ? 'none' : 'auto' }}
           />
 
-          {/* Modal - starts from right panel position, animates to center */}
+          {/* Modal - starts from origin card or right panel position, animates to center */}
           <motion.div
-            initial={{
+            initial={originRect ? {
+              left: '50%',
+              top: '50%',
+              right: 'auto',
+              x: initialPos.x,
+              y: initialPos.y,
+              opacity: 0,
+              scale: 0.8
+            } : {
               right: '0',
               top: '56px',
               left: 'auto',

@@ -106,7 +106,7 @@ export const MessageFooter = () => (
 
 // --- 4. Suggestion Stack (Numbered) ---
 // activeCount: number of suggestions that are interactive (default: 1 for demo)
-export const SuggestionStack = ({ items, activeCount = 1, onSuggestionClick }: { items: string[], activeCount?: number, onSuggestionClick?: (item: string) => void }) => (
+export const SuggestionStack = ({ items, activeCount = 1, onSuggestionClick }: { items: string[], activeCount?: number, onSuggestionClick?: (item: string, rect?: DOMRect) => void }) => (
   <div className="flex flex-col gap-2 mt-6 w-full">
     <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Suggestions</h4>
     {items.map((item, i) => {
@@ -114,7 +114,12 @@ export const SuggestionStack = ({ items, activeCount = 1, onSuggestionClick }: {
       return (
         <button
           key={i}
-          onClick={() => isActive && onSuggestionClick?.(item)}
+          onClick={(e) => {
+            if (isActive) {
+              const rect = e.currentTarget.getBoundingClientRect();
+              onSuggestionClick?.(item, rect);
+            }
+          }}
           className={clsx(
             "text-left px-3 py-2.5 rounded-lg border text-[13px] transition-all duration-200 flex items-center gap-3 group",
             isActive
