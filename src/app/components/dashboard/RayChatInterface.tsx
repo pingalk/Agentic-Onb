@@ -2202,7 +2202,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                autoPlay
                muted
                playsInline
-               className="block w-screen"
+               className="block w-full"
                style={{
                  height: 'auto',
                  clipPath: 'inset(2px)'
