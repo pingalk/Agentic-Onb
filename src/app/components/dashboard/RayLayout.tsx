@@ -45,8 +45,8 @@ const RayLayoutContent = ({ initialQuery, isEntering, onGoHome, skipInitialUserM
       {/* RIGHT PANEL: ARTIFACT CONTAINER (Split Mode) */}
       <AnimatePresence>
         {isSplitActive && (
-          <motion.div 
-            className="flex-1 my-4 mr-4"
+          <motion.div
+            className="flex-1"
             initial={{ opacity: 0, x: 20, scale: 0.98 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 20, scale: 0.98 }}
@@ -54,25 +54,25 @@ const RayLayoutContent = ({ initialQuery, isEntering, onGoHome, skipInitialUserM
           >
              {intent === 'view_transaction' ? (
                  // PREVIEW COMPONENT VARIANT
-                 <div className="h-full w-full bg-white rounded-2xl border border-gray-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col">
+                 <div className="h-full w-full bg-white rounded-l-2xl border-l border-t border-b border-gray-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col">
                     {/* Preview content handles its own header/chrome */}
                     <div className="flex-1 overflow-y-auto">
-                        <ArtifactRenderer /> 
+                        <ArtifactRenderer />
                     </div>
                  </div>
              ) : (
                  // ACTION SIDE PANE VARIANT
-                 <div className="h-full w-full bg-blue-50/10 rounded-2xl border border-blue-200/50 shadow-[0_0_24px_rgba(48,94,255,0.06)] overflow-hidden flex flex-col">
+                 <div className="h-full w-full bg-blue-50/10 rounded-l-2xl border-l border-t border-b border-blue-200/50 shadow-[0_0_24px_rgba(48,94,255,0.06)] overflow-hidden flex flex-col">
                     {/* The Artifact Header (Visual Anchor) */}
                     <div className="h-14 border-b border-gray-100 flex items-center px-6 bg-white/50 backdrop-blur-sm shrink-0">
                         <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
                            {intent === 'create_subscription' ? 'Subscription Draft' : 'Active Task'}
                         </span>
                     </div>
-                    
+
                     {/* The Form Content */}
                     <div className="flex-1 overflow-y-auto">
-                        <ArtifactRenderer /> 
+                        <ArtifactRenderer />
                     </div>
                  </div>
              )}
