@@ -2202,14 +2202,15 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="fixed bottom-0 left-0 right-0 z-[60] pointer-events-none"
+                  className="fixed bottom-0 left-0 right-0 z-[60] pointer-events-none overflow-hidden"
                >
                   <video
                      autoPlay
                      loop
                      muted
                      playsInline
-                     className="w-full h-auto"
+                     className="w-full h-auto relative"
+                     style={{ top: '-4px' }}
                      src="/rzrsense.mov"
                   />
                </motion.div>
