@@ -5141,7 +5141,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
       <div className="w-full animate-fade-in-up" style={{ position: 'relative', zIndex: 10 }}>
         {/* Ray Logo + Headline and Subtext with streaming */}
         {(data.headline || data.subtext) && (
-        <div className="flex items-start gap-3 max-w-[398px] mb-4" style={{ visibility: 'visible', display: 'flex' }}>
+        <div className="flex items-start gap-3 w-full mb-4" style={{ visibility: 'visible', display: 'flex' }}>
           {/* Ray Logo - rotates while streaming */}
           <motion.div
             className="w-6 h-6 shrink-0 mt-0.5"
