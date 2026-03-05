@@ -4,9 +4,10 @@ import { CheckCircle, Zap } from 'lucide-react';
 
 interface BankVerificationCardProps {
   onVerify: () => void;
+  isVerified?: boolean;
 }
 
-export const BankVerificationCard: React.FC<BankVerificationCardProps> = ({ onVerify }) => {
+export const BankVerificationCard: React.FC<BankVerificationCardProps> = ({ onVerify, isVerified = false }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -54,15 +55,21 @@ export const BankVerificationCard: React.FC<BankVerificationCardProps> = ({ onVe
 
         {/* Action Button */}
         <button
-          onClick={onVerify}
-          className="relative h-12 px-6 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
+          onClick={() => {
+            if (!isVerified) onVerify();
+          }}
+          disabled={isVerified}
+          className="relative h-12 px-6 border rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden disabled:cursor-not-allowed disabled:opacity-60"
           style={{
-            backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+            backgroundImage: isVerified
+              ? 'linear-gradient(-23.46deg, rgb(156, 163, 175) 54.842%, rgb(209, 213, 219) 98.573%)'
+              : 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)',
+            borderColor: isVerified ? '#9ca3af' : '#0354e0'
           }}
         >
           {/* Glass effect inset shadows */}
           <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
-          Add bank details via UPI
+          {isVerified ? 'Bank details added' : 'Add bank details via UPI'}
         </button>
       </div>
     </motion.div>

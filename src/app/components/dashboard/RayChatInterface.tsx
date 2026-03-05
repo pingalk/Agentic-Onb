@@ -887,11 +887,19 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
 
       // Handle category confirmation
       if (suggestion === 'confirm_category') {
-        setMessages(prev => [...prev, {
-          id: `kyc-u-confirm`,
-          sender: 'user' as const,
-          blocks: [{ type: 'text', content: 'Confirm' }]
-        }]);
+        // Mark the business category card as confirmed
+        setMessages(prev => [
+          ...prev.map(msg =>
+            msg.artifact?.type === 'business_category_card'
+              ? { ...msg, artifact: { ...msg.artifact, data: { ...msg.artifact.data, isConfirmed: true } } }
+              : msg
+          ),
+          {
+            id: `kyc-u-confirm`,
+            sender: 'user' as const,
+            blocks: [{ type: 'text', content: 'Confirm' }]
+          }
+        ]);
 
         // Update business model in KYC panel
         setKycBusinessModel('E-commerce, Fashion');
@@ -2108,20 +2116,27 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
              // Update bank account in KYC panel
              setKycBankAccount('2028U32U38Q\nState Bank of India, Sarjapura Branch');
 
-             // Show bank account card
-             setMessages(prev => [...prev, {
-               id: `kyc-bank-account-${Date.now()}`,
-               sender: 'ai',
-               artifact: {
-                 type: 'bank_account_card',
-                 data: {
-                   bankName: 'HDFC Bank account',
-                   accountNumber: '2383237283283287372HA',
-                   ifscCode: 'SBI78236287362326663',
-                   accountName: 'Chinnaswamy Muthuswamy Venugopal Iyer'
+             // Mark bank verification card as verified and show bank account card
+             setMessages(prev => [
+               ...prev.map(msg =>
+                 msg.artifact?.type === 'bank_verification_card'
+                   ? { ...msg, artifact: { ...msg.artifact, data: { ...msg.artifact.data, isVerified: true } } }
+                   : msg
+               ),
+               {
+                 id: `kyc-bank-account-${Date.now()}`,
+                 sender: 'ai',
+                 artifact: {
+                   type: 'bank_account_card',
+                   data: {
+                     bankName: 'HDFC Bank account',
+                     accountNumber: '2383237283283287372HA',
+                     ifscCode: 'SBI78236287362326663',
+                     accountName: 'Chinnaswamy Muthuswamy Venugopal Iyer'
+                   }
                  }
                }
-             }]);
+             ]);
 
              // Show final review message after a short delay
              setTimeout(() => {

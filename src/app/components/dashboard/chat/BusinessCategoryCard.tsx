@@ -7,13 +7,15 @@ interface BusinessCategoryCardProps {
   subCategory: string;
   onConfirm: () => void;
   onChange: () => void;
+  isConfirmed?: boolean;
 }
 
 export const BusinessCategoryCard: React.FC<BusinessCategoryCardProps> = ({
   category,
   subCategory,
   onConfirm,
-  onChange
+  onChange,
+  isConfirmed = false
 }) => {
   return (
     <motion.div
@@ -71,23 +73,31 @@ export const BusinessCategoryCard: React.FC<BusinessCategoryCardProps> = ({
         {/* Actions */}
         <div className="flex items-center gap-3 pt-2">
           <button
-            onClick={onConfirm}
-            className="relative h-12 px-6 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden hover:opacity-90"
+            onClick={() => {
+              if (!isConfirmed) onConfirm();
+            }}
+            disabled={isConfirmed}
+            className="relative h-12 px-6 border rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all inline-flex items-center justify-center gap-2 overflow-hidden disabled:cursor-not-allowed disabled:opacity-60"
             style={{
-              backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+              backgroundImage: isConfirmed
+                ? 'linear-gradient(-23.46deg, rgb(156, 163, 175) 54.842%, rgb(209, 213, 219) 98.573%)'
+                : 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)',
+              borderColor: isConfirmed ? '#9ca3af' : '#0354e0'
             }}
           >
             {/* Glass effect inset shadows */}
             <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
-            Confirm
+            {isConfirmed ? 'Confirmed' : 'Confirm'}
           </button>
 
-          <button
-            onClick={onChange}
-            className="font-sans text-[14px] font-medium text-[#1566f1] hover:text-[#0e54cc] transition-colors"
-          >
-            Change
-          </button>
+          {!isConfirmed && (
+            <button
+              onClick={onChange}
+              className="font-sans text-[14px] font-medium text-[#1566f1] hover:text-[#0e54cc] transition-colors"
+            >
+              Change
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

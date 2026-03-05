@@ -8,6 +8,7 @@ interface BankAccountCardProps {
   ifscCode?: string;
   accountName?: string;
   onChangeAccount?: () => void;
+  isConfirmed?: boolean;
 }
 
 export const BankAccountCard: React.FC<BankAccountCardProps> = ({
@@ -15,7 +16,8 @@ export const BankAccountCard: React.FC<BankAccountCardProps> = ({
   accountNumber = '2383237283283287372HA',
   ifscCode = 'SBI78236287362326663',
   accountName = 'Chinnaswamy Muthuswamy Venugopal Iyer',
-  onChangeAccount
+  onChangeAccount,
+  isConfirmed = false
 }) => {
   return (
     <motion.div
@@ -75,13 +77,15 @@ export const BankAccountCard: React.FC<BankAccountCardProps> = ({
         </div>
 
         {/* Change Account Link */}
-        <button
-          onClick={onChangeAccount}
-          className="flex items-center gap-2 text-[#1566f1] hover:text-[#0e54cc] transition-colors font-sans text-[14px] font-medium"
-        >
-          <Edit2 size={14} />
-          Change account
-        </button>
+        {!isConfirmed && (
+          <button
+            onClick={onChangeAccount}
+            className="flex items-center gap-2 text-[#1566f1] hover:text-[#0e54cc] transition-colors font-sans text-[14px] font-medium"
+          >
+            <Edit2 size={14} />
+            Change account
+          </button>
+        )}
       </div>
     </motion.div>
   );

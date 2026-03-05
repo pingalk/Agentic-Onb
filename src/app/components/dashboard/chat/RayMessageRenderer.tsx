@@ -445,10 +445,13 @@ export interface RayResponseData {
     data: {
       category: string;
       subCategory: string;
+      isConfirmed?: boolean;
     };
   } | {
     type: 'bank_verification_card';
-    data: {};
+    data: {
+      isVerified?: boolean;
+    };
   } | {
     type: 'bank_account_card';
     data: {
@@ -456,6 +459,7 @@ export interface RayResponseData {
       accountNumber?: string;
       ifscCode?: string;
       accountName?: string;
+      isConfirmed?: boolean;
     };
   };
 }
@@ -5283,7 +5287,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
   // 24.7. Business Category Card
   if (data.artifact?.type === 'business_category_card') {
-    const { category, subCategory } = data.artifact.data;
+    const { category, subCategory, isConfirmed = false } = data.artifact.data;
 
     const handleConfirm = () => {
       onSuggestionClick?.('confirm_category');
@@ -5300,6 +5304,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           subCategory={subCategory}
           onConfirm={handleConfirm}
           onChange={handleChange}
+          isConfirmed={isConfirmed}
         />
       </div>
     );
@@ -5307,20 +5312,22 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
   // 24.8. Bank Verification Card
   if (data.artifact?.type === 'bank_verification_card') {
+    const { isVerified = false } = data.artifact.data;
+
     const handleVerify = () => {
       onSuggestionClick?.('verify_bank_upi');
     };
 
     return (
       <div className="w-full max-w-[531px] animate-fade-in-up">
-        <BankVerificationCard onVerify={handleVerify} />
+        <BankVerificationCard onVerify={handleVerify} isVerified={isVerified} />
       </div>
     );
   }
 
   // 24.9. Bank Account Card
   if (data.artifact?.type === 'bank_account_card') {
-    const { bankName, accountNumber, ifscCode, accountName } = data.artifact.data;
+    const { bankName, accountNumber, ifscCode, accountName, isConfirmed = false } = data.artifact.data;
 
     const handleChangeAccount = () => {
       onSuggestionClick?.('change_bank_account');
@@ -5334,6 +5341,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           ifscCode={ifscCode}
           accountName={accountName}
           onChangeAccount={handleChangeAccount}
+          isConfirmed={isConfirmed}
         />
       </div>
     );
