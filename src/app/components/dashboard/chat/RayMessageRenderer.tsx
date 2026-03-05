@@ -5132,8 +5132,11 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const [subtextStarted, setSubtextStarted] = React.useState(false);
 
     // Debug: Log to check if headline and subtext are present
+    console.log('KYC OTP Card - Full data:', data);
     console.log('KYC OTP Card - headline:', data.headline);
     console.log('KYC OTP Card - subtext:', data.subtext);
+    console.log('KYC OTP Card - Has headline?', !!data.headline);
+    console.log('KYC OTP Card - Has subtext?', !!data.subtext);
 
     return (
       <div className="w-full animate-fade-in-up">
