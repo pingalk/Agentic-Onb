@@ -109,13 +109,15 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
               y: { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            className={`fixed bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] ${
-              hasSlid ? 'shadow-sm' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]'
+            className={`fixed bg-gradient-to-b from-white to-[#f0f0f0] overflow-hidden z-[9999] ${
+              hasSlid ? 'shadow-sm border-l-[1.5px] border-l-[rgba(0,0,0,0.1)] rounded-l-[16px]' : 'backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px]'
             }`}
             style={hasSlid ? {
-              right: '8px',
-              top: '64px',
-              height: 'calc(100vh - 64px - 8px)'
+              right: '0',
+              top: '0',
+              bottom: '0',
+              height: '100vh',
+              width: '393px'
             } : {
               left: '50%',
               top: '50%'
@@ -133,11 +135,11 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
 
 
             {/* Scrollable Content */}
-            <div className="relative overflow-y-auto h-full p-6">
+            <div className="relative overflow-y-auto h-full">
               {/* CKYC Card */}
-              <div className="border border-[rgba(108,132,157,0.18)] rounded-[12px] overflow-hidden bg-white shadow-sm">
+              <div className="border border-[rgba(108,132,157,0.18)] overflow-hidden bg-white shadow-sm">
                 {/* Header Image Section */}
-                <div className="relative h-[121px] rounded-t-[12px] overflow-hidden">
+                <div className="relative h-[121px] overflow-hidden">
                   {/* Blurred background image */}
                   <div
                     className="absolute inset-0 bg-cover bg-center"
