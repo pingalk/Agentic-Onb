@@ -5247,6 +5247,12 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     const [subtextStarted, setSubtextStarted] = React.useState(false);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+    // Auto-trigger subtext display after mount
+    React.useEffect(() => {
+      const timer = setTimeout(() => setSubtextStarted(true), 1300);
+      return () => clearTimeout(timer);
+    }, []);
+
     // Auto-open modal when streaming completes
     React.useEffect(() => {
       if (!isStreaming && !isModalOpen) {
@@ -5260,7 +5266,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     return (
       <div className="w-full animate-fade-in-up">
         {/* Ray Logo + Headline and Subtext with streaming */}
-        <div className="flex items-start gap-3 max-w-[680px] mb-6">
+        <div className="flex items-start gap-3 mb-6" style={{ visibility: 'visible', display: 'flex', marginLeft: '-36px' }}>
           {/* Ray Logo - rotates while streaming */}
           <motion.div
             className="w-6 h-6 shrink-0 mt-0.5"
@@ -5276,9 +5282,9 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
           </motion.div>
 
           {/* Text Content */}
-          <div className="flex-1">
+          <div className="flex-1" style={{ visibility: 'visible' }}>
             {headline && (
-              <h3 className="font-['TASA_Orbiter_Deck',sans-serif] text-[18px] font-semibold text-[#020202] leading-[26px] tracking-[-0.54px] mb-1">
+              <h3 className="font-['TASA_Orbiter_Deck',sans-serif] text-[18px] font-semibold text-[#020202] leading-[26px] tracking-[-0.54px] mb-1 [&_*]:font-['TASA_Orbiter_Deck',sans-serif]" style={{ visibility: 'visible', display: 'block' }}>
                 <PerplexityStreamText
                   content={headline}
                   inheritStyles={true}
@@ -5289,9 +5295,10 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
               </h3>
             )}
             {subtextStarted && subtext && (
-              <p className="text-[14px] text-[#40566d] leading-[20px] tracking-[-0.14px]">
+              <p className="font-['Inter',sans-serif] text-[14px] text-[#40566d] leading-[20px] tracking-[-0.14px] [&_*]:font-['Inter',sans-serif]" style={{ visibility: 'visible', display: 'block' }}>
                 <PerplexityStreamText
                   content={subtext}
+                  inheritStyles={true}
                   onComplete={() => {
                     setIsStreaming(false);
                     if (onStreamComplete) onStreamComplete();
