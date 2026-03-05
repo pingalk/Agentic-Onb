@@ -2190,11 +2190,9 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                playsInline
                className="block"
                style={{
-                 maxWidth: 'calc(100vw - 8px)',
-                 maxHeight: '100vh',
-                 width: 'auto',
+                 width: 'calc(100vw - 8px)',
                  height: 'auto',
-                 margin: '0 auto'
+                 maxHeight: '100vh'
                }}
              >
                <source src="/final-success.mov" type="video/quicktime" />
