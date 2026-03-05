@@ -135,7 +135,7 @@ export const KYCDetailsModal: React.FC<KYCDetailsModalProps> = ({
 
 
             {/* Scrollable Content */}
-            <div className="relative overflow-y-auto h-full p-2">
+            <div className="relative overflow-y-auto h-full p-4">
               {/* CKYC Card */}
               <div className="border border-[rgba(108,132,157,0.18)] overflow-hidden bg-white shadow-sm rounded-[8px]">
                 {/* Header Image Section */}
