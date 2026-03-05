@@ -2205,8 +2205,8 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                className="block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                style={{ maxWidth: '100vw', maxHeight: '100vh', width: 'auto', height: 'auto' }}
              >
-               <source src="/final-success.mov" type="video/quicktime" />
-               <source src="/final-success.mov" type="video/mp4" />
+               <source src="/success-final.mov" type="video/quicktime" />
+               <source src="/success-final.mov" type="video/mp4" />
                Your browser does not support the video tag.
              </video>
            </div>
