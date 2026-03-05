@@ -1147,7 +1147,7 @@ const SimpleTextArtifact = ({
 
   return (
     <motion.div
-      className="flex flex-col gap-[16px] w-full mt-2"
+      className="flex flex-col gap-3 w-full mt-2"
       initial="hidden"
       animate="visible"
       variants={containerVar}
