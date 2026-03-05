@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import clsx from 'clsx';
 import { defaultThinkingSteps } from './useDemoScript';
-import { Sparkles } from 'lucide-react';
+import Ray from '@/imports/Ray';
 
 export interface ChainOfThoughtProps {
   steps?: string[];
@@ -94,9 +94,9 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
         }
       `}</style>
 
-      {/* Sparkles icon + Text row */}
+      {/* Ray icon + Text row */}
       <div className="flex items-center gap-3 px-0">
-        {/* Sparkles icon with gentle rotation */}
+        {/* Ray icon with stepped rotation */}
         <motion.div
           className="w-6 h-6 shrink-0"
           animate={shouldRotate ? {
@@ -112,7 +112,7 @@ export const ChainOfThought: React.FC<ChainOfThoughtProps> = ({
             animationPlayState: isPaused ? 'paused' : 'running'
           }}
         >
-          <Sparkles className="w-full h-full text-[#009E5C]" strokeWidth={2} />
+          <Ray static />
         </motion.div>
 
         {/* Text - shown in waiting mode (shimmery) and complete mode (static) */}
