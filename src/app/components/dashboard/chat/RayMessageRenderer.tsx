@@ -644,7 +644,7 @@ const InvestigationReportArtifact = ({ data, onRowClick, onSuggestionClick, isLa
               >
                 <AnimatedLoadingCard isLoading={phase < 2} loadingHeight={48} borderRadius="12px">
                   <div>
-                    <h4 className="text-[15px] font-bold text-slate-900 mb-3">Your recent refunds:</h4>
+                    <h4 className="text-[18px] font-bold text-slate-900 mb-3">Your recent refunds:</h4>
                     <div className="w-full rounded-[12px] border border-[#E4E7EC] relative group/table overflow-hidden">
                         {/* Table Header */}
                         <div className="flex h-[48px] text-[14px] font-medium text-[#192839] bg-[rgba(108,132,157,0.06)] px-[16px] border-b border-[rgba(108,132,157,0.18)]">
@@ -5448,7 +5448,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
             {/* Headline */}
             {data.headline && (
-                <h3 className="text-[17px] font-bold text-slate-900 leading-snug tracking-tight mb-1">
+                <h3 className="text-[18px] font-bold text-slate-900 leading-snug tracking-tight mb-1">
                     {data.headline}
                 </h3>
             )}
