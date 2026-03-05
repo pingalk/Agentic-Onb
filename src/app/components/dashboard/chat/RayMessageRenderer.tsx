@@ -4982,7 +4982,7 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
 
   // 24.5. KYC OTP Verification Card
   if (data.artifact?.type === 'kyc_otp_card') {
-    const { heading, tag, phoneNumber, buttonText } = data.artifact.data;
+    const { heading, tag, phoneNumber, buttonText, isVerified = false } = data.artifact.data;
     const [isStreaming, setIsStreaming] = React.useState(true);
     const [subtextStarted, setSubtextStarted] = React.useState(false);
 
@@ -5080,18 +5080,23 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
             <button
               onClick={() => {
                 // Trigger KYC OTP flow
-                if (onSuggestionClick) {
+                if (!isVerified && onSuggestionClick) {
                   onSuggestionClick('verify_otp');
                 }
               }}
-              className="relative w-full h-12 border border-[#0354e0] rounded-[12px] text-white font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden hover:opacity-90 mt-4"
+              disabled={isVerified}
+              className="relative w-full h-12 border rounded-[12px] font-sans font-medium text-[14px] tracking-[-0.112px] transition-all flex items-center justify-center gap-2 overflow-hidden mt-4 disabled:cursor-not-allowed disabled:opacity-60"
               style={{
-                backgroundImage: 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)'
+                backgroundImage: isVerified
+                  ? 'linear-gradient(-23.46deg, rgb(156, 163, 175) 54.842%, rgb(209, 213, 219) 98.573%)'
+                  : 'linear-gradient(-23.46deg, rgb(21, 102, 241) 54.842%, rgb(71, 147, 253) 98.573%)',
+                borderColor: isVerified ? '#9ca3af' : '#0354e0',
+                color: 'white'
               }}
             >
               {/* Glass effect inset shadows */}
               <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_-1.5px_0px_0px_#0e54cc,inset_0px_0px_0px_0.5px_#1566f1,inset_0px_-2px_0px_0px_rgba(255,255,255,0.18),inset_0px_1.5px_0px_0px_rgba(255,255,255,0.32)]" />
-              {buttonText}
+              {isVerified ? 'OTP verified' : buttonText}
             </button>
           </div>
         </motion.div>

@@ -173,6 +173,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
   const [kycFlowStep, setKycFlowStep] = useState(0);
   const [kycBusinessModel, setKycBusinessModel] = useState<string | undefined>(undefined);
   const [kycBankAccount, setKycBankAccount] = useState<string | undefined>(undefined);
+  const [kycOTPVerified, setKycOTPVerified] = useState(false);
 
   // KYC Details Panel State
   const [isKYCPanelSettled, setIsKYCPanelSettled] = useState(false);
@@ -2028,6 +2029,14 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
            }}
            onVerify={(otp) => {
              setIsKYCOTPModalOpen(false);
+             setKycOTPVerified(true);
+
+             // Update the OTP card message to show verified state
+             setMessages(prev => prev.map(msg =>
+               msg.artifact?.type === 'kyc_otp_card'
+                 ? { ...msg, artifact: { ...msg.artifact, data: { ...msg.artifact.data, isVerified: true } } }
+                 : msg
+             ));
 
              // Show OTP as user message
              setMessages(prev => [...prev, {
