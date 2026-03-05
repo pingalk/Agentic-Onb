@@ -100,7 +100,8 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
               top: '56px',
               left: 'auto',
               opacity: 1,
-              scale: 1
+              scale: 1,
+              height: 'calc(100vh - 56px)'
             } : {
               left: '50%',
               top: '50%',
@@ -108,14 +109,16 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
               x: '-50%',
               y: '-50%',
               opacity: 1,
-              scale: 1
+              scale: 1,
+              height: 'auto'
             }}
             exit={isTransitioningToPanel ? {
               right: '0',
               top: '56px',
               left: 'auto',
               opacity: 1,
-              scale: 1
+              scale: 1,
+              height: 'calc(100vh - 56px)'
             } : {
               left: '50%',
               top: '50%',
@@ -123,7 +126,8 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
               x: '-50%',
               y: '-50%',
               opacity: 0,
-              scale: 0.95
+              scale: 0.95,
+              height: 'auto'
             }}
             transition={{
               duration: 0.5,
@@ -131,9 +135,6 @@ export const KYCReviewModal: React.FC<KYCReviewModalProps> = ({
             }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
             className="fixed bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] w-[393px] overflow-hidden z-[9999] backdrop-blur-[5.5px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)]"
-            style={isTransitioningToPanel ? {
-              height: 'calc(100vh - 56px)'
-            } : {}}
           >
             {/* Top gradient overlay for depth */}
             <div className="absolute top-0 left-0 right-0 h-[24px] pointer-events-none z-20">
