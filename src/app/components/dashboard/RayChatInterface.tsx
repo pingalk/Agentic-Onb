@@ -2186,10 +2186,13 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
            <div className="fixed inset-0 z-[99999] bg-[#fafafa] flex items-center justify-center">
              <video
                autoPlay
+               muted
                playsInline
-               className="w-full h-full object-contain"
+               controls
+               className="max-w-[90%] max-h-[90%]"
              >
                <source src="/final-success.mov" type="video/quicktime" />
+               <source src="/final-success.mov" type="video/mp4" />
                Your browser does not support the video tag.
              </video>
            </div>
