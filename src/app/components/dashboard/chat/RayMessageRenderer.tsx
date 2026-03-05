@@ -4978,30 +4978,30 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     }, []);
 
     return (
-      <div className="w-full animate-fade-in-up" style={{ position: 'relative', zIndex: 10 }}>
-        {/* Ray Logo + Headline and Subtext with streaming */}
+      <div className="w-full animate-fade-in-up relative" style={{ position: 'relative', zIndex: 10 }}>
+        {/* Ray Logo - follows streaming text, then settles at bottom */}
         {(data.headline || data.subtext) && (
-        <div className="flex items-start gap-3 mb-4" style={{ visibility: 'visible', display: 'flex', marginLeft: isStreaming ? '-36px' : '0' }}>
-          {/* Ray Logo - rotates while streaming - positioned to the left - only shows during streaming */}
-          <AnimatePresence>
-            {isStreaming && (
-              <motion.div
-                className="w-6 h-6 shrink-0 mt-0.5"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                animate={{
-                  rotate: 360
-                }}
-                style={{
-                  transition: 'rotate 1.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                }}
-              >
-                <Ray static />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <motion.div
+            className="absolute w-6 h-6 shrink-0"
+            initial={{ top: '2px', left: '-36px' }}
+            animate={
+              isStreaming
+                ? { top: '2px', left: '-36px', rotate: 360 }
+                : { top: 'auto', bottom: '0px', left: '-36px', rotate: 0 }
+            }
+            transition={
+              isStreaming
+                ? { rotate: { duration: 1.2, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }, top: { duration: 0.3 }, left: { duration: 0.3 } }
+                : { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
+            }
+          >
+            <Ray static />
+          </motion.div>
+        )}
 
+        {/* Headline and Subtext with streaming */}
+        {(data.headline || data.subtext) && (
+        <div className="mb-4" style={{ visibility: 'visible', display: 'block' }}>
           {/* Text Content - aligns with card below */}
           <div className="flex-1" style={{ visibility: 'visible' }}>
             {data.headline && (
@@ -5110,29 +5110,27 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
     }, [isStreaming, isModalOpen]);
 
     return (
-      <div className="w-full animate-fade-in-up">
-        {/* Ray Logo + Headline and Subtext with streaming */}
-        <div className="flex items-start gap-3 mb-6" style={{ visibility: 'visible', display: 'flex', marginLeft: isStreaming ? '-36px' : '0' }}>
-          {/* Ray Logo - rotates while streaming - only shows during streaming */}
-          <AnimatePresence>
-            {isStreaming && (
-              <motion.div
-                className="w-6 h-6 shrink-0 mt-0.5"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                animate={{
-                  rotate: 360
-                }}
-                style={{
-                  transition: 'rotate 1.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                }}
-              >
-                <Ray static />
-              </motion.div>
-            )}
-          </AnimatePresence>
+      <div className="w-full animate-fade-in-up relative">
+        {/* Ray Logo - follows streaming text, then settles at bottom */}
+        <motion.div
+          className="absolute w-6 h-6 shrink-0"
+          initial={{ top: '2px', left: '-36px' }}
+          animate={
+            isStreaming
+              ? { top: '2px', left: '-36px', rotate: 360 }
+              : { top: 'auto', bottom: '0px', left: '-36px', rotate: 0 }
+          }
+          transition={
+            isStreaming
+              ? { rotate: { duration: 1.2, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }, top: { duration: 0.3 }, left: { duration: 0.3 } }
+              : { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
+          }
+        >
+          <Ray static />
+        </motion.div>
 
+        {/* Headline and Subtext with streaming */}
+        <div className="mb-6" style={{ visibility: 'visible', display: 'block' }}>
           {/* Text Content */}
           <div className="flex-1" style={{ visibility: 'visible' }}>
             {headline && (
