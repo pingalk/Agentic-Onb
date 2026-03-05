@@ -17,7 +17,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animPhase, setAnimPhase] = useState(0);
-  const [loadingOpacity, setLoadingOpacity] = useState(1);
+  const [loadingOpacity, setLoadingOpacity] = useState(0);
   const [welcomeOpacity, setWelcomeOpacity] = useState(1);
   const [panOpacity, setPanOpacity] = useState(1);
   const [panConfirmOpacity, setPanConfirmOpacity] = useState(1);
@@ -93,9 +93,14 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     setStep('welcome');
   };
 
-  // Auto-transition for loading video (fade out at 9s, transition at 10s)
+  // Auto-transition for loading video (fade in, then fade out at 9s, transition at 10s)
   useEffect(() => {
     if (step === 'loading') {
+      // Fade in after a brief delay for smooth crossfade
+      const fadeInTimer = setTimeout(() => {
+        setLoadingOpacity(1);
+      }, 100);
+
       // Start fade out at 9 seconds
       const fadeTimer = setTimeout(() => {
         setLoadingOpacity(0);
@@ -104,10 +109,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       // Transition to welcome at 10 seconds
       const transitionTimer = setTimeout(() => {
         setStep('welcome');
-        setLoadingOpacity(1); // Reset for next time
+        setLoadingOpacity(0); // Reset for next time
       }, 10000);
 
       return () => {
+        clearTimeout(fadeInTimer);
         clearTimeout(fadeTimer);
         clearTimeout(transitionTimer);
       };
@@ -442,7 +448,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               initial={{ opacity: 0 }}
               animate={{ opacity: loadingOpacity }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              transition={{ duration: 0.8, ease: 'easeInOut' }}
               className="fixed inset-0 flex items-center justify-center"
               style={{ backgroundColor: '#fafafa' }}
             >
