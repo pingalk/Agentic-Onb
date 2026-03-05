@@ -1793,6 +1793,7 @@ export const RayChatInterface = ({ initialQuery, isSplit, isEntering, onGoHome, 
                         kycBusinessName={kycBusinessName}
                         kycBusinessModel={kycBusinessModel}
                         kycBankAccount={kycBankAccount}
+                        isKYCReviewModalOpen={isKYCReviewModalOpen}
                         onKYCPanelSettled={() => setIsKYCPanelSettled(true)}
                         onKYCPanelClosed={() => {
                           setIsKYCPanelSettled(false);

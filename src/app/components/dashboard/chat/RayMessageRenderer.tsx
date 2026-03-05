@@ -4373,7 +4373,7 @@ const ChatAttachmentPill = ({ filename, fileType, onClick }: { filename: string;
   );
 };
 
-export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, kycPanNumber, kycWebsite, kycBusinessName, kycBusinessModel, kycBankAccount, onKYCPanelSettled, onKYCPanelClosed }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; kycPanNumber?: string; kycWebsite?: string; kycBusinessName?: string; kycBusinessModel?: string; kycBankAccount?: string; onKYCPanelSettled?: () => void; onKYCPanelClosed?: () => void }) => {
+export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast = true, highlightedSuggestionIndex = null, onMiniCardClick, onMiniCardAnimationComplete, onStreamComplete, animatingCardId, personaId, kycPanNumber, kycWebsite, kycBusinessName, kycBusinessModel, kycBankAccount, isKYCReviewModalOpen, onKYCPanelSettled, onKYCPanelClosed }: { data: RayResponseData; onSuggestionClick?: (suggestion: string) => void; onRowClick?: (rowData: any) => void; isLast?: boolean; highlightedSuggestionIndex?: number | null; onMiniCardClick?: (formId: string, sourceRect?: SourceRect) => void; onMiniCardAnimationComplete?: (formId: string) => void; onStreamComplete?: () => void; animatingCardId?: string | null; personaId?: string; kycPanNumber?: string; kycWebsite?: string; kycBusinessName?: string; kycBusinessModel?: string; kycBankAccount?: string; isKYCReviewModalOpen?: boolean; onKYCPanelSettled?: () => void; onKYCPanelClosed?: () => void }) => {
   // State for WhatsApp preview modal
   const [isWhatsAppPreviewOpen, setIsWhatsAppPreviewOpen] = useState(false);
 
@@ -5164,6 +5164,13 @@ export const RayMessageRenderer = ({ data, onSuggestionClick, onRowClick, isLast
         return () => clearTimeout(timer);
       }
     }, [showCard, isModalOpen]);
+
+    // Close the right panel modal when review modal opens
+    React.useEffect(() => {
+      if (isKYCReviewModalOpen && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    }, [isKYCReviewModalOpen, isModalOpen]);
 
     return (
       <div className="w-full animate-fade-in-up relative">
