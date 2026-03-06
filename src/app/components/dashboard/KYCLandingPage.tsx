@@ -226,7 +226,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 muted
                 playsInline
                 onTimeUpdate={handleVideoTimeUpdate}
-                src="/kyc-intro.mp4"
+                src="/kyc-intro-new.mp4"
               />
             </motion.div>
           ) : step === 'pan' || step === 'panConfirm' ? (
