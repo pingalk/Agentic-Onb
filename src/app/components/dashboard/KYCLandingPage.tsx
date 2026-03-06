@@ -51,11 +51,14 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
   useEffect(() => {
     if (step !== 'video' && step !== 'panConfirm') {
-      const t1 = setTimeout(() => setAnimPhase(1), 100);  // Card shell appears immediately after video fade
-      const t2 = setTimeout(() => setAnimPhase(2), 500);  // Content inside card appears
-      // Start background video at the same time as content
-      const t3 = setTimeout(() => setShouldPlayBackground(true), 500);
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+      const t1 = setTimeout(() => {
+        setAnimPhase(1);
+        // Immediately trigger phase 2 so card and content appear together
+        setAnimPhase(2);
+      }, 100);  // Card with content appears together after video fade
+      // Start background video at the same time
+      const t2 = setTimeout(() => setShouldPlayBackground(true), 100);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
     }
   }, [step]);
 
