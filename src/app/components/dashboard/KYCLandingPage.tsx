@@ -215,11 +215,14 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
           {step === 'video' ? (
             <motion.div
               key="video"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: videoFadingOut ? 0 : 1 }}
+              initial={{ opacity: 0, backgroundColor: '#000000' }}
+              animate={{
+                opacity: videoFadingOut ? 0 : 1,
+                backgroundColor: videoFadingOut ? '#f8f8f8' : '#000000'
+              }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
-              className="fixed inset-0 bg-black"
+              className="fixed inset-0"
             >
               {/* Full-screen Video */}
               <video
