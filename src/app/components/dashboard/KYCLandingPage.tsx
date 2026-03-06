@@ -163,7 +163,12 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#f8f8f8' }}>
       {/* Top Navigation - only for form steps */}
       {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
-        <div className="relative z-[100] bg-black h-14 flex items-center justify-between px-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="relative z-[100] bg-black h-14 flex items-center justify-between px-4"
+        >
           {/* Logo */}
           <div className="flex items-center">
             <img
@@ -182,12 +187,17 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               <span className="text-[#dadada] text-sm font-medium">A</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* SparkRipples Background - only for form steps */}
       {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
-        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: shouldPlayBackground ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center overflow-hidden"
+        >
           <div
             style={{
               transform: 'scale(0.75)',
@@ -205,7 +215,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               shouldPlay={shouldPlayBackground}
             />
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Main Content Area */}
@@ -215,14 +225,14 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
           {step === 'video' ? (
             <motion.div
               key="video"
-              initial={{ opacity: 1 }}
+              initial={{ opacity: 1, backgroundColor: '#000000' }}
               animate={{
-                opacity: videoFadingOut ? 0 : 1
+                opacity: videoFadingOut ? 0 : 1,
+                backgroundColor: videoFadingOut ? '#f8f8f8' : '#000000'
               }}
-              exit={{ opacity: 0 }}
+              exit={{ opacity: 0, backgroundColor: '#f8f8f8' }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
               className="fixed inset-0"
-              style={{ backgroundColor: '#f8f8f8' }}
             >
               {/* Full-screen Video */}
               <video
