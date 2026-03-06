@@ -54,7 +54,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       // Set both phases immediately when step changes for seamless transition
       setAnimPhase(1);
       setAnimPhase(2);
-      setShouldPlayBackground(true);
+      // Delay background video slightly to avoid jerk
+      const bgTimer = setTimeout(() => setShouldPlayBackground(true), 400);
+      return () => clearTimeout(bgTimer);
     }
   }, [step]);
 
