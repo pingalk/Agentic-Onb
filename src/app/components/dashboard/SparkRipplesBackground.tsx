@@ -583,6 +583,7 @@ interface SparkRipplesBackgroundProps {
   scale?: number; // Scale up the animation (1.0 = 100%, 1.5 = 150%)
   playbackRate?: number; // Video playback speed (0.5 = half speed, 1.0 = normal)
   muted?: boolean; // When true, reduces contrast and brightness for subtle background use
+  shouldPlay?: boolean; // When true, starts playing the video (for delayed start)
 }
 
 export const SparkRipplesBackground = ({
@@ -591,7 +592,8 @@ export const SparkRipplesBackground = ({
   loop = true,
   scale = 1,
   playbackRate = 1,
-  muted = false
+  muted = false,
+  shouldPlay = true
 }: SparkRipplesBackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -725,7 +727,7 @@ export const SparkRipplesBackground = ({
         vid.loop = loop;
         vid.muted = true;
         vid.playsInline = true;
-        vid.autoplay = true;
+        vid.autoplay = false; // Don't autoplay - wait for shouldPlay prop
         vid.oncanplaythrough = () => resolve(vid);
         vid.onerror = reject;
         vid.load();
@@ -883,13 +885,17 @@ export const SparkRipplesBackground = ({
           video = loadedVideo;
           // Apply playback rate for slower/faster animation
           video.playbackRate = playbackRate;
-          console.log('[SparkRipples] Video loaded, attempting to play at rate:', playbackRate);
-          video.play().then(() => {
-            console.log('[SparkRipples] Video playing!');
-          }).catch((e) => {
-            console.warn('[SparkRipples] Video autoplay blocked, waiting for user interaction:', e);
-            document.addEventListener('click', () => video?.play(), { once: true });
-          });
+          console.log('[SparkRipples] Video loaded, shouldPlay:', shouldPlay);
+
+          // Only play if shouldPlay is true
+          if (shouldPlay) {
+            video.play().then(() => {
+              console.log('[SparkRipples] Video playing!');
+            }).catch((e) => {
+              console.warn('[SparkRipples] Video autoplay blocked, waiting for user interaction:', e);
+              document.addEventListener('click', () => video?.play(), { once: true });
+            });
+          }
         } else {
           console.warn('[SparkRipples] Using fallback canvas (no video)');
           fallbackCanvas = createFallbackVideoCanvas();
@@ -898,8 +904,23 @@ export const SparkRipplesBackground = ({
         animationId = requestAnimationFrame(update);
       });
 
+    // Watch shouldPlay prop and start video when it becomes true
+    const checkShouldPlay = () => {
+      if (shouldPlay && video && video.paused) {
+        console.log('[SparkRipples] shouldPlay triggered, starting video');
+        video.play().catch((e) => {
+          console.warn('[SparkRipples] Failed to play on shouldPlay:', e);
+        });
+      }
+    };
+
+    // Check immediately and set up interval to check regularly
+    checkShouldPlay();
+    const playCheckInterval = setInterval(checkShouldPlay, 100);
+
     // Cleanup
     return () => {
+      clearInterval(playCheckInterval);
       cancelAnimationFrame(animationId);
       resizeObserver.disconnect();
       if (gl.canvas.parentNode) {
@@ -910,7 +931,7 @@ export const SparkRipplesBackground = ({
         video.src = '';
       }
     };
-  }, [loop, playbackRate, muted]);
+  }, [loop, playbackRate, muted, shouldPlay]);
 
   return (
     <div

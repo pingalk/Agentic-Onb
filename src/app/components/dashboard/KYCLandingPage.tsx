@@ -21,6 +21,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const [welcomeOpacity, setWelcomeOpacity] = useState(1);
   const [panOpacity, setPanOpacity] = useState(1);
   const [panConfirmOpacity, setPanConfirmOpacity] = useState(1);
+  const [videoFadingOut, setVideoFadingOut] = useState(false);
+  const [shouldPlayBackground, setShouldPlayBackground] = useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const panTransitionVideoRef = React.useRef<HTMLVideoElement>(null);
   const loadingVideoRef = React.useRef<HTMLVideoElement>(null);
@@ -28,15 +30,22 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
 
-  // Handle video end
+  // Handle video end - trigger fade out first
   const handleVideoEnd = () => {
-    setStep('pan');
-    setAnimPhase(3); // Show card immediately
+    setVideoFadingOut(true);
+    // Transition to pan step after fade completes
+    setTimeout(() => {
+      setStep('pan');
+      setAnimPhase(0); // Start from beginning for card animation
+    }, 800); // Match fade out duration
   };
 
   const handleSkipVideo = () => {
-    setStep('pan');
-    setAnimPhase(3); // Show card immediately
+    setVideoFadingOut(true);
+    setTimeout(() => {
+      setStep('pan');
+      setAnimPhase(0);
+    }, 800);
   };
 
   // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
@@ -45,7 +54,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       const t1 = setTimeout(() => setAnimPhase(1), 200);  // Ray appears
       const t2 = setTimeout(() => setAnimPhase(2), 600);  // Title
       const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+      // Start background video AFTER card has appeared
+      const t4 = setTimeout(() => setShouldPlayBackground(true), 1200);
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
     }
   }, [step]);
 
@@ -191,6 +202,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               muted={true}
               loop={false}
               playbackRate={0.8}
+              shouldPlay={shouldPlayBackground}
             />
           </div>
         </div>
@@ -204,9 +216,9 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             <motion.div
               key="video"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: videoFadingOut ? 0 : 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.8 }}
               className="fixed inset-0 bg-black"
             >
               {/* Full-screen Video */}
