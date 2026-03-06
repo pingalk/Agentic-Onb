@@ -51,10 +51,10 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
   useEffect(() => {
     if (step !== 'video' && step !== 'panConfirm') {
-      const t1 = setTimeout(() => setAnimPhase(1), 200);  // Card shell appears
-      const t2 = setTimeout(() => setAnimPhase(2), 600);  // Content inside card appears
+      const t1 = setTimeout(() => setAnimPhase(1), 100);  // Card shell appears immediately after video fade
+      const t2 = setTimeout(() => setAnimPhase(2), 500);  // Content inside card appears
       // Start background video at the same time as content
-      const t3 = setTimeout(() => setShouldPlayBackground(true), 600);
+      const t3 = setTimeout(() => setShouldPlayBackground(true), 500);
       return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
   }, [step]);
@@ -159,7 +159,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
+    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#f8f8f8' }}>
       {/* Top Navigation - only for form steps */}
       {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
         <div className="relative z-[100] bg-black h-14 flex items-center justify-between px-4">
