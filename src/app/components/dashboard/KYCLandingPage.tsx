@@ -33,11 +33,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Handle video end - trigger fade out first
   const handleVideoEnd = () => {
     setVideoFadingOut(true);
-    // Transition to pan step after fade completes
+    // Transition to pan step slightly before fade completes for seamless overlap
     setTimeout(() => {
       setStep('pan');
       setAnimPhase(0); // Start from beginning for card animation
-    }, 800); // Match fade out duration
+    }, 600); // Start transition 200ms before video fade completes
   };
 
   const handleSkipVideo = () => {
@@ -45,7 +45,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     setTimeout(() => {
       setStep('pan');
       setAnimPhase(0);
-    }, 800);
+    }, 600); // Start transition 200ms before video fade completes
   };
 
   // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
@@ -209,7 +209,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       {/* Main Content Area */}
       <div className={`relative flex-1 flex items-center justify-center ${step === 'video' || step === 'loading' || step === 'welcome' ? '' : 'py-8'}`}>
         <div className={`relative z-10 w-full ${step === 'video' || step === 'loading' || step === 'welcome' ? '' : 'max-w-2xl px-6'}`}>
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
           {step === 'video' ? (
             <motion.div
               key="video"
@@ -219,7 +219,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
-              className="fixed inset-0"
+              className="fixed inset-0 z-50"
               style={{ backgroundColor: '#000000' }}
             >
               {/* Full-screen Video */}
