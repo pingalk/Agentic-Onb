@@ -33,11 +33,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Handle video end - trigger fade out first
   const handleVideoEnd = () => {
     setVideoFadingOut(true);
-    // Transition to pan step slightly before fade completes for seamless overlap
+    // Transition to pan step after fade completes
     setTimeout(() => {
       setStep('pan');
       setAnimPhase(0); // Start from beginning for card animation
-    }, 600); // Start transition 200ms before video fade completes
+    }, 800); // Match fade out duration
   };
 
   const handleSkipVideo = () => {
@@ -45,7 +45,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     setTimeout(() => {
       setStep('pan');
       setAnimPhase(0);
-    }, 600); // Start transition 200ms before video fade completes
+    }, 800);
   };
 
   // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
@@ -211,18 +211,18 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
       {/* Main Content Area */}
       <div className={`relative flex-1 flex items-center justify-center ${step === 'video' || step === 'loading' || step === 'welcome' ? '' : 'py-8'}`}>
         <div className={`relative z-10 w-full ${step === 'video' || step === 'loading' || step === 'welcome' ? '' : 'max-w-2xl px-6'}`}>
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
           {step === 'video' ? (
             <motion.div
               key="video"
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 1 }}
               animate={{
                 opacity: videoFadingOut ? 0 : 1
               }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className="fixed inset-0 z-50"
-              style={{ backgroundColor: '#000000' }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="fixed inset-0"
+              style={{ backgroundColor: '#f8f8f8' }}
             >
               {/* Full-screen Video */}
               <video
