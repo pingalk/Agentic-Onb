@@ -28,19 +28,10 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   const { gradientConfig, sparkRipplesConfig } = useDemo();
   const { config: currentMagicColor } = useMagicColor();
 
-  // Handle video timeupdate to stop 2.8 seconds before end
-  const handleVideoTimeUpdate = () => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-      const timeRemaining = video.duration - video.currentTime;
-
-      // Stop video 2.8 seconds before the end and transition
-      if (timeRemaining <= 2.8 && timeRemaining > 0) {
-        video.pause();
-        setStep('pan');
-        setAnimPhase(3); // Show card immediately
-      }
-    }
+  // Handle video end
+  const handleVideoEnd = () => {
+    setStep('pan');
+    setAnimPhase(3); // Show card immediately
   };
 
   const handleSkipVideo = () => {
@@ -225,7 +216,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 autoPlay
                 muted
                 playsInline
-                onTimeUpdate={handleVideoTimeUpdate}
+                onEnded={handleVideoEnd}
                 src="/kyc-intro-new.mp4"
               />
             </motion.div>
