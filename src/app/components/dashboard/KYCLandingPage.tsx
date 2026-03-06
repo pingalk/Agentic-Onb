@@ -51,12 +51,11 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
   useEffect(() => {
     if (step !== 'video' && step !== 'panConfirm') {
-      const t1 = setTimeout(() => setAnimPhase(1), 200);  // Ray appears
-      const t2 = setTimeout(() => setAnimPhase(2), 600);  // Title
-      const t3 = setTimeout(() => setAnimPhase(3), 1000); // Card appears
-      // Start background video AFTER card has appeared
-      const t4 = setTimeout(() => setShouldPlayBackground(true), 1200);
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+      const t1 = setTimeout(() => setAnimPhase(1), 200);  // Card shell appears
+      const t2 = setTimeout(() => setAnimPhase(2), 600);  // Content inside card appears
+      // Start background video at the same time as content
+      const t3 = setTimeout(() => setShouldPlayBackground(true), 600);
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
   }, [step]);
 
@@ -160,7 +159,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
     : 'xxxxxxxxxx';
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#fafafa' }}>
+    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ backgroundColor: step === 'video' ? '#000000' : '#f8f8f8' }}>
       {/* Top Navigation - only for form steps */}
       {step !== 'video' && step !== 'loading' && step !== 'welcome' && (
         <div className="relative z-[100] bg-black h-14 flex items-center justify-between px-4">
@@ -248,8 +247,8 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{
-                  opacity: animPhase >= 3 ? 1 : 0,
-                  scale: animPhase >= 3 ? 1 : 0.96
+                  opacity: animPhase >= 1 ? 1 : 0,
+                  scale: animPhase >= 1 ? 1 : 0.96
                 }}
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                 className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
@@ -291,7 +290,16 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                     </p>
                   </motion.div>
 
-                  <div className="space-y-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                    animate={{
+                      opacity: animPhase >= 2 ? 1 : 0,
+                      y: animPhase >= 2 ? 0 : 8,
+                      filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
+                    }}
+                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="space-y-4"
+                  >
                     {/* Large PAN input field */}
                     <input
                       type="text"
@@ -332,7 +340,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                         </>
                       )}
                     </button>
-                  </div>
+                  </motion.div>
                 </motion.div>
                 ) : (
                 <motion.div
@@ -432,7 +440,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8, ease: 'easeInOut' }}
               className="fixed inset-0 flex items-center justify-center"
-              style={{ backgroundColor: '#F6F6F6' }}
+              style={{ backgroundColor: '#f8f8f8' }}
             >
               {/* Loading Video Container - cropped by 40px on all sides, 2x size */}
               <div className="relative w-[160%] h-[160%] max-w-[1600px] max-h-[1600px] overflow-hidden flex items-center justify-center">
@@ -461,7 +469,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
               className="fixed inset-0 flex flex-col items-center justify-center gap-8"
-              style={{ backgroundColor: '#F6F6F6' }}
+              style={{ backgroundColor: '#f8f8f8' }}
             >
               {/* Ray Icon with rotation animation */}
               <motion.div
