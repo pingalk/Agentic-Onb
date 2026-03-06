@@ -51,14 +51,10 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
   // Entry animation sequence for form steps (skip for panConfirm to avoid jerk)
   useEffect(() => {
     if (step !== 'video' && step !== 'panConfirm') {
-      const t1 = setTimeout(() => {
-        setAnimPhase(1);
-        // Immediately trigger phase 2 so card and content appear together
-        setAnimPhase(2);
-      }, 100);  // Card with content appears together after video fade
-      // Start background video at the same time
-      const t2 = setTimeout(() => setShouldPlayBackground(true), 100);
-      return () => { clearTimeout(t1); clearTimeout(t2); };
+      // Set both phases immediately when step changes for seamless transition
+      setAnimPhase(1);
+      setAnimPhase(2);
+      setShouldPlayBackground(true);
     }
   }, [step]);
 
@@ -217,14 +213,14 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
           {step === 'video' ? (
             <motion.div
               key="video"
-              initial={{ opacity: 0, backgroundColor: '#000000' }}
+              initial={{ opacity: 0 }}
               animate={{
-                opacity: videoFadingOut ? 0 : 1,
-                backgroundColor: videoFadingOut ? '#f8f8f8' : '#000000'
+                opacity: videoFadingOut ? 0 : 1
               }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
               className="fixed inset-0"
+              style={{ backgroundColor: '#000000' }}
             >
               {/* Full-screen Video */}
               <video
@@ -240,7 +236,7 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
           ) : step === 'pan' || step === 'panConfirm' ? (
             <motion.div
               key="pan-flow"
-              initial={{ opacity: 0 }}
+              initial={{ opacity: 1 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
@@ -248,12 +244,12 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
             >
               {/* PAN Modal Card - Figma glass morphism style */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 1, scale: 1 }}
                 animate={{
                   opacity: animPhase >= 1 ? 1 : 0,
                   scale: animPhase >= 1 ? 1 : 0.96
                 }}
-                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                 className="relative backdrop-blur-[5.5px] bg-gradient-to-b from-white to-[#f0f0f0] border-[1.5px] border-[rgba(0,0,0,0.1)] rounded-[16px] shadow-[0px_8px_48px_4px_rgba(59,96,181,0.1)] overflow-hidden"
               >
                 {/* Inner shadow for depth */}
@@ -271,13 +267,13 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                 >
                   {/* Title with gradient inside card */}
                   <motion.div
-                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                    initial={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     animate={{
                       opacity: animPhase >= 2 ? 1 : 0,
                       y: animPhase >= 2 ? 0 : 8,
                       filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
                     }}
-                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                     className="text-center space-y-3"
                   >
                     <h1
@@ -294,13 +290,13 @@ export const KYCLandingPage: React.FC<KYCLandingPageProps> = ({ onPhoneSubmit })
                   </motion.div>
 
                   <motion.div
-                    initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                    initial={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     animate={{
                       opacity: animPhase >= 2 ? 1 : 0,
                       y: animPhase >= 2 ? 0 : 8,
                       filter: animPhase >= 2 ? 'blur(0px)' : 'blur(8px)'
                     }}
-                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                     className="space-y-4"
                   >
                     {/* Large PAN input field */}
